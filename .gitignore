@@ -130,8 +130,3 @@ dmypy.json
 
 # my file
 .idea/
-examples/webscrape/
-batterydataextractor/scrape/elsevier.py
-batterydataextractor/scrape/springer.py
-
-

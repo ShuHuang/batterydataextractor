@@ -3,7 +3,7 @@
 batterydataextractor.scrape.rsc
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Web-scraping papers from The Royal Society of Chemistry. Please get the permission from RSC before web-scraping.
+The Royal Society of Chemistry (RSC) web scraper. Please get the permission from RSC before web-scraping.
 author: Shu Huang (sh2009@cam.ac.uk)
 """
 import re
@@ -19,25 +19,25 @@ from .base import BaseWebScraper
 
 class RSCWebScraper(BaseWebScraper):
     """
-
+    RSC web-scraper
     """
     def __init__(self, url=None, max_wait_time=30, driver=None):
         """
-
-        :param url:
-        :param max_wait_time:
-        :param driver:
+        :param url: RSC search query url.
+        :param max_wait_time: maximum waiting time for the scraper.
+        :param driver: the Selenium driver (default: Chrome driver).
         """
+        super().__init__()
         self.url = url
         self.max_wait_time = max_wait_time
         self.driver = driver
 
     def get_doi(self, query, page):
         """
-
-        :param page:
-        :param query:
-        :return:
+        Get a list of dois from query massages and the exact page.
+        :param query: the query text (e.g. battery materials)
+        :param page: the number of page
+        :return: a list of dois of the relevant query text and page.
         """
         if self.driver is None:
             driver = webdriver.Chrome()
@@ -53,8 +53,7 @@ class RSCWebScraper(BaseWebScraper):
         wait = WebDriverWait(driver, self.max_wait_time)
         # To make sure we don't overload the server
         sleep(1)
-        next_button = wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "a[class^=paging__btn]")))[
-            1]
+        next_button = wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "a[class^=paging__btn]")))[1]
         page_string = """document.querySelectorAll("a[class^=paging__btn]")[1].setAttribute("data-pageno", \""""\
                       + str(page) + """\")"""
         driver.execute_script(page_string)
@@ -67,9 +66,9 @@ class RSCWebScraper(BaseWebScraper):
 
     def download_doi(self, doi, file_location):
         """
-
-        :param doi:
-        :param file_location:
+        Download the html paper of the doi
+        :param doi: doi of the paper
+        :param file_location: the saving location
         :return:
         """
         doi = doi.split("org/")[-1]
@@ -84,7 +83,7 @@ class RSCWebScraper(BaseWebScraper):
         if len(exact_date) == 3:
             name = exact_date[0] + exact_date[1] + exact_date[2] + '_' + doi
         else:
-            name = '00000000_' + doi
+            name = result['online_date'].replace("/", "") + '_' + doi
 
         with open(file_location + name + '.html', 'wb') as f:
             f.write(web_content)
@@ -93,9 +92,9 @@ class RSCWebScraper(BaseWebScraper):
     @staticmethod
     def get_rsc_abstract(web_content):
         """
-
-        :param web_content:
-        :return:
+        Get the metadata and abstract from a rsc html file
+        :param web_content: rsc html content
+        :return: a dictionary of metadata and abstract
         """
         soup = BeautifulSoup(web_content, features="html.parser")
         for i in soup.find_all("meta"):
@@ -111,5 +110,9 @@ class RSCWebScraper(BaseWebScraper):
             if i.has_attr("name"):
                 if i["name"] == "citation_journal_title":
                     journal = i['content']
+            if i.has_attr("name"):
+                if i["name"] == "citation_online_date":
+                    online_date = i['content']
         abstract = soup.find_all("p", attrs={"class": "abstract"})[0].get_text()
-        return {"title": title, "doi": doi, "date": date, "journal": journal, "abstract": abstract}
+        return {"title": title, "doi": doi, "date": date, "journal": journal, "online_date": online_date,
+                "abstract": abstract}

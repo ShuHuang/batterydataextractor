@@ -3,12 +3,9 @@
 batterydataextractor.scrape.springer
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Web-scraping papers from the Springer publisher.
+Springer web-scraper
 author: Shu Huang (sh2009@cam.ac.uk)
 """
-__author__ = "Shu Huang"
-__email__ = "sh2009@cam.ac.uk"
-
 import json
 import requests
 from bs4 import BeautifulSoup
@@ -16,22 +13,25 @@ from .base import BaseWebScraper
 
 
 class SpringerMetaWebScraper(BaseWebScraper):
+    """
+    Springer web-scraper using the meta API.
+    """
     def __init__(self, query, api_key):
         """
-
-        :param query:
-        :param api_key:
+        :param query: query text (e.g. battery materials)
+        :param api_key: API key from the Springer API Portal (https://dev.springernature.com/)
         """
+        super().__init__()
         self.api_key = api_key
         self.query = query.replace(" ", '%20')
 
     def get_doi(self, year=2022, start=0, max_return=100):
         """
-
-        :param year:
-        :param start:
-        :param max_return:
-        :return:
+        Get a list of dois of the query, year, and start index
+        :param year: the year of published papers
+        :param start: the start index of the returned papers
+        :param max_return: the maximum number of returned papers (max: 100)
+        :return: a list of dois of the query and year
         """
         url = "http://api.springernature.com/meta/v2/json?&q={}%20type:Journal%20year:{}&s={}&p={}&api_key={}".format(
             self.query, year, start, max_return, self.api_key)
@@ -42,18 +42,18 @@ class SpringerMetaWebScraper(BaseWebScraper):
 
     def get_xml(self, doi):
         """
-
-        :param doi:
-        :return:
+        Get the xml link of the doi
+        :param doi: the doi of a paper
+        :return: the xml url
         """
         url = "https://api.springernature.com/meta/v2/pam?q=doi:{}&p=2&api_key={}".format(doi, self.api_key)
         return url
 
     def download_doi(self, doi, file_location):
         """
-
-        :param doi:
-        :param file_location:
+        Download the Springer xml paper
+        :param doi: the doi of a paper
+        :param file_location: saving location
         :return:
         """
         url = self.get_xml(doi)
@@ -69,6 +69,11 @@ class SpringerMetaWebScraper(BaseWebScraper):
 
     @staticmethod
     def get_spr_abstract(spr_document):
+        """
+        Get the metadata and abstract from a Springer xml file
+        :param spr_document: Springer xml content
+        :return: a dictionary of metadata and abstract
+        """
         soup = BeautifulSoup(spr_document, features="html.parser")
         abstract = ''
         for i in soup.find_all("p"):
@@ -84,23 +89,26 @@ class SpringerMetaWebScraper(BaseWebScraper):
 
 
 class SpringerTDMWebScraper(BaseWebScraper):
+    """
+    Springer web-scraper using the TDM full-text API.
+    """
     def __init__(self, query, api_key):
         """
-
-        :param query:
-        :param api_key:
+        :param query: query text (e.g. battery materials)
+        :param api_key: API key from the Springer API Portal (https://dev.springernature.com/)
         """
+        super().__init__()
         self.api_key = api_key
         self.query = query.replace(" ", '%20')
 
     def get_doi(self, date_from="2020-06-01", date_to="2021-01-10", start=0, max_return=100):
         """
-
-        :param date_from:
-        :param date_to:
-        :param start:
-        :param max_return:
-        :return:
+        Get a list of dois of the query, year, and start index
+        :param date_from: the starting date of papers to be downloaded
+        :param date_to: the end date of papers to be downloaded
+        :param start: the start index of the returned papers
+        :param max_return: the maximum number of returned papers (max: 100)
+        :return: a list of dois of the query and year
         """
         url = "https://articles-api.springer.com/xmldata/jats?q={}%20onlinedatefrom:{}%20onlinedateto:{}&s={}" \
               "&p={}&api_key={}".format(self.query, date_from, date_to, start, max_return, self.api_key)
@@ -112,18 +120,18 @@ class SpringerTDMWebScraper(BaseWebScraper):
 
     def get_xml(self, doi):
         """
-
-        :param doi:
-        :return:
+        Get the xml link of the doi
+        :param doi: the doi of a paper
+        :return: the xml url
         """
         url = "https://articles-api.springer.com/xmldata/jats?q=doi:{}&api_key={}".format(doi, self.api_key)
         return url
 
     def download_doi(self, doi, file_location):
         """
-
-        :param doi:
-        :param file_location:
+        Download the Springer xml paper
+        :param doi: the doi of a paper
+        :param file_location: saving location
         :return:
         """
         url = self.get_xml(doi)
@@ -139,6 +147,11 @@ class SpringerTDMWebScraper(BaseWebScraper):
 
     @staticmethod
     def get_spr_abstract(spr_document):
+        """
+        Get the metadata and abstract from a Springer xml jats file
+        :param spr_document: Springer xml jats content
+        :return: a dictionary of metadata and abstract
+        """
         soup = BeautifulSoup(spr_document, features="html.parser")
         abstract = ''
         for i in soup.find_all("p"):

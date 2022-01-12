@@ -10,6 +10,14 @@ from batterydataextractor.scrape import RSCWebScraper
 
 
 def main(url, query, page, file_location):
+    """
+    RSC web-scraper runner
+    :param url: the scraping url (or default)
+    :param query: query text (e.g. battery materials)
+    :param page: the page number of the query pages
+    :param file_location: saving location
+    :return:
+    """
     scraper = RSCWebScraper(url=url)
     dois = scraper.get_doi(query=query, page=page)
     for doi in dois:

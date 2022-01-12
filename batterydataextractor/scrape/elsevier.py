@@ -3,7 +3,7 @@
 batterydataextractor.scrape.elsevier
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Web-scraping papers from the Elsevier publisher.
+Elsevier web-scraper
 author: Shu Huang (sh2009@cam.ac.uk)
 """
 import json
@@ -14,15 +14,17 @@ from .base import BaseWebScraper
 
 
 class ElsevierWebScraper(BaseWebScraper):
-
+    """
+    Elsevier web-scraper
+    """
     base_url = 'https://api.elsevier.com/content/search/sciencedirect'
 
     def __init__(self, api_key, query):
         """
-
-        :param api_key:
-        :param query:
+        :param api_key: API key from the Elsevier Developer Portal (https://dev.elsevier.com/)
+        :param query: query text (e.g. battery materials)
         """
+        super().__init__()
         self.api_key = api_key
         self.data = {"qs": query,
                      "date": 2022,
@@ -33,8 +35,8 @@ class ElsevierWebScraper(BaseWebScraper):
 
     def get_response(self):
         """
-
-        :return:
+        Get the requests response from the url.
+        :return: requests response.
         """
         response = requests.put(self.base_url, data=json.dumps(self.data), headers=self.headers)
         response = response.text.replace('false', 'False').replace('true', 'True')
@@ -46,9 +48,9 @@ class ElsevierWebScraper(BaseWebScraper):
 
     def get_doi(self, year=2022, volume=None):
         """
-
-        :param volume:
-        :param year:
+        Get the list of dois from the query text, year, and volume.
+        :param year: the year of published papers
+        :param volume: the volume of the journal
         :return:
         """
         dois = []
@@ -72,9 +74,9 @@ class ElsevierWebScraper(BaseWebScraper):
 
     def download_doi(self, doi, file_location):
         """
-
-        :param doi:
-        :param file_location:
+        Download the xml file from the doi
+        :param doi: doi of a paper
+        :param file_location: saving location
         :return:
         """
         request_url = 'https://api.elsevier.com/content/article/doi/{}?apiKey={}&httpAccept=text%2Fxml'.format(
@@ -91,9 +93,9 @@ class ElsevierWebScraper(BaseWebScraper):
     @staticmethod
     def get_els_abstract(els_document):
         """
-
-        :param els_document:
-        :return:
+        Get the metadata and abstract from a Elsevier xml file
+        :param els_document: Elsevier xml content
+        :return: a dictionary of metadata and abstract
         """
         soup = BeautifulSoup(els_document, features="html.parser")
         date = soup.find_all("xocs:available-online-date")[0].get_text()

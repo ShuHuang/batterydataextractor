@@ -19,7 +19,7 @@ def run_meta_scraper(api_key, query, year, file_location, start=0):
 
 def run_tdm_scraper(api_key, query, data_from, date_to, file_location, start=0):
     scraper = SpringerTDMWebScraper(api_key=api_key, query=query)
-    dois = scraper.get_doi(date_from='2021-06-01', date_to='2022-01-11', start=start)
+    dois = scraper.get_doi(date_from=data_from, date_to=date_to, start=start)
     for doi in dois:
         scraper.download_doi(doi, file_location)
     return
@@ -40,4 +40,3 @@ if __name__ == "__main__":
         for start in range(0, 10000, 100):
             run_tdm_scraper(api_key=api_key, query=query, data_from=date_from, date_to=date_to, file_location=location,
                             start=start)
-

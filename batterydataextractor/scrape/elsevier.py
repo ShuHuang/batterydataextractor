@@ -68,7 +68,7 @@ class ElsevierWebScraper(BaseWebScraper):
                 for result in results:
                     if 'doi' in result:
                         dois.append(result['doi'])
-        return dois
+        return list(set(dois))
 
     def download_doi(self, doi, file_location):
         """
@@ -85,9 +85,6 @@ class ElsevierWebScraper(BaseWebScraper):
         date = result['date'].replace("-", "")
         name = date + "_" + doi
         with open(file_location + name + '.xml', 'w', encoding='utf-8') as f:
-            request_url = 'https://api.elsevier.com/content/article/doi/{}?apiKey={}&httpAccept=text%2Fxml'.format(
-                doi, self.api_key)
-            text = requests.get(request_url).text
             f.write(text)
         return
 
@@ -107,5 +104,3 @@ class ElsevierWebScraper(BaseWebScraper):
         abstract = abstract.replace("\t", "")
         doi = soup.find_all("prism:doi")[0].get_text()
         return {"title": title, "doi": doi, "date": date, "journal": journal, "abstract": abstract}
-
-

@@ -96,7 +96,8 @@ class SpringerTDMWebScraper(BaseWebScraper):
     def get_doi(self, date_from="2020-06-01", date_to="2021-01-10", start=0, max_return=100):
         """
 
-        :param year:
+        :param date_from:
+        :param date_to:
         :param start:
         :param max_return:
         :return:

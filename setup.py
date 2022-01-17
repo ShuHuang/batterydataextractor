@@ -21,12 +21,12 @@ else:
     long_description = '''BatteryDataExtractor: A battery version of ChemDataExtractor based on BatteryBERT models.'''
 
 setup(
-    name='batterybert',
+    name='batterydataextractor',
     version='1.0.0',
     author='Shu Huang',
     author_email='sh2009@cam.ac.uk',
     license=license,
-    url='https://github.com/ShuHuang/batterybert',
+    url='https://github.com/ShuHuang/batterydataextractor',
     packages=find_packages(),
     description='BatteryDataExtractor: A battery version of ChemDataExtractor based on BatteryBERT models.',
     long_description=long_description,

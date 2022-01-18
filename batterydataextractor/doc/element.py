@@ -6,7 +6,7 @@ batterydataextractor.doc.element
 Document elements.
 author:
 """
-from abc import ABCMeta, abstractproperty
+from abc import ABCMeta, abstractmethod
 import json
 import operator
 
@@ -16,7 +16,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-class BaseElement():
+class BaseElement(six.with_metaclass(ABCMeta)):
     """
     Abstract base class for a Document Element.
     :ivar id: (Optional) An identifier for this Element.
@@ -72,7 +72,8 @@ class BaseElement():
         # except TypeError:
         #     self._document = document
 
-    # @abstractpropertyabstractproperty
+    @property
+    @abstractmethod
     def records(self):
         """All records found in this Document, as a list of :class:`chemdataextractor.model.base.BaseModel`."""
         return []

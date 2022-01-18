@@ -8,16 +8,15 @@ author:
 """
 import logging
 import six
-# from abc import abstractmethod
+from abc import abstractmethod, ABCMeta
 from collections import defaultdict
 
 from lxml import etree
 from lxml.etree import XMLParser
 from lxml.html import HTMLParser
-from bs4 import UnicodeDammit
 
 from ..errors import ReaderError
-# from ..doc.document import Document
+from ..doc.document import Document
 from ..doc.text import Title, Heading, Paragraph, Citation, Text, Sentence
 from ..doc.meta import MetaData
 # from ..doc.table_new import Table
@@ -38,7 +37,7 @@ INLINE_ELEMENTS = {
 }
 
 
-class LxmlReader(BaseReader):
+class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
     """Abstract base class for lxml-based readers."""
 
     #: A ``Cleaner`` instance to
@@ -242,7 +241,7 @@ class LxmlReader(BaseReader):
             return True
         return False
 
-    # @abstractmethod
+    @abstractmethod
     def _make_tree(self, fstring):
         """Read a string into an lxml elementtree."""
         pass

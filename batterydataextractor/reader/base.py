@@ -8,12 +8,13 @@ author:
 """
 from abc import ABCMeta, abstractmethod
 
+import six
 
-class BaseReader():
+
+class BaseReader(six.with_metaclass(ABCMeta)):
     """All Document Readers should implement a parse method."""
 
     def __init__(self):
-        super().__init__()
         self.root = None
 
     def detect(self, fstring, fname=None):
@@ -23,7 +24,7 @@ class BaseReader():
         """
         return True
 
-    # @abstractmethod
+    @abstractmethod
     def parse(self, fstring):
         """Parse the input and return a Document. Raises ReaderError if the parse fails."""
         pass

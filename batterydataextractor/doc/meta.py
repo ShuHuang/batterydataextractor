@@ -10,6 +10,7 @@ from .element import BaseElement
 import logging
 log = logging.getLogger(__name__)
 
+
 class MetaData(BaseElement):
 
     def __init__(self, data):

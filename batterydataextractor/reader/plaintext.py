@@ -9,7 +9,7 @@ author:
 import re
 import six
 
-# from ..doc.document import Document
+from ..doc.document import Document
 from .base import BaseReader
 from ..text import get_encoding
 

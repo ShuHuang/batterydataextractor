@@ -6,7 +6,7 @@ batterydataextractor.doc.document
 Document model.
 author:
 """
-# from abc import abstractproperty
+from abc import ABCMeta, abstractmethod
 import collections
 import io
 import json
@@ -22,13 +22,12 @@ from ..errors import ReaderError
 # from ..model.model import Compound
 from ..text import get_encoding
 from ..config import Config
-from ..reader import DEFAULT_READERS
 
 
 log = logging.getLogger(__name__)
 
 
-class BaseDocument(collections.Sequence):
+class BaseDocument(six.with_metaclass(ABCMeta, collections.Sequence)):
     """Abstract base class for a Document."""
 
     def __repr__(self):
@@ -42,13 +41,15 @@ class BaseDocument(collections.Sequence):
 
     def __len__(self):
         return len(self.elements)
-    #
-    # @abstractproperty
+
+    @property
+    @abstractmethod
     def elements(self):
         """Return a list of document elements."""
         return []
 
-    # @abstractproperty
+    @property
+    @abstractmethod
     def records(self):
         """Chemical records that have been parsed from this Document."""
         return []
@@ -164,6 +165,7 @@ class Document(BaseDocument):
             :class:`~chemdataextractor.reader.pdf.PdfReader`, and :class:`~chemdataextractor.reader.plaintext.PlainTextReader`.
         """
         if readers is None:
+            from ..reader import DEFAULT_READERS
             readers = DEFAULT_READERS
 
         if isinstance(fstring, six.text_type):

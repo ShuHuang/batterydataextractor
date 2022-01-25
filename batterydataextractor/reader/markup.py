@@ -276,8 +276,8 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
             specials[heading] = self._parse_text(heading, element_cls=Heading, refs=refs, specials=specials)
         # for figure in figures:
             # specials[figure] = self._parse_figure(figure, refs=refs, specials=specials)
-        #for table in tables:
-         #   specials[table] = self._parse_table(table, refs=refs, specials=specials)
+        # for table in tables:
+            # specials[table] = self._parse_table(table, refs=refs, specials=specials)
         for citation in citations:
             specials[citation] = self._parse_text(citation, element_cls=Citation, refs=refs, specials=specials)
         for md in metadata:

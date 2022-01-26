@@ -71,12 +71,12 @@ class BaseElement(six.with_metaclass(ABCMeta)):
         #     self._document = weakref.proxy(document)
         # except TypeError:
         #     self._document = document
-
-    @property
-    @abstractmethod
-    def records(self):
-        """All records found in this Document, as a list of :class:`chemdataextractor.model.base.BaseModel`."""
-        return []
+    #
+    # @property
+    # @abstractmethod
+    # def records(self):
+    #     """All records found in this Document, as a list of :class:`chemdataextractor.model.base.BaseModel`."""
+    #     return []
 
     # @abstractmethod  # TODO: Put this back?
     # def serialize(self):

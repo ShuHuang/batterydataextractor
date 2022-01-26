@@ -43,16 +43,17 @@ class BaseDocument(six.with_metaclass(ABCMeta, collections.Sequence)):
         return len(self.elements)
 
     @property
-    @abstractmethod
+    # TODO: abstractmethod?
+    # @abstractmethod
     def elements(self):
         """Return a list of document elements."""
         return []
 
-    @property
-    @abstractmethod
-    def records(self):
-        """Chemical records that have been parsed from this Document."""
-        return []
+    # @property
+    # @abstractmethod
+    # def records(self):
+    #     """Chemical records that have been parsed from this Document."""
+    #     return []
 
 
 class Document(BaseDocument):
@@ -93,8 +94,6 @@ class Document(BaseDocument):
                 element.set_config()
         log.debug('%s: Initializing with %s elements' % (self.__class__.__name__, len(self.elements)))
 
-    def __new__(cls, *args, **kwargs):
-        return
 
     def add_models(self, models):
         """

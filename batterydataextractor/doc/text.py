@@ -6,7 +6,7 @@ batterydataextractor.doc.text
 Text-based document elements.
 author:
 """
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 import collections
 import logging
 # import re
@@ -14,12 +14,12 @@ import logging
 import six
 
 # from ..model.base import ModelList
-from ..nlp.lexicon import ChemLexicon, Lexicon
-from ..nlp.cem import CemTagger, IGNORE_PREFIX, IGNORE_SUFFIX, SPECIALS, SPLITS, CiDictCemTagger, CsDictCemTagger, CrfCemTagger
+# from ..nlp.lexicon import ChemLexicon, Lexicon
+from ..nlp.cem import CemTagger, BertCemTagger #, IGNORE_SUFFIX, SPECIALS, SPLITS, CiDictCemTagger, CsDictCemTagger, CrfCemTagger
 from ..nlp.abbrev import ChemAbbreviationDetector
-from ..nlp.tag import NoneTagger
-from ..nlp.pos import ChemCrfPosTagger, CrfPosTagger, ApPosTagger, ChemApPosTagger
-from ..nlp.tokenize import ChemSentenceTokenizer, ChemWordTokenizer, regex_span_tokenize, SentenceTokenizer, WordTokenizer, FineWordTokenizer
+from ..nlp.tag import NoneTagger, BaseTagger, BertTagger
+# from ..nlp.pos import ChemCrfPosTagger, CrfPosTagger, ApPosTagger, ChemApPosTagger
+from ..nlp.tokenize import ChemSentenceTokenizer, ChemWordTokenizer, SentenceTokenizer, WordTokenizer
 # from ..text import CONTROL_RE
 from ..utils import memoized_property#, first
 from .element import BaseElement
@@ -63,7 +63,7 @@ class BaseText(BaseElement):
         super(BaseText, self).__init__(**kwargs)
         self._text = text
         self.word_tokenizer = word_tokenizer if word_tokenizer is not None else self.word_tokenizer
-        self.lexicon = lexicon if lexicon is not None else self.lexicon
+        # self.lexicon = lexicon if lexicon is not None else self.lexicon
         self.abbreviation_detector = abbreviation_detector if abbreviation_detector is not None else self.abbreviation_detector
         self.pos_tagger = pos_tagger if pos_tagger is not None else self.pos_tagger
         self.ner_tagger = ner_tagger if ner_tagger is not None else self.ner_tagger
@@ -85,11 +85,11 @@ class BaseText(BaseElement):
         """The :class:`~chemdataextractor.nlp.tokenize.WordTokenizer` used by this element."""
         return
 
-    @property
-    @abstractmethod
-    def lexicon(self):
-        """The :class:`~chemdataextractor.nlp.lexicon.Lexicon` used by this element."""
-        return
+    # @property
+    # @abstractmethod
+    # def lexicon(self):
+    #     """The :class:`~chemdataextractor.nlp.lexicon.Lexicon` used by this element."""
+    #     return
 
     @property
     @abstractmethod
@@ -119,13 +119,13 @@ class BaseText(BaseElement):
         """
         return
 
-    @property
-    @abstractmethod
-    def definitions(self):
-        """
-        A list of all specifier definitions
-        """
-        return
+    # @property
+    # @abstractmethod
+    # def definitions(self):
+    #     """
+    #     A list of all specifier definitions
+    #     """
+    #     return
 
     def serialize(self):
         """
@@ -139,15 +139,31 @@ class BaseText(BaseElement):
     def _repr_html_(self):
         return self.text
 
+    @word_tokenizer.setter
+    def word_tokenizer(self, value):
+        self._word_tokenizer = value
+
+    # @lexicon.setter
+    # def lexicon(self, value):
+    #     self._lexicon = value
+
+    @pos_tagger.setter
+    def pos_tagger(self, value):
+        self._pos_tagger = value
+
+    @ner_tagger.setter
+    def ner_tagger(self, value):
+        self._ner_tagger = value
+
 
 class Text(collections.Sequence, BaseText):
     """A passage of text, comprising one or more sentences."""
 
     sentence_tokenizer = ChemSentenceTokenizer()
     word_tokenizer = ChemWordTokenizer()
-    lexicon = ChemLexicon()
+    # lexicon = ChemLexicon()
     abbreviation_detector = ChemAbbreviationDetector()
-    pos_tagger = ChemCrfPosTagger()  # ChemPerceptronTagger()
+    pos_tagger = BertTagger()  # ChemPerceptronTagger()
     ner_tagger = CemTagger()
 
     def __init__(self, text, sentence_tokenizer=None, word_tokenizer=None, lexicon=None, abbreviation_detector=None, pos_tagger=None, ner_tagger=None, parsers=None, **kwargs):
@@ -180,7 +196,7 @@ class Text(collections.Sequence, BaseText):
             inside a :class:`~chemdataextractor.doc.text.Paragraph`), or is part of a :class:`~chemdataextractor.doc.document.Document`,
             this is set automatically to be the same as that of the containing element, unless manually set otherwise.
         """
-        super(Text, self).__init__(text, word_tokenizer=word_tokenizer, lexicon=lexicon, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, parsers=None, **kwargs)
+        super(Text, self).__init__(text, word_tokenizer=word_tokenizer, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, parsers=None, **kwargs)
         self.sentence_tokenizer = sentence_tokenizer if sentence_tokenizer is not None else self.sentence_tokenizer
 
     def __getitem__(self, index):
@@ -206,8 +222,8 @@ class Text(collections.Sequence, BaseText):
                 self.pos_tagger = eval(c['POS_TAGGER'])()
             if 'NER_TAGGER' in c.keys():
                 self.ner_tagger = eval(c['NER_TAGGER'])()
-            if 'LEXICON' in c.keys():
-                self.lexicon = eval(c['LEXICON'])()
+            # if 'LEXICON' in c.keys():
+                # self.lexicon = eval(c['LEXICON'])()
             if 'PARSERS' in c.keys():
                 raise(DeprecationWarning('Manually setting parsers deprecated, any settings from config files for this will be ignored.'))
 
@@ -222,7 +238,7 @@ class Text(collections.Sequence, BaseText):
                 start=span[0],
                 end=span[1],
                 word_tokenizer=self.word_tokenizer,
-                lexicon=self.lexicon,
+                # lexicon=self.lexicon,
                 abbreviation_detector=self.abbreviation_detector,
                 pos_tagger=self.pos_tagger,
                 ner_tagger=self.ner_tagger,
@@ -337,7 +353,7 @@ class Text(collections.Sequence, BaseText):
                 references=self.references + other.references,
                 sentence_tokenizer=self.sentence_tokenizer,
                 word_tokenizer=self.word_tokenizer,
-                lexicon=self.lexicon,
+                # lexicon=self.lexicon,
                 abbreviation_detector=self.abbreviation_detector,
                 pos_tagger=self.pos_tagger,
                 ner_tagger=self.ner_tagger,
@@ -346,7 +362,7 @@ class Text(collections.Sequence, BaseText):
         return NotImplemented
 
 
-class Title(Text):
+class Title(Text, ABC):
 
     def __init__(self, text, **kwargs):
         super(Title, self).__init__(text, **kwargs)
@@ -417,16 +433,16 @@ class Caption(Text):
         return [definition for sent in self.sentences for definition in sent.definitions]
 
 
-class Sentence(BaseText):
+class Sentence(BaseText, ABC):
     """A single sentence within a text passage."""
 
     word_tokenizer = ChemWordTokenizer()
-    lexicon = ChemLexicon()
+    # lexicon = ChemLexicon()
     abbreviation_detector = ChemAbbreviationDetector()
-    pos_tagger = ChemCrfPosTagger()  # ChemPerceptronTagger()
+    pos_tagger = BertTagger()  # ChemPerceptronTagger()
     ner_tagger = CemTagger()
 
-    def __init__(self, text, start=0, end=None, word_tokenizer=None, lexicon=None, abbreviation_detector=None, pos_tagger=None, ner_tagger=None, **kwargs):
+    def __init__(self, text, start=0, end=None, word_tokenizer=None, abbreviation_detector=None, pos_tagger=None, ner_tagger=None, **kwargs):
         """
         .. note::
             If intended as part of a :class:`chemdataextractor.doc.document.Document`,
@@ -457,7 +473,7 @@ class Sentence(BaseText):
             this is set automatically to be the same as that of the containing element, unless manually set otherwise.
         """
         # self.models = [Compound]
-        # super(Sentence, self).__init__(text, word_tokenizer=word_tokenizer, lexicon=lexicon, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, **kwargs)
+        super(Sentence, self).__init__(text, word_tokenizer=word_tokenizer, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, **kwargs)
         #: The start index of this sentence within the text passage.
         self.start = start
         #: The end index of this sentence within the text passage.
@@ -466,188 +482,188 @@ class Sentence(BaseText):
     def __repr__(self):
         return '%s(%r, %r, %r)' % (self.__class__.__name__, self._text, self.start, self.end)
 
-    # @memoized_property
-    # def tokens(self):
-    #     spans = self.word_tokenizer.span_tokenize(self.text)
-    #     toks = [Token(
-    #         text=self.text[span[0]:span[1]],
-    #         start=span[0] + self.start,
-    #         end=span[1] + self.start,
-    #         lexicon=self.lexicon
-    #     ) for span in spans]
-    #     return toks
+    @memoized_property
+    def tokens(self):
+        spans = self.word_tokenizer.span_tokenize(self.text)
+        toks = [Token(
+            text=self.text[span[0]:span[1]],
+            start=span[0] + self.start,
+            end=span[1] + self.start,
+            # lexicon=self.lexicon
+        ) for span in spans]
+        return toks
 
-    # @property
-    # def raw_tokens(self):
-    #     """A list of :class:`str` representations for the tokens in the object."""
-    #     return [token.text for token in self.tokens]
-    #
-    # @memoized_property
-    # def pos_tagged_tokens(self):
-    #     """A list of (:class:`Token` token, :class:`str` tag) tuples for each sentence in this sentence."""
-    #     # log.debug('Getting pos tags')
-    #     return self.pos_tagger.tag(self.raw_tokens)
-    #
-    # @property
-    # def pos_tags(self):
-    #     """A list of :class:`str` part of speech tags for each sentence in this sentence."""
-    #     return [tag for token, tag in self.pos_tagged_tokens]
-    #
-    # @memoized_property
-    # def unprocessed_ner_tagged_tokens(self):
-    #     """
-    #     A list of (:class:`Token` token, :class:`str` named entity recognition tag)
-    #     from the text.
-    #     No corrections from abbreviation detection are performed.
-    #     """
-    #     # log.debug('Getting unprocessed_ner_tags')
-    #     return self.ner_tagger.tag(self.pos_tagged_tokens)
-    #
-    # @memoized_property
-    # def unprocessed_ner_tags(self):
-    #     """
-    #     A list of :class:`str` unprocessed named entity tags for the tokens in this sentence.
-    #     No corrections from abbreviation detection are performed.
-    #     """
-    #     return [tag for token, tag in self.unprocessed_ner_tagged_tokens]
-    #
-    # @memoized_property
-    # def abbreviation_definitions(self):
-    #     """
-    #     A list of all abbreviation definitions in this Document. Each abbreviation is in the form
-    #     (:class:`str` abbreviation, :class:`str` long form of abbreviation, :class:`str` ner_tag)
-    #     """
-    #     abbreviations = []
-    #     if self.abbreviation_detector:
-    #         # log.debug('Detecting abbreviations')
-    #         ners = self.unprocessed_ner_tags
-    #         for abbr_span, long_span in self.abbreviation_detector.detect_spans(self.raw_tokens):
-    #             abbr = self.raw_tokens[abbr_span[0]:abbr_span[1]]
-    #             long = self.raw_tokens[long_span[0]:long_span[1]]
-    #             # Check if long is entirely tagged as one named entity type
-    #             long_tags = ners[long_span[0]:long_span[1]]
-    #             unique_tags = set([tag[2:] for tag in long_tags if tag is not None])
-    #             tag = long_tags[0][2:] if None not in long_tags and len(unique_tags) == 1 else None
-    #             abbreviations.append((abbr, long, tag))
-    #     return abbreviations
-    #
-    # @memoized_property
-    # def ner_tagged_tokens(self):
-    #     """
-    #     A list of (:class:`Token` token, :class:`str` named entity recognition tag)
-    #     from the sentence.
-    #     """
-    #     return list(zip(self.raw_tokens, self.ner_tags))
-    #
-    # @memoized_property
-    # def ner_tags(self):
-    #     """
-    #     A list of named entity tags corresponding to each of the tokens in the object.
-    #     For information on what each of the tags can be, check the documentation on
-    #     the specific :attr:`ner_tagger` used for this object.
-    #     """
-    #     # log.debug('Getting ner_tags')
-    #     ner_tags = self.unprocessed_ner_tags
-    #     abbrev_defs = self.document.abbreviation_definitions if self.document else self.abbreviation_definitions
-    #     # Ensure abbreviation entity matches long entity
-    #     # TODO: This is potentially a performance bottleneck?
-    #     for i in range(0, len(ner_tags)):
-    #         for abbr, long, ner_tag in abbrev_defs:
-    #             if abbr == self.raw_tokens[i:i+len(abbr)]:
-    #                 old_ner_tags = ner_tags[i:i+len(abbr)]
-    #                 ner_tags[i] = 'B-%s' % ner_tag if ner_tag is not None else None
-    #                 ner_tags[i+1:i+len(abbr)] = ['I-%s' % ner_tag if ner_tag is not None else None] * (len(abbr) - 1)
-    #                 # Remove ner tags from brackets surrounding abbreviation
-    #                 if i > 1 and self.raw_tokens[i-1] == '(':
-    #                     ner_tags[i-1] = None
-    #                 if i < len(self.raw_tokens) - 1 and self.raw_tokens[i+1] == ')':
-    #                     ner_tags[i+1] = None
-    #                 if not old_ner_tags == ner_tags[i:i+len(abbr)]:
-    #                     log.debug('Correcting abbreviation tag: %s (%s): %s -> %s' % (' '.join(abbr), ' '.join(long), old_ner_tags, ner_tags[i:i+len(abbr)]))
-    #     # TODO: Ensure abbreviations in brackets at the end of an entity match are separated and the brackets untagged
-    #     # Hydrogen Peroxide (H2O2)
-    #     # Tungsten Carbide (WC)
-    #     # TODO: Filter off alphanumerics from end (1h) (3) (I)
-    #     # May need more intelligent
-    #     return ner_tags
-    #
-    # @memoized_property
-    # def cems(self):
-    #     """
-    #     A list of all Chemical Entity Mentions in this text as :class:`~chemdataextractor.doc.text.Span`
-    #     """
-    #     # log.debug('Getting cems')
-    #     spans = []
-    #     # print(self.text.encode('utf8'))
-    #     for result in chemical_name.scan(self.tagged_tokens):
-    #         # parser scan yields (result, startindex, endindex) - we just use the indexes here
-    #         tokens = self.tokens[result[1]:result[2]]
-    #         start = tokens[0].start
-    #         end = tokens[-1].end
-    #         # Adjust boundaries to exclude disallowed prefixes/suffixes
-    #         currenttext = self.text[start-self.start:end-self.start].lower()
-    #         for prefix in IGNORE_PREFIX:
-    #             if currenttext.startswith(prefix):
-    #                 # print('%s removing %s' % (currenttext, prefix))
-    #                 start += len(prefix)
-    #                 break
-    #         for suffix in IGNORE_SUFFIX:
-    #             if currenttext.endswith(suffix):
-    #                 # print('%s removing %s' % (currenttext, suffix))
-    #                 end -= len(suffix)
-    #                 break
-    #         # Adjust boundaries to exclude matching brackets at start and end
-    #         currenttext = self.text[start-self.start:end-self.start]
-    #         for bpair in [('(', ')'), ('[', ']')]:
-    #             if len(currenttext) > 2 and currenttext[0] == bpair[0] and currenttext[-1] == bpair[1]:
-    #                 level = 1
-    #                 for k, char in enumerate(currenttext[1:]):
-    #                     if char == bpair[0]:
-    #                         level += 1
-    #                     elif char == bpair[1]:
-    #                         level -= 1
-    #                     if level == 0 and k == len(currenttext) - 2:
-    #                         start += 1
-    #                         end -= 1
-    #                         break
-    #
-    #         # If entity has been reduced to nothing by adjusting boundaries, skip it
-    #         if start >= end:
-    #             continue
-    #
-    #         currenttext = self.text[start-self.start:end-self.start]
-    #
-    #         # Do splits
-    #         split_spans = []
-    #         comps = list(regex_span_tokenize(currenttext, '(-|\+|\)?-to-\(?|···|/|\s)'))
-    #         if len(comps) > 1:
-    #             for split in SPLITS:
-    #                 if all(re.search(split, currenttext[comp[0]:comp[1]]) for comp in comps):
-    #                     # print('%s splitting %s' % (currenttext, [currenttext[comp[0]:comp[1]] for comp in comps]))
-    #                     for comp in comps:
-    #                         span = Span(text=currenttext[comp[0]:comp[1]], start=start+comp[0], end=start+comp[1])
-    #                         # print('SPLIT: %s - %s' % (currenttext, repr(span)))
-    #                         split_spans.append(span)
-    #                     break
-    #             else:
-    #                 split_spans.append(Span(text=currenttext, start=start, end=end))
-    #         else:
-    #             split_spans.append(Span(text=currenttext, start=start, end=end))
-    #
-    #         # Do specials
-    #         for split_span in split_spans:
-    #             for special in SPECIALS:
-    #                 m = re.search(special, split_span.text)
-    #                 if m:
-    #                     # print('%s special %s' % (split_span.text, m.groups()))
-    #                     for i in range(1, len(m.groups()) + 1):
-    #                         span = Span(text=m.group(i), start=split_span.start+m.start(i), end=split_span.start+m.end(i))
-    #                         # print('SUBMATCH: %s - %s' % (currenttext, repr(span)))
-    #                         spans.append(span)
-    #                     break
-    #             else:
-    #                 spans.append(split_span)
-    #     return spans
+    @property
+    def raw_tokens(self):
+        """A list of :class:`str` representations for the tokens in the object."""
+        return [token.text for token in self.tokens]
+
+    @memoized_property
+    def pos_tagged_tokens(self):
+        """A list of (:class:`Token` token, :class:`str` tag) tuples for each sentence in this sentence."""
+        # log.debug('Getting pos tags')
+        return self.pos_tagger.tag(self.raw_tokens)
+
+    @property
+    def pos_tags(self):
+        """A list of :class:`str` part of speech tags for each sentence in this sentence."""
+        return [tag for token, tag in self.pos_tagged_tokens]
+
+    @memoized_property
+    def unprocessed_ner_tagged_tokens(self):
+        """
+        A list of (:class:`Token` token, :class:`str` named entity recognition tag)
+        from the text.
+        No corrections from abbreviation detection are performed.
+        """
+        # log.debug('Getting unprocessed_ner_tags')
+        return self.ner_tagger.tag(self.pos_tagged_tokens)
+
+    @memoized_property
+    def unprocessed_ner_tags(self):
+        """
+        A list of :class:`str` unprocessed named entity tags for the tokens in this sentence.
+        No corrections from abbreviation detection are performed.
+        """
+        return [tag for token, tag in self.unprocessed_ner_tagged_tokens]
+
+    @memoized_property
+    def abbreviation_definitions(self):
+        """
+        A list of all abbreviation definitions in this Document. Each abbreviation is in the form
+        (:class:`str` abbreviation, :class:`str` long form of abbreviation, :class:`str` ner_tag)
+        """
+        abbreviations = []
+        if self.abbreviation_detector:
+            # log.debug('Detecting abbreviations')
+            ners = self.unprocessed_ner_tags
+            for abbr_span, long_span in self.abbreviation_detector.detect_spans(self.raw_tokens):
+                abbr = self.raw_tokens[abbr_span[0]:abbr_span[1]]
+                long = self.raw_tokens[long_span[0]:long_span[1]]
+                # Check if long is entirely tagged as one named entity type
+                long_tags = ners[long_span[0]:long_span[1]]
+                unique_tags = set([tag[2:] for tag in long_tags if tag is not None])
+                tag = long_tags[0][2:] if None not in long_tags and len(unique_tags) == 1 else None
+                abbreviations.append((abbr, long, tag))
+        return abbreviations
+
+    @memoized_property
+    def ner_tagged_tokens(self):
+        """
+        A list of (:class:`Token` token, :class:`str` named entity recognition tag)
+        from the sentence.
+        """
+        return list(zip(self.raw_tokens, self.ner_tags))
+
+    @memoized_property
+    def ner_tags(self):
+        """
+        A list of named entity tags corresponding to each of the tokens in the object.
+        For information on what each of the tags can be, check the documentation on
+        the specific :attr:`ner_tagger` used for this object.
+        """
+        # log.debug('Getting ner_tags')
+        ner_tags = self.unprocessed_ner_tags
+        abbrev_defs = self.document.abbreviation_definitions if self.document else self.abbreviation_definitions
+        # Ensure abbreviation entity matches long entity
+        # TODO: This is potentially a performance bottleneck?
+        for i in range(0, len(ner_tags)):
+            for abbr, long, ner_tag in abbrev_defs:
+                if abbr == self.raw_tokens[i:i+len(abbr)]:
+                    old_ner_tags = ner_tags[i:i+len(abbr)]
+                    ner_tags[i] = 'B-%s' % ner_tag if ner_tag is not None else None
+                    ner_tags[i+1:i+len(abbr)] = ['I-%s' % ner_tag if ner_tag is not None else None] * (len(abbr) - 1)
+                    # Remove ner tags from brackets surrounding abbreviation
+                    if i > 1 and self.raw_tokens[i-1] == '(':
+                        ner_tags[i-1] = None
+                    if i < len(self.raw_tokens) - 1 and self.raw_tokens[i+1] == ')':
+                        ner_tags[i+1] = None
+                    if not old_ner_tags == ner_tags[i:i+len(abbr)]:
+                        log.debug('Correcting abbreviation tag: %s (%s): %s -> %s' % (' '.join(abbr), ' '.join(long), old_ner_tags, ner_tags[i:i+len(abbr)]))
+        # TODO: Ensure abbreviations in brackets at the end of an entity match are separated and the brackets untagged
+        # Hydrogen Peroxide (H2O2)
+        # Tungsten Carbide (WC)
+        # TODO: Filter off alphanumerics from end (1h) (3) (I)
+        # May need more intelligent
+        return ner_tags
+
+    @memoized_property
+    def cems(self):
+        """
+        A list of all Chemical Entity Mentions in this text as :class:`~chemdataextractor.doc.text.Span`
+        """
+        # log.debug('Getting cems')
+        spans = []
+        # print(self.text.encode('utf8'))
+        # for result in chemical_name.scan(self.tagged_tokens):
+        #     # parser scan yields (result, startindex, endindex) - we just use the indexes here
+        #     tokens = self.tokens[result[1]:result[2]]
+        #     start = tokens[0].start
+        #     end = tokens[-1].end
+        #     # Adjust boundaries to exclude disallowed prefixes/suffixes
+        #     currenttext = self.text[start-self.start:end-self.start].lower()
+        #     for prefix in IGNORE_PREFIX:
+        #         if currenttext.startswith(prefix):
+        #             # print('%s removing %s' % (currenttext, prefix))
+        #             start += len(prefix)
+        #             break
+        #     for suffix in IGNORE_SUFFIX:
+        #         if currenttext.endswith(suffix):
+        #             # print('%s removing %s' % (currenttext, suffix))
+        #             end -= len(suffix)
+        #             break
+        #     # Adjust boundaries to exclude matching brackets at start and end
+        #     currenttext = self.text[start-self.start:end-self.start]
+        #     for bpair in [('(', ')'), ('[', ']')]:
+        #         if len(currenttext) > 2 and currenttext[0] == bpair[0] and currenttext[-1] == bpair[1]:
+        #             level = 1
+        #             for k, char in enumerate(currenttext[1:]):
+        #                 if char == bpair[0]:
+        #                     level += 1
+        #                 elif char == bpair[1]:
+        #                     level -= 1
+        #                 if level == 0 and k == len(currenttext) - 2:
+        #                     start += 1
+        #                     end -= 1
+        #                     break
+        #
+        #     # If entity has been reduced to nothing by adjusting boundaries, skip it
+        #     if start >= end:
+        #         continue
+        #
+        #     currenttext = self.text[start-self.start:end-self.start]
+        #
+        #     # Do splits
+        #     split_spans = []
+        #     comps = list(regex_span_tokenize(currenttext, '(-|\+|\)?-to-\(?|···|/|\s)'))
+        #     if len(comps) > 1:
+        #         for split in SPLITS:
+        #             if all(re.search(split, currenttext[comp[0]:comp[1]]) for comp in comps):
+        #                 # print('%s splitting %s' % (currenttext, [currenttext[comp[0]:comp[1]] for comp in comps]))
+        #                 for comp in comps:
+        #                     span = Span(text=currenttext[comp[0]:comp[1]], start=start+comp[0], end=start+comp[1])
+        #                     # print('SPLIT: %s - %s' % (currenttext, repr(span)))
+        #                     split_spans.append(span)
+        #                 break
+        #         else:
+        #             split_spans.append(Span(text=currenttext, start=start, end=end))
+        #     else:
+        #         split_spans.append(Span(text=currenttext, start=start, end=end))
+
+            # Do specials
+            # for split_span in split_spans:
+            #     for special in SPECIALS:
+            #         m = re.search(special, split_span.text)
+            #         if m:
+            #             # print('%s special %s' % (split_span.text, m.groups()))
+            #             for i in range(1, len(m.groups()) + 1):
+            #                 span = Span(text=m.group(i), start=split_span.start+m.start(i), end=split_span.start+m.end(i))
+            #                 # print('SUBMATCH: %s - %s' % (currenttext, repr(span)))
+            #                 spans.append(span)
+            #             break
+            #     else:
+            #         spans.append(split_span)
+        return spans
 
     # @memoized_property
     # def definitions(self):
@@ -749,7 +765,7 @@ class Sentence(BaseText):
                 id=self.id or other.id,
                 references=self.references + other.references,
                 word_tokenizer=self.word_tokenizer,
-                lexicon=self.lexicon,
+                # lexicon=self.lexicon,
                 abbreviation_detector=self.abbreviation_detector,
                 pos_tagger=self.pos_tagger,
                 ner_tagger=self.ner_tagger,
@@ -771,10 +787,10 @@ class Cell(Sentence):
         """Empty list. Abbreviation detection is disabled within table cells."""
         return []
 
-    @property
-    def records(self):
-        """Empty list. Individual cells don't provide records, this is handled by the parent Table."""
-        return []
+    # @property
+    # def records(self):
+    #     """Empty list. Individual cells don't provide records, this is handled by the parent Table."""
+    #     return []
 
 
 class Span(object):
@@ -820,7 +836,7 @@ class Span(object):
 class Token(Span):
     """A single token within a sentence. Corresponds to a word, character, punctuation etc."""
 
-    def __init__(self, text, start, end, lexicon):
+    def __init__(self, text, start, end):
         """
         :param str text: The text contained by this token.
         :param int start: The start offset of this token in the original text.
@@ -829,10 +845,10 @@ class Token(Span):
         """
         super(Token, self).__init__(text, start, end)
         #: The lexicon for this token.
-        self.lexicon = lexicon
-        self.lexicon.add(text)
-
-    @property
-    def lex(self):
-        """The corresponding :class:`chemdataextractor.nlp.lexicon.Lexeme` entry in the Lexicon for this token."""
-        return self.lexicon[self.text]
+        # self.lexicon = lexicon
+        # self.lexicon.add(text)
+    #
+    # @property
+    # def lex(self):
+    #     """The corresponding :class:`chemdataextractor.nlp.lexicon.Lexeme` entry in the Lexicon for this token."""
+    #     return self.lexicon[self.text]

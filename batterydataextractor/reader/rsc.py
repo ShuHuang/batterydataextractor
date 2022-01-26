@@ -9,7 +9,7 @@ author:
 import logging
 import re
 
-from .clean import clean, Cleaner
+from ..scrape.clean import clean, Cleaner
 from .markup import HtmlReader
 
 log = logging.getLogger(__name__)
@@ -189,15 +189,6 @@ class RscHtmlReader(HtmlReader):
     figure_css = '.image_table'
     figure_caption_css = '.graphic_title'
     ignore_css = '.table_caption + table, .left_head, sup span.sup_ref, small sup a, a[href^="#fn"], .PMedLink'
-
-    # def _parse_table_footnotes(self, fns, refs, specials):
-    #     """Override to account for awkward RSC table footnotes."""
-    #     footnotes = []
-    #     for fn in fns:
-    #         footnote = self._parse_text(fn, refs=refs, specials=specials, element_cls=Footnote)[0]
-    #         footnote += Footnote('', id=fn.getprevious().get('id'))
-    #         footnotes.append(footnote)
-    #     return footnotes
 
     def detect(self, fstring, fname=None):
         """"""

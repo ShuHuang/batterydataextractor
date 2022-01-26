@@ -10,7 +10,7 @@ import unittest
 from lxml.etree import tostring
 from lxml import html
 
-from batterydataextractor.reader.clean import Cleaner, clean, strip, strip_markup, strip_html
+from scrape.clean import Cleaner, clean, strip, strip_markup, strip_html
 
 
 logging.basicConfig(level=logging.DEBUG)

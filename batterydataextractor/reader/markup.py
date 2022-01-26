@@ -19,10 +19,8 @@ from ..errors import ReaderError
 from ..doc.document import Document
 from ..doc.text import Title, Heading, Paragraph, Citation, Text, Sentence
 from ..doc.meta import MetaData
-# from ..doc.table_new import Table
-# from ..doc.figure import Figure
-from .clean import clean
-from .csstranslator import CssHTMLTranslator
+from ..scrape.clean import clean
+from ..scrape.csstranslator import CssHTMLTranslator
 from .base import BaseReader
 from ..text import get_encoding
 
@@ -145,43 +143,8 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
                 log.warning('Adding of two objects was skipped. {} and {} cannot be added.'.format(str(type(element)), str(type(next_element))))
         return [element]
 
-    # def _parse_figure(self, el, refs, specials):
-    #     caps = self._css(self.figure_caption_css, el)
-    #     caption = self._parse_text(caps[0], refs=refs, specials=specials, element_cls=Caption)[0] if caps else Caption('')
-    #     fig = Figure(caption, id=el.get('id', None))
-    #     return [fig]
-
-    # def _parse_table_rows(self, els, refs, specials):
-    #     hdict = {}
-    #     for row, tr in enumerate(els):
-    #         colnum = 0
-    #         for td in self._css(self.table_cell_css, tr):
-    #             cell = self._parse_text(td, refs=refs, specials=specials, element_cls=Cell)
-    #             colspan = int(td.get('colspan', '1'))
-    #             rowspan = int(td.get('rowspan', '1'))
-    #             for i in range(colspan):
-    #                 for j in range(rowspan):
-    #                     rownum = row + j
-    #                     if not rownum in hdict:
-    #                         hdict[rownum] = {}
-    #                     while colnum in hdict[rownum]:
-    #                         colnum += 1
-    #                     hdict[rownum][colnum] = cell[0]
-    #                 colnum += 1
-    #     rows = []
-    #     for row in sorted(hdict):
-    #         rows.append([])
-    #         for col in sorted(hdict[row]):
-    #             rows[-1].append(hdict[row][col])
-    #     for r in rows:
-    #         r.extend([Cell('')] * (len(max(rows, key=len)) - len(r)))
-    #     rows = [r for r in rows if any(r)]
-    #     return rows
-    #
-    # def _parse_table_footnotes(self, fns, refs, specials):
-    #     return [self._parse_text(fn, refs=refs, specials=specials, element_cls=Footnote)[0] for fn in fns]
-
-    def _parse_reference(self, el):
+    @staticmethod
+    def _parse_reference(el):
         """Return reference ID from href or text content."""
         if '#' in el.get('href', ''):
             return [el.get('href').split('#', 1)[1]]
@@ -194,18 +157,18 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
 
     def _parse_metadata(self, el, refs, specials):
         title = self._css(self.metadata_title_css, el)
-        authors = self._css(self.metadata_author_css,el)
-        publisher = self._css(self.metadata_publisher_css,el)
-        journal = self._css(self.metadata_journal_css,el)
-        date = self._css(self.metadata_date_css,el)
-        language = self._css(self.metadata_language_css,el)
-        volume = self._css(self.metadata_volume_css,el)
-        issue = self._css(self.metadata_issue_css,el)
-        firstpage =self._css(self.metadata_firstpage_css,el)
-        lastpage=self._css(self.metadata_lastpage_css,el)
-        doi = self._css(self.metadata_doi_css,el)
-        pdf_url = self._css(self.metadata_pdf_url_css,el)
-        html_url = self._css(self.metadata_html_url_css,el)
+        authors = self._css(self.metadata_author_css, el)
+        publisher = self._css(self.metadata_publisher_css, el)
+        journal = self._css(self.metadata_journal_css, el)
+        date = self._css(self.metadata_date_css, el)
+        language = self._css(self.metadata_language_css, el)
+        volume = self._css(self.metadata_volume_css, el)
+        issue = self._css(self.metadata_issue_css, el)
+        firstpage =self._css(self.metadata_firstpage_css, el)
+        lastpage=self._css(self.metadata_lastpage_css, el)
+        doi = self._css(self.metadata_doi_css, el)
+        pdf_url = self._css(self.metadata_pdf_url_css, el)
+        html_url = self._css(self.metadata_html_url_css, el)
 
         metadata = {
                 '_title': title[0] if title else None,
@@ -225,7 +188,8 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
         meta = MetaData(metadata)
         return [meta]
 
-    def _xpath(self, query, root):
+    @staticmethod
+    def _xpath(query, root):
         result = root.xpath(query, smart_strings=False)
         if type(result) is not list:
             result = [result]
@@ -260,8 +224,6 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
         refs = defaultdict(list)
         titles = self._css(self.title_css, root)
         headings = self._css(self.heading_css, root)
-        # figures = self._css(self.figure_css, root)
-        # tables = self._css(self.table_css, root)
         citations = self._css(self.citation_css, root)
         references = self._css(self.reference_css, root)
         ignores = self._css(self.ignore_css, root)
@@ -274,10 +236,6 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
             specials[title] = self._parse_text(title, element_cls=Title, refs=refs, specials=specials)
         for heading in headings:
             specials[heading] = self._parse_text(heading, element_cls=Heading, refs=refs, specials=specials)
-        # for figure in figures:
-            # specials[figure] = self._parse_figure(figure, refs=refs, specials=specials)
-        # for table in tables:
-            # specials[table] = self._parse_table(table, refs=refs, specials=specials)
         for citation in citations:
             specials[citation] = self._parse_text(citation, element_cls=Citation, refs=refs, specials=specials)
         for md in metadata:

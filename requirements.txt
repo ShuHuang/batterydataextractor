@@ -6,3 +6,4 @@ transformers[torch]
 lxml>=4.7.1
 cssselect>=1.1.0
 appdirs
+https://huggingface.co/surrey-nlp/en_abbreviation_detection_roberta_lar/resolve/main/en_abbreviation_detection_roberta_lar-any-py3-none-any.whl

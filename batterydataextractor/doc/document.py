@@ -413,20 +413,6 @@ class Document(BaseDocument):
         # TODO: Elements can contain nested elements (captions, footnotes, table cells, etc.)
         return next((el for el in self.elements if el.id == id), None)
 
-    # @property
-    # def figures(self):
-    #     """
-    #     A list of all :class:`~batterydataextractor.doc.figure.Figure` elements in this Document.
-    #     """
-    #     return [el for el in self.elements if isinstance(el, Figure)]
-
-    # @property
-    # def tables(self):
-    #     """
-    #     A list of all :class:`~batterydataextractor.doc.table.Table` elements in this Document.
-    #     """
-    #     return [el for el in self.elements if isinstance(el, Table)]
-
     @property
     def citations(self):
         """

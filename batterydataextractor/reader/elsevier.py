@@ -8,9 +8,7 @@ coauthor:: Callum Court <cc889@cam.ac.uk>
 author:
 """
 import six
-from .clean import clean, Cleaner
-# from ..doc.table import Cell, Table
-# from ..doc.text import Caption
+from ..scrape.clean import clean, Cleaner
 from ..doc.meta import MetaData
 from .markup import XmlReader
 from lxml import etree
@@ -71,9 +69,6 @@ def els_xml_whitespace(document):
             el.text = ''
         if str(el.tail).isspace():
             el.tail = ''
-    # debug, check the document
-    #print(etree.tostring(document, pretty_print=True))
-    # sys.exit()
     return document
 
 
@@ -149,19 +144,18 @@ class ElsevierXmlReader(XmlReader):
 
     def _parse_metadata(self, el, refs, specials):
         title = self._css(self.metadata_title_css, el)
-        authors = self._css(self.metadata_author_css,el)
-        publisher = self._css(self.metadata_publisher_css,el)
-        journal = self._css(self.metadata_journal_css,el)
-        date = self._css(self.metadata_date_css,el)
-        language = self._css(self.metadata_language_css,el)
-        volume = self._css(self.metadata_volume_css,el)
-        issue = self._css(self.metadata_issue_css,el)
-        firstpage =self._css(self.metadata_firstpage_css,el)
-        lastpage=self._css(self.metadata_lastpage_css,el)
-        doi = self._css(self.metadata_doi_css,el)
-        pii = self._css(self.metadata_pii_css, el)
-        pdf_url = self._css(self.metadata_pdf_url_css,el)
-        html_url = self._css(self.metadata_html_url_css,el)
+        authors = self._css(self.metadata_author_css, el)
+        publisher = self._css(self.metadata_publisher_css, el)
+        journal = self._css(self.metadata_journal_css, el)
+        date = self._css(self.metadata_date_css, el)
+        language = self._css(self.metadata_language_css, el)
+        volume = self._css(self.metadata_volume_css, el)
+        issue = self._css(self.metadata_issue_css, el)
+        firstpage =self._css(self.metadata_firstpage_css, el)
+        lastpage=self._css(self.metadata_lastpage_css, el)
+        doi = self._css(self.metadata_doi_css, el)
+        pdf_url = self._css(self.metadata_pdf_url_css, el)
+        html_url = self._css(self.metadata_html_url_css, el)
 
         metadata = {
                 '_title': title[0].text if title else None,
@@ -176,7 +170,6 @@ class ElsevierXmlReader(XmlReader):
                 '_lastpage': lastpage[0].text if lastpage else None,
                 '_doi': doi[0].text if doi else None,
                 '_pdf_url': self.url_prefix + pdf_url[0].text if pdf_url else None,
-                #'_html_url': self.url_prefix + html_url[0].text if html_url else self.url_prefix + pii[0].text
                 '_html_url': self.url_prefix + html_url[0].text if html_url else None
                 }
         meta = MetaData(metadata)

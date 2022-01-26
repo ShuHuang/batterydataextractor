@@ -61,12 +61,8 @@ class ChemAbbreviationDetector(AbbreviationDetector):
     This abbreviation detector has an additional list of string equivalents (e.g. Silver = Ag) that improve abbreviation
     detection on chemistry texts.
     """
-    #: Minimum abbreviation length
-    abbr_min = 3
-    #: Maximum abbreviation length
-    abbr_max = 10
     #: String equivalents to use when detecting abbreviations.
-    # TODO: include rule-based abbrev into it.
+    # TODO: include rule-based abbrev into it?
     abbr_equivs = [
         ('silver', 'Ag'),
         ('gold', 'Au'),
@@ -79,23 +75,4 @@ class ChemAbbreviationDetector(AbbreviationDetector):
         ('potassium', 'K'),
         ('copper', 'Cu'),
         ('sulfate', 'SO4'),
-        ('methanol', 'MeOH'),
-        ('ethanol', 'EtOH'),
-        ('hydroxy', 'OH'),
-        ('hexadecyltrimethylammonium bromide', 'CTAB'),
-        ('cytarabine', 'Ara-C'),
-        ('hydroxylated', 'OH'),
-        ('hydrogen peroxide', 'H2O2'),
-        ('quartz', 'SiO2'),
-        ('amino', 'NH2'),
-        ('amino', 'NH2'),
-        ('ammonia', 'NH3'),
-        ('ammonium', 'NH4'),
-        ('methyl', 'CH3'),
-        ('nitro', 'NO2'),
-        ('potassium carbonate', 'K2CO3'),
-        ('carbonate', 'CO3'),
-        ('borohydride', 'BH4'),
-        ('triethylamine', 'NEt3'),
-        ('triethylamine', 'Et3N'),
     ]

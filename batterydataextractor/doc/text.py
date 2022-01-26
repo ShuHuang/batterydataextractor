@@ -9,21 +9,17 @@ author:
 from abc import abstractmethod, ABC
 import collections
 import logging
-# import re
 
 import six
 
 # from ..model.base import ModelList
 from ..nlp.lexicon import ChemLexicon, Lexicon
-from ..nlp.cem import CemTagger #, IGNORE_SUFFIX, SPECIALS, SPLITS, CiDictCemTagger, CsDictCemTagger, CrfCemTagger
+from ..nlp.cem import CemTagger
 from ..nlp.abbrev import ChemAbbreviationDetector
 from ..nlp.tag import NoneTagger, BaseTagger, BertTagger
-# from ..nlp.pos import ChemCrfPosTagger, CrfPosTagger, ApPosTagger, ChemApPosTagger
 from ..nlp.tokenize import ChemSentenceTokenizer, ChemWordTokenizer, SentenceTokenizer, WordTokenizer
-# from ..text import CONTROL_RE
-from ..utils import memoized_property#, first
+from ..utils import memoized_property
 from .element import BaseElement
-# from ..parse.definitions import specifier_definition
 # from ..parse.cem import chemical_name
 # from ..model.model import Compound
 
@@ -118,14 +114,6 @@ class BaseText(BaseElement):
         the specific :attr:`ner_tagger` and :attr:`pos_tagger` used for this class.
         """
         return
-
-    # @property
-    # @abstractmethod
-    # def definitions(self):
-    #     """
-    #     A list of all specifier definitions
-    #     """
-    #     return
 
     def serialize(self):
         """
@@ -314,13 +302,6 @@ class Text(collections.Sequence, BaseText):
         return [cem for sent in self.sentences for cem in sent.cems]
 
     @property
-    def definitions(self):
-        """
-        Return a list of tagged definitions for each sentence in this text passage
-        """
-        return [definition for sent in self.sentences for definition in sent.definitions]
-
-    @property
     def tagged_tokens(self):
         """
         A list of (:class:`Token` token, :class:`str` named entity recognition tag)
@@ -427,10 +408,6 @@ class Caption(Text):
 
     def _repr_html_(self):
         return '<caption class="cde-caption">' + self.text + '</caption>'
-
-    @memoized_property
-    def definitions(self):
-        return [definition for sent in self.sentences for definition in sent.definitions]
 
 
 class Sentence(BaseText, ABC):
@@ -665,32 +642,6 @@ class Sentence(BaseText, ABC):
             #         spans.append(split_span)
         return spans
 
-    # @memoized_property
-    # def definitions(self):
-    #     """
-    #     Return specifier definitions from this sentence
-    #     A definition consists of:
-    #     a) A definition -- The quantitity being defined e.g. "Curie Temperature"
-    #     b) A specifier -- The symbol used to define the quantity e.g. "Tc"
-    #     c) Start -- The index of the starting point of the definition
-    #     d) End -- The index of the end point of the definition
-    #     :return: list -- The specifier definitions
-    #     """
-    #     defs = []
-    #     tagged_tokens = [(CONTROL_RE.sub('', token), tag) for token, tag in self.tagged_tokens]
-    #     for result in specifier_definition.scan(tagged_tokens):
-    #         definition = result[0]
-    #         start = result[1]
-    #         end = result[2]
-    #         new_def = {
-    #                    'definition': first(definition.xpath('./phrase/text()')),
-    #                    'specifier': first(definition.xpath('./specifier/text()')),
-    #                    'tokens': tagged_tokens[start:end],
-    #                    'start': start,
-    #                    'end': end}
-    #         defs.append(new_def)
-    #     return defs
-
     @memoized_property
     def tags(self):
         tags = self.pos_tags
@@ -772,25 +723,6 @@ class Sentence(BaseText, ABC):
             )
             return merged
         return NotImplemented
-
-
-class Cell(Sentence):
-    """Data cell for tables. One row of the category table"""
-    # It appears that using different tokenizers/taggers is making the cem recognition worse.
-    # This is also consistent with the use of the regular expressions etc we have defined so far.
-    # word_tokenizer = FineWordTokenizer()
-    # pos_tagger = NoneTagger()
-    # ner_tagger = NoneTagger()
-
-    @memoized_property
-    def abbreviation_definitions(self):
-        """Empty list. Abbreviation detection is disabled within table cells."""
-        return []
-
-    # @property
-    # def records(self):
-    #     """Empty list. Individual cells don't provide records, this is handled by the parent Table."""
-    #     return []
 
 
 class Span(object):

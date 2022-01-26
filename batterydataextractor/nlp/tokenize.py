@@ -695,8 +695,6 @@ class ChemWordTokenizer(WordTokenizer):
             if text.endswith(bpair[1]) and self._opening_bracket_index(text, bpair=bpair) is None:
                 return self._split_span(span, -1, 0)
 
-        # TODO: Consider splitting around comma in limited circumstances. Mainly to fix whitespace errors.
-
         # Characters to split around, but with exceptions
         for i, char in enumerate(text):
             before = text[:i]
@@ -767,25 +765,6 @@ class ChemWordTokenizer(WordTokenizer):
                     split = False  # Don't split if prefix or suffix match chem regex
                 if split:
                     return self._split_span(span, i, 1)
-
-                # TODO: Errors:
-                # [³H]-choline
-                # S,S'-...
-                # 1,4-di-substituted
-                # 11-β - hydroxysteroid
-                # Spelt out greek: 11beta - hydroxysteroid
-                # ...-N-substituted like 2,5-dimethyl-N-substituted pyrroles
-                # 4-(2-Butyl-6,7-dichloro-2-cyclopentyl-indan-1-on-5-yl) oxobutyric acid
-                # Adenosine - monophosphate
-                # Consistency for amino acids: Arg-Arg and Arg-Arg-Asp... probably always split
-                # D,L-α-peptide?
-                # N'-formylkynurenine
-                # poly(D,L-lactic acid )?
-                # poly(methyl metha-acrylate )?
-                # Poly(N - alkyl Acrylamide )
-                # poly(N - isopropyl acrylamide )
-                # R,S - lorazepam
-                # S,S - dioxide
 
         # Split units off the end of a numeric value
         quantity = self.QUANTITY_RE.search(text)

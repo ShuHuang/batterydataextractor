@@ -6,7 +6,7 @@ batterydataextractor.doc.document
 Document model.
 author:
 """
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 import collections
 import io
 import json
@@ -63,7 +63,7 @@ class Document(BaseDocument):
     def __init__(self, *elements, **kwargs):
         """Initialize a Document manually by passing one or more Document elements (Paragraph, Heading, Table, etc.)
         Strings that are passed to this constructor are automatically wrapped into Paragraph elements.
-        :param list[chemdataextractor.doc.element.BaseElement|string] elements: Elements in this Document.
+        :param list[batterydataextractor.doc.element.BaseElement|string] elements: Elements in this Document.
         :keyword Config config: (Optional) Config file for the Document.
         :keyword list[BaseModel] models: (Optional) Models that the Document should extract data for.
         """
@@ -93,7 +93,6 @@ class Document(BaseDocument):
             if callable(getattr(element, 'set_config', None)):
                 element.set_config()
         log.debug('%s: Initializing with %s elements' % (self.__class__.__name__, len(self.elements)))
-
 
     def add_models(self, models):
         """
@@ -133,12 +132,12 @@ class Document(BaseDocument):
         :param f: A file-like object or path to a file.
         :type f: file or str
         :param str fname: (Optional) The filename. Used to help determine file format.
-        :param list[chemdataextractor.reader.base.BaseReader] readers: (Optional) List of readers to use. If not set, Document will try all default readers,
-            which are :class:`~chemdataextractor.reader.acs.AcsHtmlReader`, :class:`~chemdataextractor.reader.rsc.RscHtmlReader`,
-            :class:`~chemdataextractor.reader.nlm.NlmXmlReader`, :class:`~chemdataextractor.reader.uspto.UsptoXmlReader`,
-            :class:`~chemdataextractor.reader.cssp.CsspHtmlReader`, :class:`~chemdataextractor.elsevier.ElsevierXmlReader`,
-            :class:`~chemdataextractor.reader.markup.XmlReader`, :class:`~chemdataextractor.reader.markup.HtmlReader`,
-            :class:`~chemdataextractor.reader.pdf.PdfReader`, and :class:`~chemdataextractor.reader.plaintext.PlainTextReader`.
+        :param list[batterydataextractor.reader.base.BaseReader] readers: (Optional) List of readers to use. If not set, Document will try all default readers,
+            which are :class:`~batterydataextractor.reader.acs.AcsHtmlReader`, :class:`~batterydataextractor.reader.rsc.RscHtmlReader`,
+            :class:`~batterydataextractor.reader.nlm.NlmXmlReader`, :class:`~batterydataextractor.reader.uspto.UsptoXmlReader`,
+            :class:`~batterydataextractor.reader.cssp.CsspHtmlReader`, :class:`~batterydataextractor.elsevier.ElsevierXmlReader`,
+            :class:`~batterydataextractor.reader.markup.XmlReader`, :class:`~batterydataextractor.reader.markup.HtmlReader`,
+            :class:`~batterydataextractor.reader.pdf.PdfReader`, and :class:`~batterydataextractor.reader.plaintext.PlainTextReader`.
         """
         if isinstance(f, six.string_types):
             f = io.open(f, 'rb')
@@ -153,15 +152,15 @@ class Document(BaseDocument):
             contents = open('paper.html', 'rb').read()
             doc = Document.from_string(contents)
         .. note::
-            This method expects a byte string, not a unicode string (in contrast to most methods in ChemDataExtractor).
+            This method expects a byte string, not a unicode string (in contrast to most methods in batterydataextractor).
         :param bytes fstring: A byte string containing the contents of a file.
         :param str fname: (Optional) The filename. Used to help determine file format.
-        :param list[chemdataextractor.reader.base.BaseReader] readers: (Optional) List of readers to use. If not set, Document will try all default readers,
-            which are :class:`~chemdataextractor.reader.acs.AcsHtmlReader`, :class:`~chemdataextractor.reader.rsc.RscHtmlReader`,
-            :class:`~chemdataextractor.reader.nlm.NlmXmlReader`, :class:`~chemdataextractor.reader.uspto.UsptoXmlReader`,
-            :class:`~chemdataextractor.reader.cssp.CsspHtmlReader`, :class:`~chemdataextractor.elsevier.ElsevierXmlReader`,
-            :class:`~chemdataextractor.reader.markup.XmlReader`, :class:`~chemdataextractor.reader.markup.HtmlReader`,
-            :class:`~chemdataextractor.reader.pdf.PdfReader`, and :class:`~chemdataextractor.reader.plaintext.PlainTextReader`.
+        :param list[batterydataextractor.reader.base.BaseReader] readers: (Optional) List of readers to use. If not set, Document will try all default readers,
+            which are :class:`~batterydataextractor.reader.acs.AcsHtmlReader`, :class:`~batterydataextractor.reader.rsc.RscHtmlReader`,
+            :class:`~batterydataextractor.reader.nlm.NlmXmlReader`, :class:`~batterydataextractor.reader.uspto.UsptoXmlReader`,
+            :class:`~batterydataextractor.reader.cssp.CsspHtmlReader`, :class:`~batterydataextractor.elsevier.ElsevierXmlReader`,
+            :class:`~batterydataextractor.reader.markup.XmlReader`, :class:`~batterydataextractor.reader.markup.HtmlReader`,
+            :class:`~batterydataextractor.reader.pdf.PdfReader`, and :class:`~batterydataextractor.reader.plaintext.PlainTextReader`.
         """
         if readers is None:
             from ..reader import DEFAULT_READERS
@@ -185,9 +184,9 @@ class Document(BaseDocument):
     @property
     def elements(self):
         """
-        A list of all the elements in this document. All elements subclass from :class:`~chemdataextractor.doc.element.BaseElement`,
-        and represent things such as paragraphs or tables, and can be found in :mod:`chemdataextractor.doc.figure`,
-        :mod:`chemdataextractor.doc.table_new`, and :mod:`chemdataextractor.doc.text`.
+        A list of all the elements in this document. All elements subclass from :class:`~batterydataextractor.doc.element.BaseElement`,
+        and represent things such as paragraphs or tables, and can be found in :mod:`batterydataextractor.doc.figure`,
+        :mod:`batterydataextractor.doc.table_new`, and :mod:`batterydataextractor.doc.text`.
         """
         return self._elements
 
@@ -195,7 +194,7 @@ class Document(BaseDocument):
 #     @property
 #     def records(self):
 #         """
-#         All records found in this Document, as a list of :class:`~chemdataextractor.model.base.BaseModel`.
+#         All records found in this Document, as a list of :class:`~batterydataextractor.model.base.BaseModel`.
 #         """
 #         log.debug("Getting chemical records")
 #         records = ModelList()  # Final list of records -- output
@@ -417,28 +416,28 @@ class Document(BaseDocument):
     # @property
     # def figures(self):
     #     """
-    #     A list of all :class:`~chemdataextractor.doc.figure.Figure` elements in this Document.
+    #     A list of all :class:`~batterydataextractor.doc.figure.Figure` elements in this Document.
     #     """
     #     return [el for el in self.elements if isinstance(el, Figure)]
 
     # @property
     # def tables(self):
     #     """
-    #     A list of all :class:`~chemdataextractor.doc.table.Table` elements in this Document.
+    #     A list of all :class:`~batterydataextractor.doc.table.Table` elements in this Document.
     #     """
     #     return [el for el in self.elements if isinstance(el, Table)]
 
     @property
     def citations(self):
         """
-        A list of all :class:`~chemdataextractor.doc.text.Citation` elements in this Document.
+        A list of all :class:`~batterydataextractor.doc.text.Citation` elements in this Document.
         """
         return [el for el in self.elements if isinstance(el, Citation)]
 
     @property
     def footnotes(self):
         """
-        A list of all :class:`~chemdataextractor.doc.text.Footnote` elements in this Document.
+        A list of all :class:`~batterydataextractor.doc.text.Footnote` elements in this Document.
         .. note::
             Elements (e.g. Tables) can contain nested Footnotes which are not taken into account.
         """
@@ -448,35 +447,35 @@ class Document(BaseDocument):
     @property
     def titles(self):
         """
-        A list of all :class:`~chemdataextractor.doc.text.Title` elements in this Document.
+        A list of all :class:`~batterydataextractor.doc.text.Title` elements in this Document.
         """
         return [el for el in self.elements if isinstance(el, Title)]
 
     @property
     def headings(self):
         """
-        A list of all :class:`~chemdataextractor.doc.text.Heading` elements in this Document.
+        A list of all :class:`~batterydataextractor.doc.text.Heading` elements in this Document.
         """
         return [el for el in self.elements if isinstance(el, Heading)]
 
     @property
     def paragraphs(self):
         """
-        A list of all :class:`~chemdataextractor.doc.text.Paragraph` elements in this Document.
+        A list of all :class:`~batterydataextractor.doc.text.Paragraph` elements in this Document.
         """
         return [el for el in self.elements if isinstance(el, Paragraph)]
 
     @property
     def captions(self):
         """
-        A list of all :class:`~chemdataextractor.doc.text.Caption` elements in this Document.
+        A list of all :class:`~batterydataextractor.doc.text.Caption` elements in this Document.
         """
         return [el for el in self.elements if isinstance(el, Caption)]
 
     @property
     def captioned_elements(self):
         """
-        A list of all :class:`~chemdataextractor.doc.element.CaptionedElement` elements in this Document.
+        A list of all :class:`~batterydataextractor.doc.element.CaptionedElement` elements in this Document.
         """
         return [el for el in self.elements if isinstance(el, CaptionedElement)]
 
@@ -507,17 +506,9 @@ class Document(BaseDocument):
     @property
     def cems(self):
         """
-        A list of all Chemical Entity Mentions in this document as :class:`~chemdataextractor.doc.text.Span`
+        A list of all Chemical Entity Mentions in this document as :class:`~batterydataextractor.doc.text.Span`
         """
         return list(set([n for el in self.elements for n in el.cems]))
-
-    @property
-    def definitions(self):
-        """
-        Return a list of all recognised definitions within this Document
-        """
-        # TODO: What's the type of this?
-        return list([defn for el in self.elements for defn in el.definitions])
 
     def serialize(self):
         """

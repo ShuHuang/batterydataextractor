@@ -6,7 +6,7 @@ batterydataextractor.doc.element
 Document elements.
 author:
 """
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 import json
 import operator
 
@@ -205,15 +205,6 @@ class CaptionedElement(BaseElement):
         A list of all Chemical Entity Mentions in this document as :class:`~chemdataextractor.doc.text.Span`
         """
         return self.caption.cems
-
-    @property
-    def definitions(self):
-        """Return a list of all specifier definitions in the caption
-        Returns:
-            list-- The specifier definitions
-        """
-
-        return self.caption.definitions
 
     @property
     def models(self):

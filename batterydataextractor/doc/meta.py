@@ -113,7 +113,3 @@ class MetaData(BaseElement):
     @property
     def abbreviation_definitions(self):
         return []
-
-    @property
-    def definitions(self):
-        return []

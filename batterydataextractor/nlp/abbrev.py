@@ -30,6 +30,7 @@ class AbbreviationDetector(object):
                 lf_spans = (tuples[1][0], tuples[2][-1])
                 left, right = index, index
                 # TODO: Need to optimise this logic
+                # TODO: Use the same tokenizer rather than this one?
                 while True:
                     if right < len(new_tuples):
                         if new_tuples[right][-1] == "AC":

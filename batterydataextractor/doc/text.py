@@ -14,8 +14,8 @@ import logging
 import six
 
 # from ..model.base import ModelList
-# from ..nlp.lexicon import ChemLexicon, Lexicon
-from ..nlp.cem import CemTagger, BertCemTagger #, IGNORE_SUFFIX, SPECIALS, SPLITS, CiDictCemTagger, CsDictCemTagger, CrfCemTagger
+from ..nlp.lexicon import ChemLexicon, Lexicon
+from ..nlp.cem import CemTagger #, IGNORE_SUFFIX, SPECIALS, SPLITS, CiDictCemTagger, CsDictCemTagger, CrfCemTagger
 from ..nlp.abbrev import ChemAbbreviationDetector
 from ..nlp.tag import NoneTagger, BaseTagger, BertTagger
 # from ..nlp.pos import ChemCrfPosTagger, CrfPosTagger, ApPosTagger, ChemApPosTagger
@@ -37,10 +37,10 @@ class BaseText(BaseElement):
     def __init__(self, text, word_tokenizer=None, lexicon=None, abbreviation_detector=None, pos_tagger=None, ner_tagger=None, **kwargs):
         """
         .. note::
-            If intended as part of a :class:`~chemdataextractor.doc.document.Document`,
+            If intended as part of a :class:`~batterydataextractor.doc.document.Document`,
             an element should either be initialized with a reference to its containing document,
             or its :attr:`document` attribute should be set as soon as possible.
-            If the element is being passed in to a :class:`~chemdataextractor.doc.document.Document`
+            If the element is being passed in to a :class:`~batterydataextractor.doc.document.Document`
             to initialise it, the :attr:`document` attribute is automatically set
             during the initialisation of the document, so the user does not need to worry about this.
         :param str text: The text contained in this element.
@@ -53,9 +53,9 @@ class BaseText(BaseElement):
         :param Document document: (Optional) The document containing this element.
         :param str label: (Optional) The label for the captioned element, e.g. Table 1 would have a label of 1.
         :param Any id: (Optional) Some identifier for this element. Must be equatable.
-        :param list[chemdataextractor.models.BaseModel] models: (Optional) A list of models for this element to parse.
-            If the element is part of another element (e.g. a :class:`~chemdataextractor.doc.text.Sentence`
-            inside a :class:`~chemdataextractor.doc.text.Paragraph`), or is part of a :class:`~chemdataextractor.doc.document.Document`,
+        :param list[batterydataextractor.models.BaseModel] models: (Optional) A list of models for this element to parse.
+            If the element is part of another element (e.g. a :class:`~batterydataextractor.doc.text.Sentence`
+            inside a :class:`~batterydataextractor.doc.text.Paragraph`), or is part of a :class:`~batterydataextractor.doc.document.Document`,
             this is set automatically to be the same as that of the containing element, unless manually set otherwise.
         """
         if not isinstance(text, six.text_type):
@@ -63,7 +63,7 @@ class BaseText(BaseElement):
         super(BaseText, self).__init__(**kwargs)
         self._text = text
         self.word_tokenizer = word_tokenizer if word_tokenizer is not None else self.word_tokenizer
-        # self.lexicon = lexicon if lexicon is not None else self.lexicon
+        self.lexicon = lexicon if lexicon is not None else self.lexicon
         self.abbreviation_detector = abbreviation_detector if abbreviation_detector is not None else self.abbreviation_detector
         self.pos_tagger = pos_tagger if pos_tagger is not None else self.pos_tagger
         self.ner_tagger = ner_tagger if ner_tagger is not None else self.ner_tagger
@@ -82,25 +82,25 @@ class BaseText(BaseElement):
     @property
     @abstractmethod
     def word_tokenizer(self):
-        """The :class:`~chemdataextractor.nlp.tokenize.WordTokenizer` used by this element."""
+        """The :class:`~batterydataextractor.nlp.tokenize.WordTokenizer` used by this element."""
         return
 
-    # @property
-    # @abstractmethod
-    # def lexicon(self):
-    #     """The :class:`~chemdataextractor.nlp.lexicon.Lexicon` used by this element."""
-    #     return
+    @property
+    @abstractmethod
+    def lexicon(self):
+        """The :class:`~batterydataextractor.nlp.lexicon.Lexicon` used by this element."""
+        return
 
     @property
     @abstractmethod
     def pos_tagger(self):
-        """The part of speech tagger used by this element. A subclass of :class:`~chemdataextractor.nlp.tag.BaseTagger`"""
+        """The part of speech tagger used by this element. A subclass of :class:`~batterydataextractor.nlp.tag.BaseTagger`"""
         return
 
     @property
     @abstractmethod
     def ner_tagger(self):
-        """The named entity recognition tagger used by this element. A subclass of :class:`~chemdataextractor.nlp.tag.BaseTagger`"""
+        """The named entity recognition tagger used by this element. A subclass of :class:`~batterydataextractor.nlp.tag.BaseTagger`"""
         return
 
     @property
@@ -143,9 +143,9 @@ class BaseText(BaseElement):
     def word_tokenizer(self, value):
         self._word_tokenizer = value
 
-    # @lexicon.setter
-    # def lexicon(self, value):
-    #     self._lexicon = value
+    @lexicon.setter
+    def lexicon(self, value):
+        self._lexicon = value
 
     @pos_tagger.setter
     def pos_tagger(self, value):
@@ -161,7 +161,7 @@ class Text(collections.Sequence, BaseText):
 
     sentence_tokenizer = ChemSentenceTokenizer()
     word_tokenizer = ChemWordTokenizer()
-    # lexicon = ChemLexicon()
+    lexicon = ChemLexicon()
     abbreviation_detector = ChemAbbreviationDetector()
     pos_tagger = BertTagger()  # ChemPerceptronTagger()
     ner_tagger = CemTagger()
@@ -169,34 +169,34 @@ class Text(collections.Sequence, BaseText):
     def __init__(self, text, sentence_tokenizer=None, word_tokenizer=None, lexicon=None, abbreviation_detector=None, pos_tagger=None, ner_tagger=None, parsers=None, **kwargs):
         """
         .. note::
-            If intended as part of a :class:`~chemdataextractor.doc.document.Document`,
+            If intended as part of a :class:`~batterydataextractor.doc.document.Document`,
             an element should either be initialized with a reference to its containing document,
             or its :attr:`document` attribute should be set as soon as possible.
-            If the element is being passed in to a :class:`~chemdataextractor.doc.document.Document`
+            If the element is being passed in to a :class:`~batterydataextractor.doc.document.Document`
             to initialise it, the :attr:`document` attribute is automatically set
             during the initialisation of the document, so the user does not need to worry about this.
         :param str text: The text contained in this element.
         :param SentenceTokenizer sentence_tokenizer: (Optional) Sentence tokenizer for this element.
-            Default :class:`~chemdataextractor.nlp.tokenize.ChemSentenceTokenizer`.
+            Default :class:`~batterydataextractor.nlp.tokenize.ChemSentenceTokenizer`.
         :param WordTokenizer word_tokenizer: (Optional) Word tokenizer for this element.
-            Default :class:`~chemdataextractor.nlp.tokenize.ChemWordTokenizer`.
+            Default :class:`~batterydataextractor.nlp.tokenize.ChemWordTokenizer`.
         :param Lexicon lexicon: (Optional) Lexicon for this element. The lexicon stores all the occurences of unique words and can provide
-            Brown clusters for the words. Default :class:`~chemdataextractor.nlp.lexicon.ChemLexicon`
+            Brown clusters for the words. Default :class:`~batterydataextractor.nlp.lexicon.ChemLexicon`
         :param AbbreviationDetector abbreviation_detector: (Optional) The abbreviation detector for this element.
-            Default :class:`~chemdataextractor.nlp.abbrev.ChemAbbreviationDetector`.
+            Default :class:`~batterydataextractor.nlp.abbrev.ChemAbbreviationDetector`.
         :param BaseTagger pos_tagger: (Optional) The part of speech tagger for this element.
-            Default :class:`~chemdataextractor.nlp.pos.ChemCrfPosTagger`.
+            Default :class:`~batterydataextractor.nlp.pos.ChemCrfPosTagger`.
         :param BaseTagger ner_tagger: (Optional) The named entity recognition tagger for this element.
-            Default :class:`~chemdataextractor.nlp.cem.CemTagger`
+            Default :class:`~batterydataextractor.nlp.cem.CemTagger`
         :param Document document: (Optional) The document containing this element.
         :param str label: (Optional) The label for the captioned element, e.g. Table 1 would have a label of 1.
         :param Any id: (Optional) Some identifier for this element. Must be equatable.
-        :param list[chemdataextractor.models.BaseModel] models: (Optional) A list of models for this element to parse.
-            If the element is part of another element (e.g. a :class:`~chemdataextractor.doc.text.Sentence`
-            inside a :class:`~chemdataextractor.doc.text.Paragraph`), or is part of a :class:`~chemdataextractor.doc.document.Document`,
+        :param list[batterydataextractor.models.BaseModel] models: (Optional) A list of models for this element to parse.
+            If the element is part of another element (e.g. a :class:`~batterydataextractor.doc.text.Sentence`
+            inside a :class:`~batterydataextractor.doc.text.Paragraph`), or is part of a :class:`~batterydataextractor.doc.document.Document`,
             this is set automatically to be the same as that of the containing element, unless manually set otherwise.
         """
-        super(Text, self).__init__(text, word_tokenizer=word_tokenizer, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, parsers=None, **kwargs)
+        super(Text, self).__init__(text, word_tokenizer=word_tokenizer, lexicon=lexicon, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, parsers=None, **kwargs)
         self.sentence_tokenizer = sentence_tokenizer if sentence_tokenizer is not None else self.sentence_tokenizer
 
     def __getitem__(self, index):
@@ -222,8 +222,8 @@ class Text(collections.Sequence, BaseText):
                 self.pos_tagger = eval(c['POS_TAGGER'])()
             if 'NER_TAGGER' in c.keys():
                 self.ner_tagger = eval(c['NER_TAGGER'])()
-            # if 'LEXICON' in c.keys():
-                # self.lexicon = eval(c['LEXICON'])()
+            if 'LEXICON' in c.keys():
+                self.lexicon = eval(c['LEXICON'])()
             if 'PARSERS' in c.keys():
                 raise(DeprecationWarning('Manually setting parsers deprecated, any settings from config files for this will be ignored.'))
 
@@ -238,7 +238,7 @@ class Text(collections.Sequence, BaseText):
                 start=span[0],
                 end=span[1],
                 word_tokenizer=self.word_tokenizer,
-                # lexicon=self.lexicon,
+                lexicon=self.lexicon,
                 abbreviation_detector=self.abbreviation_detector,
                 pos_tagger=self.pos_tagger,
                 ner_tagger=self.ner_tagger,
@@ -309,7 +309,7 @@ class Text(collections.Sequence, BaseText):
     @property
     def cems(self):
         """
-        A list of all Chemical Entity Mentions in this text as :class:`chemdataextractor.doc.text.span`
+        A list of all Chemical Entity Mentions in this text as :class:`batterydataextractor.doc.text.span`
         """
         return [cem for sent in self.sentences for cem in sent.cems]
 
@@ -342,7 +342,7 @@ class Text(collections.Sequence, BaseText):
     #
     # @property
     # def records(self):
-    #     """All records found in the object, as a list of :class:`~chemdataextractor.model.base.BaseModel`."""
+    #     """All records found in the object, as a list of :class:`~batterydataextractor.model.base.BaseModel`."""
     #     return ModelList(*[r for sent in self.sentences for r in sent.records])
 
     def __add__(self, other):
@@ -353,7 +353,7 @@ class Text(collections.Sequence, BaseText):
                 references=self.references + other.references,
                 sentence_tokenizer=self.sentence_tokenizer,
                 word_tokenizer=self.word_tokenizer,
-                # lexicon=self.lexicon,
+                lexicon=self.lexicon,
                 abbreviation_detector=self.abbreviation_detector,
                 pos_tagger=self.pos_tagger,
                 ner_tagger=self.ner_tagger,
@@ -437,43 +437,43 @@ class Sentence(BaseText, ABC):
     """A single sentence within a text passage."""
 
     word_tokenizer = ChemWordTokenizer()
-    # lexicon = ChemLexicon()
+    lexicon = ChemLexicon()
     abbreviation_detector = ChemAbbreviationDetector()
     pos_tagger = BertTagger()  # ChemPerceptronTagger()
     ner_tagger = CemTagger()
 
-    def __init__(self, text, start=0, end=None, word_tokenizer=None, abbreviation_detector=None, pos_tagger=None, ner_tagger=None, **kwargs):
+    def __init__(self, text, start=0, end=None, word_tokenizer=None, lexicon=None, abbreviation_detector=None, pos_tagger=None, ner_tagger=None, **kwargs):
         """
         .. note::
-            If intended as part of a :class:`chemdataextractor.doc.document.Document`,
+            If intended as part of a :class:`batterydataextractor.doc.document.Document`,
             an element should either be initialized with a reference to its containing document,
             or its :attr:`document` attribute should be set as soon as possible.
-            If the element is being passed in to a :class:`chemdataextractor.doc.document.Document`
+            If the element is being passed in to a :class:`batterydataextractor.doc.document.Document`
             to initialise it, the :attr:`document` attribute is automatically set
             during the initialisation of the document, so the user does not need to worry about this.
         :param str text: The text contained in this element.
         :param int start: (Optional) The starting index of the sentence within the containing element. Default 0.
         :param int end: (Optional) The end index of the sentence within the containing element. Defualt None
         :param WordTokenizer word_tokenizer: (Optional) Word tokenizer for this element.
-            Default :class:`~chemdataextractor.nlp.tokenize.ChemWordTokenizer`.
+            Default :class:`~batterydataextractor.nlp.tokenize.ChemWordTokenizer`.
         :param Lexicon lexicon: (Optional) Lexicon for this element. The lexicon stores all the occurences of unique words and can provide
-            Brown clusters for the words. Default :class:`~chemdataextractor.nlp.lexicon.ChemLexicon`
+            Brown clusters for the words. Default :class:`~batterydataextractor.nlp.lexicon.ChemLexicon`
         :param AbbreviationDetector abbreviation_detector: (Optional) The abbreviation detector for this element.
-            Default :class:`~chemdataextractor.nlp.abbrev.ChemAbbreviationDetector`.
+            Default :class:`~batterydataextractor.nlp.abbrev.ChemAbbreviationDetector`.
         :param BaseTagger pos_tagger: (Optional) The part of speech tagger for this element.
-            Default :class:`~chemdataextractor.nlp.pos.ChemCrfPosTagger`.
+            Default :class:`~batterydataextractor.nlp.pos.ChemCrfPosTagger`.
         :param BaseTagger ner_tagger: (Optional) The named entity recognition tagger for this element.
-            Default :class:`~chemdataextractor.nlp.cem.CemTagger`
+            Default :class:`~batterydataextractor.nlp.cem.CemTagger`
         :param Document document: (Optional) The document containing this element.
         :param str label: (Optional) The label for the captioned element, e.g. Table 1 would have a label of 1.
         :param Any id: (Optional) Some identifier for this element. Must be equatable.
-        :param list[chemdataextractor.models.BaseModel] models: (Optional) A list of models for this element to parse.
-            If the element is part of another element (e.g. a :class:`~chemdataextractor.doc.text.Sentence`
-            inside a :class:`~chemdataextractor.doc.text.Paragraph`), or is part of a :class:`~chemdataextractor.doc.document.Document`,
+        :param list[batterydataextractor.models.BaseModel] models: (Optional) A list of models for this element to parse.
+            If the element is part of another element (e.g. a :class:`~batterydataextractor.doc.text.Sentence`
+            inside a :class:`~batterydataextractor.doc.text.Paragraph`), or is part of a :class:`~batterydataextractor.doc.document.Document`,
             this is set automatically to be the same as that of the containing element, unless manually set otherwise.
         """
         # self.models = [Compound]
-        super(Sentence, self).__init__(text, word_tokenizer=word_tokenizer, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, **kwargs)
+        super(Sentence, self).__init__(text, word_tokenizer=word_tokenizer, lexicon=lexicon, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, **kwargs)
         #: The start index of this sentence within the text passage.
         self.start = start
         #: The end index of this sentence within the text passage.
@@ -489,7 +489,7 @@ class Sentence(BaseText, ABC):
             text=self.text[span[0]:span[1]],
             start=span[0] + self.start,
             end=span[1] + self.start,
-            # lexicon=self.lexicon
+            lexicon=self.lexicon
         ) for span in spans]
         return toks
 
@@ -590,7 +590,7 @@ class Sentence(BaseText, ABC):
     @memoized_property
     def cems(self):
         """
-        A list of all Chemical Entity Mentions in this text as :class:`~chemdataextractor.doc.text.Span`
+        A list of all Chemical Entity Mentions in this text as :class:`~batterydataextractor.doc.text.Span`
         """
         # log.debug('Getting cems')
         spans = []
@@ -709,7 +709,7 @@ class Sentence(BaseText, ABC):
     #
     # @property
     # def records(self):
-    #     """All records found in the object, as a list of :class:`~chemdataextractor.model.base.BaseModel`."""
+    #     """All records found in the object, as a list of :class:`~batterydataextractor.model.base.BaseModel`."""
     #     records = ModelList()
     #     seen_labels = set()
     #     # Ensure no control characters are sent to a parser (need to be XML compatible)
@@ -765,7 +765,7 @@ class Sentence(BaseText, ABC):
                 id=self.id or other.id,
                 references=self.references + other.references,
                 word_tokenizer=self.word_tokenizer,
-                # lexicon=self.lexicon,
+                lexicon=self.lexicon,
                 abbreviation_detector=self.abbreviation_detector,
                 pos_tagger=self.pos_tagger,
                 ner_tagger=self.ner_tagger,
@@ -836,7 +836,7 @@ class Span(object):
 class Token(Span):
     """A single token within a sentence. Corresponds to a word, character, punctuation etc."""
 
-    def __init__(self, text, start, end):
+    def __init__(self, text, start, end, lexicon):
         """
         :param str text: The text contained by this token.
         :param int start: The start offset of this token in the original text.
@@ -845,10 +845,10 @@ class Token(Span):
         """
         super(Token, self).__init__(text, start, end)
         #: The lexicon for this token.
-        # self.lexicon = lexicon
-        # self.lexicon.add(text)
-    #
-    # @property
-    # def lex(self):
-    #     """The corresponding :class:`chemdataextractor.nlp.lexicon.Lexeme` entry in the Lexicon for this token."""
-    #     return self.lexicon[self.text]
+        self.lexicon = lexicon
+        self.lexicon.add(text)
+
+    @property
+    def lex(self):
+        """The corresponding :class:`batterydataextractor.nlp.lexicon.Lexeme` entry in the Lexicon for this token."""
+        return self.lexicon[self.text]

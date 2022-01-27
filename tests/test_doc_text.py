@@ -4,8 +4,8 @@ import os
 
 from batterydataextractor.doc.document import Document
 from batterydataextractor.doc.text import Paragraph, Title, Heading, Caption, Footnote
-# from chemdataextractor.config import Config
-# from chemdataextractor.model import Compound, NmrSpectrum, IrSpectrum, UvvisSpectrum, MeltingPoint, GlassTransition
+# from batterydataextractor.config import Config
+# from batterydataextractor.model import Compound, NmrSpectrum, IrSpectrum, UvvisSpectrum, MeltingPoint, GlassTransition
 from batterydataextractor.nlp import *
 
 logging.basicConfig(level=logging.DEBUG)
@@ -64,6 +64,6 @@ class TestText(unittest.TestCase):
         title = d.titles[0]
         self.assertEqual(type(title.pos_tagger), BertTagger)
         self.assertEqual(type(title.ner_tagger), CemTagger)
-        # self.assertEqual(type(title.lexicon), ChemLexicon)
+        self.assertEqual(type(title.lexicon), ChemLexicon)
         self.assertEqual(type(title.sentence_tokenizer), ChemSentenceTokenizer)
         self.assertEqual(type(title.word_tokenizer), ChemWordTokenizer)

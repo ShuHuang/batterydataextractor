@@ -1,5 +1,6 @@
 import unittest
 from batterydataextractor.nlp.tokenize import WordTokenizer, FineWordTokenizer, ChemWordTokenizer
+from batterydataextractor.doc import Text
 
 
 class TestWordTokenizer(unittest.TestCase):
@@ -144,13 +145,13 @@ class TestWordTokenizer(unittest.TestCase):
             self.t.tokenize('The address is http://www.chemdataextractor.org')
         )
 
-    # def test_text_sentence(self):
-    #     """Test tokenization through the Text and Sentence API."""
-    #     t = Text('Hi, my name is Matt. What is your name?', word_tokenizer=WordTokenizer())
-    #     self.assertEqual(
-    #         [['Hi', ',', 'my', 'name', 'is', 'Matt', '.'], ['What', 'is', 'your', 'name', '?']],
-    #         [sent.raw_tokens for sent in t.sentences]
-    #     )
+    def test_text_sentence(self):
+        """Test tokenization through the Text and Sentence API."""
+        t = Text('Hi, my name is Matt. What is your name?', word_tokenizer=WordTokenizer())
+        self.assertEqual(
+            [['Hi', ',', 'my', 'name', 'is', 'Matt', '.'], ['What', 'is', 'your', 'name', '?']],
+            [sent.raw_tokens for sent in t.sentences]
+        )
 
 
 class TestChemTokenizer(unittest.TestCase):
@@ -490,7 +491,7 @@ class TestChemTokenizer(unittest.TestCase):
     def test_more_brackets(self):
         self.assertEqual(['NaOH', '(', 'aq', ')'], self.t.tokenize('NaOH(aq)'))
         self.assertEqual(['HCl', '(', 'g', ')'], self.t.tokenize('HCl(g)'))
-        self.assertEqual(['5(g)'], self.t.tokenize('5(g)'))
+        self.assertEqual(['5', '(', 'g', ')'], self.t.tokenize('5(g)'))
         self.assertEqual(['a', ')', 'UV', '/', 'vis', 'spectrum', '.'], self.t.tokenize('a) UV/vis spectrum.'))
         self.assertEqual(['a', ')', 'UV', '-', 'vis', 'spectrum', '.'], self.t.tokenize('a) UV-vis spectrum.'))
         self.assertEqual(['(', 'c', ')', '–', '(', 'e', ')'], self.t.tokenize('(c)–(e)'))
@@ -768,21 +769,21 @@ class TestChemTokenizer(unittest.TestCase):
         """Test the word tokenizer quote followed by colon followed by digit (IndexError bugfix)."""
         self.assertEqual(['\'', ':', '1'], self.t.tokenize('\':1'))
 
-    # def test_chemtext_sentence(self):
-    #     """Test tokenization through the Text and Sentence API."""
-    #     t = Text('Hi, my name is Matt. What is your name?')
-    #     self.assertEqual(
-    #         [['Hi', ',', 'my', 'name', 'is', 'Matt', '.'], ['What', 'is', 'your', 'name', '?']],
-    #         [sent.raw_tokens for sent in t.sentences]
-    #     )
-    #
-    # def test_chemtext_sentence2(self):
-    #     """Test tokenization through the ChemText and Sentence API."""
-    #     t = Text('(Ka: 1.42×10(10) M-1 vs 1.95±0.35×10(10) M-1) and increased (9.9 vs 3.7±0.4 fmol)')
-    #     self.assertEqual(
-    #         [['(', 'Ka', ':', '1.42', '×', '10(10)', 'M-1', 'vs', '1.95', '±', '0.35', '×', '10(10)', 'M-1', ')', 'and', 'increased', '(', '9.9', 'vs', '3.7', '±', '0.4', 'fmol', ')']],
-    #         [sent.raw_tokens for sent in t.sentences]
-    #     )
+    def test_chemtext_sentence(self):
+        """Test tokenization through the Text and Sentence API."""
+        t = Text('Hi, my name is Matt. What is your name?')
+        self.assertEqual(
+            [['Hi', ',', 'my', 'name', 'is', 'Matt', '.'], ['What', 'is', 'your', 'name', '?']],
+            [sent.raw_tokens for sent in t.sentences]
+        )
+
+    def test_chemtext_sentence2(self):
+        """Test tokenization through the ChemText and Sentence API."""
+        t = Text('(Ka: 1.42×10(10) M-1 vs 1.95±0.35×10(10) M-1) and increased (9.9 vs 3.7±0.4 fmol)')
+        self.assertEqual(
+            [['(', 'Ka', ':', '1.42', '×', '10(10)', 'M-1', 'vs', '1.95', '±', '0.35', '×', '10(10)', 'M-1', ')', 'and', 'increased', '(', '9.9', 'vs', '3.7', '±', '0.4', 'fmol', ')']],
+            [sent.raw_tokens for sent in t.sentences]
+        )
 
 
 class TestFineWordTokenizer(unittest.TestCase):

@@ -1,5 +1,6 @@
 import unittest
 from batterydataextractor.nlp import BertTagger
+from batterydataextractor.doc import Text
 
 
 class TestBertTagger(unittest.TestCase):
@@ -16,13 +17,13 @@ class TestBertTagger(unittest.TestCase):
             self.t.tag(['And', 'now', 'for', 'something', 'completely', 'different'])
         )
 
-    # def test_text_sentence(self):
-    #     """Test tagging through the Text and Sentence API."""
-    #     t = Text('And now for something completely different')
-    #     self.assertEqual(
-    #         [[(u'And', u'CC'), (u'now', u'RB'), (u'for', u'IN'), (u'something', u'NN'), (u'completely', u'RB'), (u'different', u'JJ')]],
-    #         t.pos_tagged_tokens
-    #     )
+    def test_text_sentence(self):
+        """Test tagging through the Text and Sentence API."""
+        t = Text('And now for something completely different')
+        self.assertEqual(
+            [[(u'And', u'CC'), (u'now', u'RB'), (u'for', u'IN'), (u'something', u'NN'), (u'completely', u'NNP'), (u'different', u'JJ')]],
+            t.pos_tagged_tokens
+        )
 
 
 if __name__ == '__main__':

@@ -39,7 +39,7 @@ class AbbreviationDetector(object):
                             break
                         right += 1
                     else:
-                        if new_tuples[left][-1] == "AC" and left >= 0:
+                        if new_tuples[left][-1] == "AC" and left >= 1:
                             abbrev_spans = (new_tuples[left][1][0], new_tuples[left][2][-1])
                             # abbrev_text = [new_tuples[left][0]]
                             break

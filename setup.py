@@ -9,6 +9,8 @@ author: Shu Huang (sh2009@cam.ac.uk)
 import os
 from setuptools import setup, find_packages
 
+# TODO: python -m spacy download en_core_web_md
+
 with open('LICENSE', encoding='utf8') as f:
     license = f.read()
 

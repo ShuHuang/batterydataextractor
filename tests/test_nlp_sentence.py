@@ -1,6 +1,8 @@
 import logging
 import unittest
 from batterydataextractor.nlp import ChemSentenceTokenizer
+from batterydataextractor.doc import Text
+
 
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -72,13 +74,13 @@ class TestChemSentenceTokenizer(unittest.TestCase):
         ]
         self.assertEqual(sents, self.ps.tokenize(text))
 
-    # def test_chemtext_sentence(self):
-    #     """Test sentence tokenization through the ChemText and Sentence API."""
-    #     t = Text('These regions are positive contributors to overall efficiency. van Westen et al. built on this by including data from 24 new sources.')
-    #     self.assertEqual(
-    #         [(0, 62, 'These regions are positive contributors to overall efficiency.'), (63, 133, 'van Westen et al. built on this by including data from 24 new sources.')],
-    #         [(s.start, s.end, s.text) for s in t.sentences]
-    #     )
+    def test_chemtext_sentence(self):
+        """Test sentence tokenization through the ChemText and Sentence API."""
+        t = Text('These regions are positive contributors to overall efficiency. van Westen et al. built on this by including data from 24 new sources.')
+        self.assertEqual(
+            [(0, 62, 'These regions are positive contributors to overall efficiency.'), (63, 133, 'van Westen et al. built on this by including data from 24 new sources.')],
+            [(s.start, s.end, s.text) for s in t.sentences]
+        )
 
 
 if __name__ == '__main__':

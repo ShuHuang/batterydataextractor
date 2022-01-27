@@ -9,7 +9,7 @@ import logging
 import os
 import unittest
 
-from batterydataextractor import Document
+from batterydataextractor.doc import Document
 from batterydataextractor.reader import RscHtmlReader
 
 

@@ -1,5 +1,6 @@
 import unittest
 from batterydataextractor.nlp import BertCemTagger, CemTagger
+from batterydataextractor.doc import Document, Span
 
 
 class TestBertCemTagger(unittest.TestCase):
@@ -40,13 +41,13 @@ class TestCemTagger(unittest.TestCase):
         self.assertEqual([(('-aromatic', 'JJ'), None)], ct.tag([('-aromatic', 'JJ')]))
         self.assertEqual([(('non-aromatic', 'JJ'), None)], ct.tag([('non-aromatic', 'JJ')]))
 
-    # def test_cems_stoplist(self):
-    #     """Test Document cems removes words in stoplist, ncluding words entirely made up of ignore prefix/suffix.
-    #     GitHub issue #12.
-    #     """
-    #     self.assertEqual([Span('benzene', 0, 7)], Document('benzene-aromatic').cems)
-    #     self.assertEqual([], Document('-aromatic').cems)
-    #     self.assertEqual([], Document('non-aromatic').cems)
+    def test_cems_stoplist(self):
+        """Test Document cems removes words in stoplist, ncluding words entirely made up of ignore prefix/suffix.
+        GitHub issue #12.
+        """
+        self.assertEqual([Span('benzene', 0, 7)], Document('benzene-aromatic').cems)
+        self.assertEqual([], Document('-aromatic').cems)
+        self.assertEqual([], Document('non-aromatic').cems)
 
 
 if __name__ == '__main__':

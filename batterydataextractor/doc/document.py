@@ -14,7 +14,7 @@ import logging
 
 import six
 
-from .text import Paragraph, Citation, Footnote, Heading, Title, Caption
+from .text import Paragraph, Citation, Footnote, Heading, Title
 from .element import CaptionedElement
 from .meta import MetaData
 from ..errors import ReaderError
@@ -108,7 +108,6 @@ class Document(BaseDocument):
         for element in self.elements:
             if callable(getattr(element, 'add_models', None)):
                 element.add_models(models)
-            # print(element.models)
         return
 
     @property

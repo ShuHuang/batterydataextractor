@@ -48,7 +48,7 @@ class Config(MutableMapping):
         self._path = path
         self._data = {}
 
-        # Use CHEMDATAEXTRACTOR_CONFIG environment variable if set
+        # Use BATTERYDATAEXTRACTOR_CONFIG environment variable if set
         if not self._path:
             self._path = os.environ.get('CHEMDATAEXTRACTOR_CONFIG')
         # Use OS-dependent config directory given by appdirs

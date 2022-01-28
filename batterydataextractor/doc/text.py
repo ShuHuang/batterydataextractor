@@ -350,7 +350,7 @@ class Title(Text, ABC):
         # self.models = [Compound]
 
     def _repr_html_(self):
-        return '<h1 class="cde-title">' + self.text + '</h1>'
+        return '<h1 class="bde-title">' + self.text + '</h1>'
 
 
 class Heading(Text):
@@ -361,7 +361,7 @@ class Heading(Text):
         # default_parsers = [CompoundHeadingParser(), ChemicalLabelParser()]
 
     def _repr_html_(self):
-        return '<h2 class="cde-title">' + self.text + '</h2>'
+        return '<h2 class="bde-title">' + self.text + '</h2>'
 
 
 class Paragraph(Text):
@@ -375,7 +375,7 @@ class Paragraph(Text):
         # ]
 
     def _repr_html_(self):
-        return '<p class="cde-paragraph">' + self.text + '</p>'
+        return '<p class="bde-paragraph">' + self.text + '</p>'
 
 
 class Footnote(Text):
@@ -386,7 +386,7 @@ class Footnote(Text):
         # self.models = [Compound]
 
     def _repr_html_(self):
-        return '<p class="cde-footnote">' + self.text + '</p>'
+        return '<p class="bde-footnote">' + self.text + '</p>'
 
 
 class Citation(Text):
@@ -396,7 +396,7 @@ class Citation(Text):
     # TODO: Store number/label
 
     def _repr_html_(self):
-        return '<p class="cde-citation">' + self.text + '</p>'
+        return '<p class="bde-citation">' + self.text + '</p>'
 
 
 class Caption(Text):
@@ -407,7 +407,17 @@ class Caption(Text):
         # default_parsers = [CompoundParser(), ChemicalLabelParser(), CaptionContextParser()]
 
     def _repr_html_(self):
-        return '<caption class="cde-caption">' + self.text + '</caption>'
+        return '<caption class="bde-caption">' + self.text + '</caption>'
+
+
+class Abstract(Text):
+    def __init__(self, text, **kwargs):
+        super(Abstract, self).__init__(text, **kwargs)
+        # self.models = [Compound]
+        # default_parsers = [CompoundHeadingParser(), ChemicalLabelParser()]
+
+    def _repr_html_(self):
+        return '<h2 class="bde-abstract">' + self.text + '</h2>'
 
 
 class Sentence(BaseText, ABC):

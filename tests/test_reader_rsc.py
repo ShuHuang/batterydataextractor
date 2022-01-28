@@ -24,7 +24,7 @@ class TestRscHtmlReader(unittest.TestCase):
     def test_detect(self):
         """Test RscHtmlReader can detect an RSC document."""
         r = RscHtmlReader()
-        fname = 'rsctest.html'
+        fname = 'rsc_test1.html'
         f = io.open(os.path.join(os.path.dirname(__file__), 'testpapers', fname), 'rb')
         content = f.read()
         self.assertEqual(r.detect(content, fname=fname), True)
@@ -32,18 +32,18 @@ class TestRscHtmlReader(unittest.TestCase):
     def test_direct_usage(self):
         """Test RscHtmlReader used directly to parse file."""
         r = RscHtmlReader()
-        fname = 'rsctest.html'
+        fname = 'rsc_test1.html'
         f = io.open(os.path.join(os.path.dirname(__file__), 'testpapers', fname), 'rb')
         content = f.read()
         d = r.readstring(content)
-        self.assertEqual(len(d.elements), 61)
+        self.assertEqual(len(d.elements), 95)
 
     def test_document_usage(self):
         """Test RscHtmlReader used via Document.from_file."""
-        fname = 'rsctest.html'
+        fname = 'rsc_test2.html'
         f = io.open(os.path.join(os.path.dirname(__file__), 'testpapers', fname), 'rb')
         d = Document.from_file(f, readers=[RscHtmlReader()])
-        self.assertEqual(len(d.elements), 61)
+        self.assertEqual(len(d.elements), 60)
 
 
 if __name__ == '__main__':

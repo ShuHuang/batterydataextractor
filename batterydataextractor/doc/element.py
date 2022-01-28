@@ -21,24 +21,24 @@ class BaseElement(six.with_metaclass(ABCMeta)):
     Abstract base class for a Document Element.
     :ivar id: (Optional) An identifier for this Element.
     :type id: Any or None
-    :ivar list[chemdataextractor.models.BaseModel] models: A list of models that this element will parse
+    :ivar list[batterydataextractor.models.BaseModel] models: A list of models that this element will parse
     """
 
     def __init__(self, document=None, references=None, id=None, models=None, **kwargs):
         """
         .. note::
-            If intended as part of a :class:`~chemdataextractor.doc.document.Document`,
+            If intended as part of a :class:`~batterydataextractor.doc.document.Document`,
             an element should either be initialized with a reference to its containing document,
             or its :attr:`document` attribute should be set as soon as possible.
-            If the element is being passed in to a :class:`~chemdataextractor.doc.document.Document`
+            If the element is being passed in to a :class:`~batterydataextractor.doc.document.Document`
             to initialise it, the :attr:`document` attribute is automatically set
             during the initialisation of the document, so the user does not need to worry about this.
         :param Document document: (Optional) The document containing this element.
         :param list[Citation] references: (Optional) Any references contained in the element.
         :param Any id: (Optional) An identifier for this element. Must be equatable.
-        :param list[chemdataextractor.models.BaseModel] models: (Optional) A list of models for this element to parse.
-            If the element is part of another element (e.g. a :class:`~chemdataextractor.doc.text.Sentence`
-            inside a :class:`~chemdataextractor.doc.text.Paragraph`), or is part of a :class:`chemdataextractor.doc.document.Document`,
+        :param list[batterydataextractor.models.BaseModel] models: (Optional) A list of models for this element to parse.
+            If the element is part of another element (e.g. a :class:`~batterydataextractor.doc.text.Sentence`
+            inside a :class:`~batterydataextractor.doc.text.Paragraph`), or is part of a :class:`batterydataextractor.doc.document.Document`,
             this is set automatically to be the same as that of the containing element, unless manually set otherwise.
         """
         #: The containing Document
@@ -59,7 +59,7 @@ class BaseElement(six.with_metaclass(ABCMeta)):
 
     @property
     def document(self):
-        """ The :class:`chemdataextractor.doc.document.Document` that this element belongs to. """
+        """ The :class:`batterydataextractor.doc.document.Document` that this element belongs to. """
         return self._document
 
     @document.setter
@@ -75,7 +75,7 @@ class BaseElement(six.with_metaclass(ABCMeta)):
     # @property
     # @abstractmethod
     # def records(self):
-    #     """All records found in this Document, as a list of :class:`chemdataextractor.model.base.BaseModel`."""
+    #     """All records found in this Document, as a list of :class:`batterydataextractor.model.base.BaseModel`."""
     #     return []
 
     # @abstractmethod  # TODO: Put this back?
@@ -138,19 +138,19 @@ class CaptionedElement(BaseElement):
     def __init__(self, caption, label=None, **kwargs):
         """
         .. note::
-            If intended as part of a :class:`~chemdataextractor.doc.document.Document`,
+            If intended as part of a :class:`~batterydataextractor.doc.document.Document`,
             an element should either be initialized with a reference to its containing document,
             or its :attr:`document` attribute should be set as soon as possible.
-            If the element is being passed in to a :class:`~chemdataextractor.doc.document.Document`
+            If the element is being passed in to a :class:`~batterydataextractor.doc.document.Document`
             to initialise it, the :attr:`document` attribute is automatically set
             during the initialisation of the document, so the user does not need to worry about this.
         :param BaseElement caption: The caption for the element.
         :param Document document: (Optional) The document containing this element.
         :param str label: (Optional) The label for the captioned element, e.g. Table 1 would have a label of 1.
         :param Any id: (Optional) Some identifier for this element. Must be equatable.
-        :param list[chemdataextractor.models.BaseModel] models: (Optional) A list of models for this element to parse.
-            If the element is part of another element (e.g. a :class:`~chemdataextractor.doc.text.Sentence`
-            inside a :class:`~chemdataextractor.doc.text.Paragraph`), or is part of a :class:`~chemdataextractor.doc.document.Document`,
+        :param list[batterydataextractor.models.BaseModel] models: (Optional) A list of models for this element to parse.
+            If the element is part of another element (e.g. a :class:`~batterydataextractor.doc.text.Sentence`
+            inside a :class:`~batterydataextractor.doc.text.Paragraph`), or is part of a :class:`~batterydataextractor.doc.document.Document`,
             this is set automatically to be the same as that of the containing element, unless manually set otherwise.
         """
         # TODO: docs for label
@@ -166,7 +166,7 @@ class CaptionedElement(BaseElement):
 
     @property
     def document(self):
-        """ The :class:`~chemdataextractor.doc.document.Document` that this element belongs to. """
+        """ The :class:`~batterydataextractor.doc.document.Document` that this element belongs to. """
         return self._document
 
     @document.setter
@@ -176,7 +176,7 @@ class CaptionedElement(BaseElement):
 
     @property
     def records(self):
-        """All records found in the object, as a list of :class:`~chemdataextractor.model.base.BaseModel`."""
+        """All records found in the object, as a list of :class:`~batterydataextractor.model.base.BaseModel`."""
         # This just passes the caption records. Subclasses may wish to extend this.
         return self.caption.records
 
@@ -202,7 +202,7 @@ class CaptionedElement(BaseElement):
     @property
     def cems(self):
         """
-        A list of all Chemical Entity Mentions in this document as :class:`~chemdataextractor.doc.text.Span`
+        A list of all Chemical Entity Mentions in this document as :class:`~batterydataextractor.doc.text.Span`
         """
         return self.caption.cems
 
@@ -219,7 +219,7 @@ class CaptionedElement(BaseElement):
         """
         Convert self to a dictionary. The key 'type' will contain
         the name of the class being serialized, and the key 'caption' will contain
-        a serialized representation of :attr:`caption`, which is a :class:`~chemdataextractor.doc.element.BaseElement`
+        a serialized representation of :attr:`caption`, which is a :class:`~batterydataextractor.doc.element.BaseElement`
         """
         data = {'type': self.__class__.__name__, 'caption': self.caption.serialize()}
         return data

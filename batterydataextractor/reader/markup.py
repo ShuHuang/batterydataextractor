@@ -17,7 +17,7 @@ from lxml.html import HTMLParser
 
 from ..errors import ReaderError
 from ..doc.document import Document
-from ..doc.text import Title, Heading, Paragraph, Citation, Text, Sentence
+from ..doc.text import Title, Heading, Paragraph, Citation, Text, Sentence, Abstract
 from ..doc.meta import MetaData
 from ..scrape.clean import clean
 from ..scrape.csstranslator import CssHTMLTranslator
@@ -44,16 +44,9 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
     root_css = 'html'
     title_css = 'h1'
     heading_css = 'h2, h3, h4, h5, h6'
-    table_css = 'table'
-    table_caption_css = 'caption'
-    table_head_row_css = 'thead tr'
-    table_body_row_css = 'tbody tr'
-    table_cell_css = 'th, td'
-    table_footnote_css = 'tfoot tr th'
     reference_css = 'a.ref'
-    figure_css = 'figure'
-    figure_caption_css = 'figcaption'
     citation_css = 'cite'
+    abstract_css = 'div[class="abstract"], p[class="abstract"]'
 
     metadata_css = 'head'
     metadata_publisher_css = 'meta[name="DC.publisher"]::attr("content"), meta[name="citation_publisher"]::attr("content")'
@@ -81,7 +74,7 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
         if el.tag in {etree.Comment, etree.ProcessingInstruction}:
             return []
         # if el in refs:
-        #     return [element_cls('', references=refs[el])]
+            # return [element_cls('', references=refs[el])]
         if el in specials:
             return specials[el]
         id = el.get('id', id)
@@ -164,8 +157,8 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
         language = self._css(self.metadata_language_css, el)
         volume = self._css(self.metadata_volume_css, el)
         issue = self._css(self.metadata_issue_css, el)
-        firstpage =self._css(self.metadata_firstpage_css, el)
-        lastpage=self._css(self.metadata_lastpage_css, el)
+        firstpage = self._css(self.metadata_firstpage_css, el)
+        lastpage= self._css(self.metadata_lastpage_css, el)
         doi = self._css(self.metadata_doi_css, el)
         pdf_url = self._css(self.metadata_pdf_url_css, el)
         html_url = self._css(self.metadata_html_url_css, el)
@@ -216,7 +209,6 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
 
         if root is None:
             raise ReaderError
-
         root = self._css(self.root_css, root)[0]
         for cleaner in self.cleaners:
             cleaner(root)
@@ -224,14 +216,13 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
         refs = defaultdict(list)
         titles = self._css(self.title_css, root)
         headings = self._css(self.heading_css, root)
+        abstracts = self._css(self.abstract_css, root)
         citations = self._css(self.citation_css, root)
         references = self._css(self.reference_css, root)
         ignores = self._css(self.ignore_css, root)
         metadata = self._css(self.metadata_css, root)
         for reference in references:
             refs[reference.getparent()].extend(self._parse_reference(reference))
-        for ignore in ignores:
-            specials[ignore] = []
         for title in titles:
             specials[title] = self._parse_text(title, element_cls=Title, refs=refs, specials=specials)
         for heading in headings:
@@ -240,6 +231,10 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
             specials[citation] = self._parse_text(citation, element_cls=Citation, refs=refs, specials=specials)
         for md in metadata:
             specials[md] = self._parse_metadata(md, refs=refs, specials=specials)
+        for abstract in abstracts:
+            specials[abstract] = self._parse_text(abstract, element_cls=Abstract, refs=refs, specials=specials)
+        for ignore in ignores:
+            specials[ignore] = []
         elements = self._parse_element(root, specials=specials, refs=refs)
         return Document(*elements)
 

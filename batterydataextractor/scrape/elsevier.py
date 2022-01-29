@@ -106,3 +106,59 @@ class ElsevierWebScraper(BaseWebScraper):
         abstract = abstract.replace("\t", "")
         doi = soup.find_all("prism:doi")[0].get_text()
         return {"title": title, "doi": doi, "date": date, "journal": journal, "abstract": abstract}
+
+
+def fix_elsevier_xml_whitespace(document):
+    """ Fix tricky xml tags"""
+    # space hsp  and refs correctly
+    for el in document.xpath('.//ce:hsp'):
+        parent = el.getparent()
+        previous = el.getprevious()
+        if parent is None:
+            continue
+        # Append the text to previous tail (or parent text if no previous), ensuring newline if block level
+        if el.text and isinstance(el.tag, six.string_types):
+            if previous is None:
+                if parent.text:
+                    if parent.text.endswith(' '):
+                        parent.text = (parent.text or '') + '' + el.text
+                    else:
+                        parent.text = (parent.text or '') + ' ' + el.text
+            else:
+                if previous.tail:
+                    if previous.tail.endswith(' '):
+                        previous.tail = (previous.tail or '') + '' + el.text
+                    else:
+                        previous.tail = (previous.tail or '') + ' ' + el.text
+        # Append the tail to last child tail, or previous tail, or parent text, ensuring newline if block level
+        if el.tail:
+            if len(el):
+                last = el[-1]
+                last.tail = (last.tail or '') + el.tail
+            elif previous is None:
+                if el.tail.startswith(' '):
+                    parent.text = (parent.text or '') + '' + el.tail
+                else:
+                    parent.text = (parent.text or '') + ' ' + el.tail
+            else:
+                if el.tail.startswith(' '):
+                    previous.tail = (previous.tail or '') + '' + el.tail
+                else:
+                    previous.tail = (previous.tail or '') + ' ' + el.tail
+
+        index = parent.index(el)
+        parent[index:index + 1] = el[:]
+    return document
+
+
+def els_xml_whitespace(document):
+    """ Remove whitespace in xml.text or xml.tails for all elements, if it is only whitespace """
+    # selects all tags and checks if the text or tail are spaces
+    for el in document.xpath('//*'):
+        if str(el.text).isspace():
+            el.text = ''
+        if str(el.tail).isspace():
+            el.tail = ''
+        if el.text:
+            el.text = el.text.replace('\n', ' ')
+    return document

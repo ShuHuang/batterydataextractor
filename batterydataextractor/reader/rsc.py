@@ -27,6 +27,7 @@ class RscHtmlReader(HtmlReader):
     title_css = 'h1, .title_heading'
     heading_css = 'h2, h3, h4, h5, h6, .a_heading, .b_heading, .c_heading, .c_heading_indent, .d_heading,' \
                   '.d_heading_indent'
+    abstract_css = 'div[class="abstract"], p[class="abstract"]'
     citation_css = 'span[id^="cit"]'
     reference_css = 'small sup a, a[href^="#cit"], a[href^="#fn"], a[href^="#tab"]'
     ignore_css = '.table_caption + table, .left_head, sup span.sup_ref, small sup a, a[href^="#fn"], .PMedLink, ' \

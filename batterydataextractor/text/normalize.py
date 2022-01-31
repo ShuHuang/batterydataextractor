@@ -120,10 +120,10 @@ class Normalizer(BaseNormalizer):
             text = ' '.join(text.split())
         return text
 
-# #: Default normalize that canonicalizes unicode and fixes whitespace.
-# normalize = Normalizer(strip=True, collapse=True, hyphens=False, quotes=False, ellipsis=False)
-# #: More aggressive normalize that also standardizes hyphens, and quotes.
-# strict_normalize = Normalizer(strip=True, collapse=True, hyphens=True, quotes=True, ellipsis=True, tildes=True)
+#: Default normalize that canonicalizes unicode and fixes whitespace.
+normalize = Normalizer(strip=True, collapse=True, hyphens=False, quotes=False, ellipsis=False)
+#: More aggressive normalize that also standardizes hyphens, and quotes.
+strict_normalize = Normalizer(strip=True, collapse=True, hyphens=True, quotes=True, ellipsis=True, tildes=True)
 
 
 # class ExcessNormalizer(Normalizer):

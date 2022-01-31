@@ -114,6 +114,6 @@ class ElsevierXmlReader(XmlReader):
                 '_doi': doi[0].text if doi else None,
                 '_pdf_url': self.url_prefix + pdf_url[0].text if pdf_url else None,
                 '_html_url': self.url_prefix + html_url[0].text if html_url else None
-                }
+        }
         meta = MetaData(metadata)
         return [meta]

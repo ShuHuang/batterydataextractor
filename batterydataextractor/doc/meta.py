@@ -29,6 +29,7 @@ class MetaData(BaseElement):
         self._language = None
         self._pdf_url = None
         self._html_url = None
+        self._abstract = None
         for key, value in data.items():
             setattr(self, key, value)
 
@@ -99,6 +100,11 @@ class MetaData(BaseElement):
     def html_url(self):
         """The source url to the HTML version"""
         return self._html_url
+
+    @property
+    def abstract(self):
+        """The abstract"""
+        return self._abstract
 
     @property
     def date(self):

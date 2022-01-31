@@ -37,14 +37,14 @@ class TestElsXMLReader(unittest.TestCase):
         content = f.read()
         d = r.readstring(content)
         f.close()
-        self.assertEqual(len(d.elements), 137)
+        self.assertEqual(len(d.elements), 143)
 
     def test_document_usage(self):
         """Test RscXMLReader used via Document.from_file."""
         fname = 'els_test2.xml'
         f = io.open(os.path.join(os.path.dirname(__file__), 'testpapers', fname), 'rb')
         d = Document.from_file(f, readers=[ElsevierXmlReader()])
-        self.assertEqual(len(d.elements), 51)
+        self.assertEqual(len(d.elements), 56)
 
 
 if __name__ == '__main__':

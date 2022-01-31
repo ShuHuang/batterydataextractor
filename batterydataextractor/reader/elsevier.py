@@ -73,7 +73,7 @@ class ElsevierXmlReader(XmlReader):
                  'xocs|pii-unformatted, xocs|ucs-locator, ce|copyright,' \
                  'prism|publisher, prism|*, xocs|copyright-line, xocs|cp-notice,' \
                  'dc|description, ce|table, ce|figure, default|coredata, default|objects, default|scopus-id, ' \
-                 'ce|nomenclature, ce|keywords, ce|formula, ce|conflict-of-interest, ce|acknowledgements, default|aid'
+                 'ce|nomenclature, ce|formula, ce|conflict-of-interest, ce|acknowledgements, default|aid'
 
     url_prefix = 'https://sciencedirect.com/science/article/pii/'
 

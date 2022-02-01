@@ -9,6 +9,7 @@ author:
 from abc import abstractmethod, ABC
 import collections
 import logging
+import re
 
 import six
 
@@ -551,27 +552,6 @@ class Sentence(BaseText, ABC):
         """
         # log.debug('Getting ner_tags')
         ner_tags = self.unprocessed_ner_tags
-        abbrev_defs = self.document.abbreviation_definitions if self.document else self.abbreviation_definitions
-        # Ensure abbreviation entity matches long entity
-        # TODO: This is potentially a performance bottleneck?
-        for i in range(0, len(ner_tags)):
-            for abbr, long, ner_tag in abbrev_defs:
-                if abbr == self.raw_tokens[i:i+len(abbr)]:
-                    old_ner_tags = ner_tags[i:i+len(abbr)]
-                    ner_tags[i] = 'B-%s' % ner_tag if ner_tag is not None else None
-                    ner_tags[i+1:i+len(abbr)] = ['I-%s' % ner_tag if ner_tag is not None else None] * (len(abbr) - 1)
-                    # Remove ner tags from brackets surrounding abbreviation
-                    if i > 1 and self.raw_tokens[i-1] == '(':
-                        ner_tags[i-1] = None
-                    if i < len(self.raw_tokens) - 1 and self.raw_tokens[i+1] == ')':
-                        ner_tags[i+1] = None
-                    if not old_ner_tags == ner_tags[i:i+len(abbr)]:
-                        log.debug('Correcting abbreviation tag: %s (%s): %s -> %s' % (' '.join(abbr), ' '.join(long), old_ner_tags, ner_tags[i:i+len(abbr)]))
-        # TODO: Ensure abbreviations in brackets at the end of an entity match are separated and the brackets untagged
-        # Hydrogen Peroxide (H2O2)
-        # Tungsten Carbide (WC)
-        # TODO: Filter off alphanumerics from end (1h) (3) (I)
-        # May need more intelligent
         return ner_tags
 
     @memoized_property
@@ -579,77 +559,15 @@ class Sentence(BaseText, ABC):
         """
         A list of all Chemical Entity Mentions in this text as :class:`~batterydataextractor.doc.text.Span`
         """
-        # log.debug('Getting cems')
+        log.debug('Getting cems')
         spans = []
-        # print(self.text.encode('utf8'))
-        # for result in chemical_name.scan(self.tagged_tokens):
-        #     # parser scan yields (result, startindex, endindex) - we just use the indexes here
-        #     tokens = self.tokens[result[1]:result[2]]
-        #     start = tokens[0].start
-        #     end = tokens[-1].end
-        #     # Adjust boundaries to exclude disallowed prefixes/suffixes
-        #     currenttext = self.text[start-self.start:end-self.start].lower()
-        #     for prefix in IGNORE_PREFIX:
-        #         if currenttext.startswith(prefix):
-        #             # print('%s removing %s' % (currenttext, prefix))
-        #             start += len(prefix)
-        #             break
-        #     for suffix in IGNORE_SUFFIX:
-        #         if currenttext.endswith(suffix):
-        #             # print('%s removing %s' % (currenttext, suffix))
-        #             end -= len(suffix)
-        #             break
-        #     # Adjust boundaries to exclude matching brackets at start and end
-        #     currenttext = self.text[start-self.start:end-self.start]
-        #     for bpair in [('(', ')'), ('[', ']')]:
-        #         if len(currenttext) > 2 and currenttext[0] == bpair[0] and currenttext[-1] == bpair[1]:
-        #             level = 1
-        #             for k, char in enumerate(currenttext[1:]):
-        #                 if char == bpair[0]:
-        #                     level += 1
-        #                 elif char == bpair[1]:
-        #                     level -= 1
-        #                 if level == 0 and k == len(currenttext) - 2:
-        #                     start += 1
-        #                     end -= 1
-        #                     break
-        #
-        #     # If entity has been reduced to nothing by adjusting boundaries, skip it
-        #     if start >= end:
-        #         continue
-        #
-        #     currenttext = self.text[start-self.start:end-self.start]
-        #
-        #     # Do splits
-        #     split_spans = []
-        #     comps = list(regex_span_tokenize(currenttext, '(-|\+|\)?-to-\(?|···|/|\s)'))
-        #     if len(comps) > 1:
-        #         for split in SPLITS:
-        #             if all(re.search(split, currenttext[comp[0]:comp[1]]) for comp in comps):
-        #                 # print('%s splitting %s' % (currenttext, [currenttext[comp[0]:comp[1]] for comp in comps]))
-        #                 for comp in comps:
-        #                     span = Span(text=currenttext[comp[0]:comp[1]], start=start+comp[0], end=start+comp[1])
-        #                     # print('SPLIT: %s - %s' % (currenttext, repr(span)))
-        #                     split_spans.append(span)
-        #                 break
-        #         else:
-        #             split_spans.append(Span(text=currenttext, start=start, end=end))
-        #     else:
-        #         split_spans.append(Span(text=currenttext, start=start, end=end))
-
-            # Do specials
-            # for split_span in split_spans:
-            #     for special in SPECIALS:
-            #         m = re.search(special, split_span.text)
-            #         if m:
-            #             # print('%s special %s' % (split_span.text, m.groups()))
-            #             for i in range(1, len(m.groups()) + 1):
-            #                 span = Span(text=m.group(i), start=split_span.start+m.start(i), end=split_span.start+m.end(i))
-            #                 # print('SUBMATCH: %s - %s' % (currenttext, repr(span)))
-            #                 spans.append(span)
-            #             break
-            #     else:
-            #         spans.append(split_span)
+        raw_tokens = self.raw_tokens
+        for index, result in enumerate(self.ner_tags):
+            if result == 'B-CM':
+                ner_word = raw_tokens[index]
+                span = Span(text=raw_tokens[index], start=re.search(ner_word, self.text).start() + self.start,
+                            end=re.search(ner_word, self.text).end() + self.start)
+                spans.append(span)
         return spans
 
     @memoized_property

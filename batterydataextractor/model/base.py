@@ -193,6 +193,7 @@ class BaseModel(six.with_metaclass(ModelMeta)):
 
     fields = {}
     parsers = []
+    defined_names = ['']
     specifier = None
 
     def __init__(self, **raw_data):

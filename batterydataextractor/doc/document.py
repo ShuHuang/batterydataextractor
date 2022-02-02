@@ -6,7 +6,7 @@ batterydataextractor.doc.document
 Document model.
 author:
 """
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 import collections
 import io
 import json
@@ -14,12 +14,12 @@ import logging
 
 import six
 
-from .text import Paragraph, Citation, Footnote, Heading, Title
+from .text import Paragraph, Citation, Footnote, Heading, Title, Caption
 from .element import CaptionedElement
 from .meta import MetaData
 from ..errors import ReaderError
 from ..model.base import ModelList
-from ..model.model import Compound
+from ..model.model import PropertyData, Compound
 from ..text import get_encoding
 from ..config import Config
 
@@ -43,14 +43,13 @@ class BaseDocument(six.with_metaclass(ABCMeta, collections.Sequence)):
         return len(self.elements)
 
     @property
-    # TODO: abstractmethod?
-    # @abstractmethod
+    @abstractmethod
     def elements(self):
         """Return a list of document elements."""
         return []
 
     @property
-    # @abstractmethod
+    @abstractmethod
     def records(self):
         """Chemical records that have been parsed from this Document."""
         return []
@@ -99,7 +98,7 @@ class Document(BaseDocument):
         Add models to all elements.
         Usage::
             d = Document.from_file(f)
-            d.set_models([myModelClass1, myModelClass2,..])
+            d.add_models([myModelClass1, myModelClass2,..])
         Arguments::
             models -- List of model classes
         """
@@ -108,6 +107,25 @@ class Document(BaseDocument):
         for element in self.elements:
             if callable(getattr(element, 'add_models', None)):
                 element.add_models(models)
+        return
+
+    def add_models_by_names(self, names):
+        """
+        Add models to all elements.
+        Usage::
+            d = Document.from_file(f)
+            d.add_models_by_names("myModelName1", "myModelName2",..])
+        Arguments::
+            models -- List of model classes
+        """
+        log.debug("Setting models by names")
+
+        model = PropertyData
+        model.defined_names = names
+        self._models.extend([model])
+        for element in self.elements:
+            if callable(getattr(element, 'add_models', None)):
+                element.add_models([model])
         return
 
     @property
@@ -331,28 +349,28 @@ class Document(BaseDocument):
         #                     compound.names.append(name)
 
         # Merge Compound records with any shared name/label
-        len_l = len(records)
-        log.debug(records)
-        i = 0
-        while i < (len_l - 1):
-            j = i + 1
-            while j < len_l:
-                r = records[i]
-                other_r = records[j]
-                r_compound = None
-                if isinstance(r, Compound):
-                    r_compound = r
-                elif hasattr(r, 'compound') and isinstance(r.compound, Compound):
-                    r_compound = r.compound
-                other_r_compound = None
-                if isinstance(other_r, Compound):
-                    other_r_compound = other_r
-                elif hasattr(other_r, 'compound') and isinstance(other_r.compound, Compound):
-                    other_r_compound = other_r.compound
-                if r_compound and other_r_compound:
-                    # Strip whitespace and lowercase to compare names
-                    rnames_std = {''.join(n.split()).lower() for n in r_compound.names}
-                    onames_std = {''.join(n.split()).lower() for n in other_r_compound.names}
+        # len_l = len(records)
+        # log.debug(records)
+        # i = 0
+        # while i < (len_l - 1):
+        #     j = i + 1
+        #     while j < len_l:
+        #         r = records[i]
+        #         other_r = records[j]
+        #         r_compound = None
+        #         if isinstance(r, Compound):
+        #             r_compound = r
+        #         elif hasattr(r, 'compound') and isinstance(r.compound, Compound):
+        #             r_compound = r.compound
+        #         other_r_compound = None
+        #         if isinstance(other_r, Compound):
+        #             other_r_compound = other_r
+        #         elif hasattr(other_r, 'compound') and isinstance(other_r.compound, Compound):
+        #             other_r_compound = other_r.compound
+        #         if r_compound and other_r_compound:
+        #             # Strip whitespace and lowercase to compare names
+        #             rnames_std = {''.join(n.split()).lower() for n in r_compound.names}
+        #             onames_std = {''.join(n.split()).lower() for n in other_r_compound.names}
 
                     # # Clashing labels, don't merge
                     # if len(set(r_compound.labels) - set(other_r_compound.labels)) > 0 and len(set(other_r_compound.labels) - set(r_compound.labels)) > 0:
@@ -369,18 +387,18 @@ class Document(BaseDocument):
                     #         len_l -= 1
                     #         i -= 1
                     #     break
-                j += 1
-            i += 1
-
-        i = 0
-        length = len(records)
-        while i < length:
-            j = 0
-            while j < length:
-                if i != j:
-                    records[j].merge_contextual(records[i])
-                j += 1
-            i += 1
+        #         j += 1
+        #     i += 1
+        #
+        # i = 0
+        # length = len(records)
+        # while i < length:
+        #     j = 0
+        #     while j < length:
+        #         if i != j:
+        #             records[j].merge_contextual(records[i])
+        #         j += 1
+        #     i += 1
 
         # clean up records
         cleaned_records = ModelList()

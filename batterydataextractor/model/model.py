@@ -8,18 +8,17 @@ author:
 """
 import logging
 
-from .base import BaseModel, StringType, ListType
+from .base import BaseModel, StringType, ListType, ModelType
 
 from ..parse.cem import CompoundParser
+from ..parse.bert import BertParser
 
 log = logging.getLogger(__name__)
 
 
 class Compound(BaseModel):
     names = ListType(StringType())
-    parsers = [
-        CompoundParser()
-    ]
+    parsers = [CompoundParser()]
 
     def merge(self, other):
         """Merge data from another Compound into this Compound."""
@@ -46,3 +45,12 @@ class Compound(BaseModel):
         if self.names:
             return True
         return False
+
+
+class PropertyData(BaseModel):
+    value = StringType(contextual=False, required=True)
+    # units = StringType(contextual=False)
+    specifier = StringType(contextual=False)
+    compound = ModelType(Compound, contextual=False)
+    parser = BertParser()
+    parsers = [parser]

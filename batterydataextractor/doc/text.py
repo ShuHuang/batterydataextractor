@@ -13,7 +13,7 @@ import re
 
 import six
 
-# from ..model.base import ModelList
+from ..model.base import ModelList
 from ..nlp.lexicon import ChemLexicon, Lexicon
 from ..nlp.cem import CemTagger
 from ..nlp.abbrev import ChemAbbreviationDetector
@@ -21,8 +21,8 @@ from ..nlp.tag import NoneTagger, BaseTagger, BertTagger
 from ..nlp.tokenize import ChemSentenceTokenizer, ChemWordTokenizer, SentenceTokenizer, WordTokenizer
 from ..utils import memoized_property
 from .element import BaseElement
-# from ..parse.cem import chemical_name
-# from ..model.model import Compound
+from ..model.model import Compound
+from ..text import CONTROL_RE
 
 
 log = logging.getLogger(__name__)
@@ -321,11 +321,11 @@ class Text(collections.Sequence, BaseText):
         (:class:`str` abbreviation, :class:`str` long form of abbreviation, :class:`str` ner_tag)
         """
         return [ab for sent in self.sentences for ab in sent.abbreviation_definitions]
-    #
-    # @property
-    # def records(self):
-    #     """All records found in the object, as a list of :class:`~batterydataextractor.model.base.BaseModel`."""
-    #     return ModelList(*[r for sent in self.sentences for r in sent.records])
+
+    @property
+    def records(self):
+        """All records found in the object, as a list of :class:`~batterydataextractor.model.base.BaseModel`."""
+        return ModelList(*[r for sent in self.sentences for r in sent.records])
 
     def __add__(self, other):
         if type(self) == type(other):
@@ -348,7 +348,7 @@ class Title(Text, ABC):
 
     def __init__(self, text, **kwargs):
         super(Title, self).__init__(text, **kwargs)
-        # self.models = [Compound]
+        self.models = [Compound]
 
     def _repr_html_(self):
         return '<h1 class="bde-title">' + self.text + '</h1>'
@@ -358,8 +358,7 @@ class Heading(Text):
 
     def __init__(self, text, **kwargs):
         super(Heading, self).__init__(text, **kwargs)
-        # self.models = [Compound]
-        # default_parsers = [CompoundHeadingParser(), ChemicalLabelParser()]
+        self.models = [Compound]
 
     def _repr_html_(self):
         return '<h2 class="bde-title">' + self.text + '</h2>'
@@ -369,8 +368,7 @@ class Paragraph(Text):
 
     def __init__(self, text, **kwargs):
         super(Paragraph, self).__init__(text, **kwargs)
-        # default_parsers = [CompoundParser(), ChemicalLabelParser(), NmrParser(), IrParser(), UvvisParser(), MpParser(),
-        #        TgParser(), ContextParser()]
+        self.models = [Compound]
         # self.models = [BatteryVoltage, BatteryCapacity, Compound, BatteryConductivity, BatteryCoulombic, BatteryEnergy#
                        #SublimationTemperature, NmrSpectrum, IrSpectrum, UvvisSpectrum, MeltingPoint, GlassTransition, BatteryCapacity,
         # ]
@@ -383,8 +381,7 @@ class Footnote(Text):
 
     def __init__(self, text, **kwargs):
         super(Footnote, self).__init__(text, **kwargs)
-        # default_parsers = [ContextParser(), CaptionContextParser()]
-        # self.models = [Compound]
+        self.models = [Compound]
 
     def _repr_html_(self):
         return '<p class="bde-footnote">' + self.text + '</p>'
@@ -404,8 +401,7 @@ class Caption(Text):
 
     def __init__(self, text, **kwargs):
         super(Caption, self).__init__(text, **kwargs)
-        # self.models = [Compound]
-        # default_parsers = [CompoundParser(), ChemicalLabelParser(), CaptionContextParser()]
+        self.models = [Compound]
 
     def _repr_html_(self):
         return '<caption class="bde-caption">' + self.text + '</caption>'
@@ -414,8 +410,7 @@ class Caption(Text):
 class Abstract(Text):
     def __init__(self, text, **kwargs):
         super(Abstract, self).__init__(text, **kwargs)
-        # self.models = [Compound]
-        # default_parsers = [CompoundHeadingParser(), ChemicalLabelParser()]
+        self.models = [Compound]
 
     def _repr_html_(self):
         return '<h2 class="bde-abstract">' + self.text + '</h2>'
@@ -427,7 +422,7 @@ class Sentence(BaseText, ABC):
     word_tokenizer = ChemWordTokenizer()
     lexicon = ChemLexicon()
     abbreviation_detector = ChemAbbreviationDetector()
-    pos_tagger = BertTagger()  # ChemPerceptronTagger()
+    pos_tagger = BertTagger()
     ner_tagger = CemTagger()
 
     def __init__(self, text, start=0, end=None, word_tokenizer=None, lexicon=None, abbreviation_detector=None, pos_tagger=None, ner_tagger=None, **kwargs):
@@ -460,7 +455,7 @@ class Sentence(BaseText, ABC):
             inside a :class:`~batterydataextractor.doc.text.Paragraph`), or is part of a :class:`~batterydataextractor.doc.document.Document`,
             this is set automatically to be the same as that of the containing element, unless manually set otherwise.
         """
-        # self.models = [Compound]
+        self.models = [Compound]
         super(Sentence, self).__init__(text, word_tokenizer=word_tokenizer, lexicon=lexicon, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, **kwargs)
         #: The start index of this sentence within the text passage.
         self.start = start
@@ -585,55 +580,34 @@ class Sentence(BaseText, ABC):
         from the text.
         """
         return list(zip(self.raw_tokens, self.tags))
-    #
-    # @property
-    # def records(self):
-    #     """All records found in the object, as a list of :class:`~batterydataextractor.model.base.BaseModel`."""
-    #     records = ModelList()
-    #     seen_labels = set()
-    #     # Ensure no control characters are sent to a parser (need to be XML compatible)
-    #     tagged_tokens = [(CONTROL_RE.sub('', token), tag) for token, tag in self.tagged_tokens]
-    #     for model in self._streamlined_models:
-    #         for parser in model.parsers:
-    #             if hasattr(parser, 'parse_sentence'):
-    #                 for record in parser.parse_sentence(tagged_tokens):
-    #                     p = record.serialize()
-    #                     if not p:  # TODO: Potential performance issues?
-    #                         continue
-    #                     # Skip duplicate records
-    #                     if record in records:
-    #                         continue
-    #                     # Skip just labels that have already been seen (bit of a hack)
-    #                     if (isinstance(record, Compound) and all(k in {'labels', 'roles'} for k in p['Compound'].keys()) and
-    #                       set(record.labels).issubset(seen_labels)):
-    #                         continue
-    #                     if isinstance(record, Compound):
-    #                         seen_labels.update(record.labels)
-    #                         # This could be super slow if we find lots of things
-    #                         found = False
-    #                         for seen_record in records:
-    #                             if (isinstance(seen_record, Compound)
-    #                               and (not set(record.names).isdisjoint(seen_record.names)
-    #                                    or not set(record.labels).isdisjoint(seen_record.labels))):
-    #                                 seen_record.names = sorted(list(set(seen_record.names).union(record.names)))
-    #                                 seen_record.labels = sorted(list(set(seen_record.labels).union(record.labels)))
-    #                                 seen_record.roles = sorted(list(set(seen_record.roles).union(record.roles)))
-    #                                 found = True
-    #                         if found:
-    #                             continue
-    #                     elif hasattr(record, 'compound') and record.compound is not None:
-    #                         seen_labels.update(record.compound.labels)
-    #                     records.append(record)
-    #     i = 0
-    #     length = len(records)
-    #     while i < length:
-    #         j = 0
-    #         while j < length:
-    #             if i != j:
-    #                 records[j].merge_all(records[i])
-    #             j += 1
-    #         i += 1
-    #     return records
+
+    @property
+    def records(self):
+        """All records found in the object, as a list of :class:`~batterydataextractor.model.base.BaseModel`."""
+        records = ModelList()
+        # Ensure no control characters are sent to a parser (need to be XML compatible)
+        tagged_tokens = [(CONTROL_RE.sub('', token), tag) for token, tag in self.tagged_tokens]
+        for model in self._streamlined_models:
+            for parser in model.parsers:
+                if hasattr(parser, 'parse_sentence'):
+                    for record in parser.parse_sentence(tagged_tokens):
+                        p = record.serialize()
+                        if not p:  # TODO: Potential performance issues?
+                            continue
+                        # Skip duplicate records
+                        if record in records:
+                            continue
+                        records.append(record)
+        i = 0
+        length = len(records)
+        while i < length:
+            j = 0
+            while j < length:
+                if i != j:
+                    records[j].merge_all(records[i])
+                j += 1
+            i += 1
+        return records
 
     def __add__(self, other):
         if type(self) == type(other):

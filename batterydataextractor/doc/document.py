@@ -18,8 +18,8 @@ from .text import Paragraph, Citation, Footnote, Heading, Title
 from .element import CaptionedElement
 from .meta import MetaData
 from ..errors import ReaderError
-# from ..model.base import ModelList
-# from ..model.model import Compound
+from ..model.base import ModelList
+from ..model.model import Compound
 from ..text import get_encoding
 from ..config import Config
 
@@ -49,11 +49,11 @@ class BaseDocument(six.with_metaclass(ABCMeta, collections.Sequence)):
         """Return a list of document elements."""
         return []
 
-    # @property
+    @property
     # @abstractmethod
-    # def records(self):
-    #     """Chemical records that have been parsed from this Document."""
-    #     return []
+    def records(self):
+        """Chemical records that have been parsed from this Document."""
+        return []
 
 
 class Document(BaseDocument):
@@ -190,64 +190,65 @@ class Document(BaseDocument):
         return self._elements
 
 #     # TODO: memoized_property?
-#     @property
-#     def records(self):
-#         """
-#         All records found in this Document, as a list of :class:`~batterydataextractor.model.base.BaseModel`.
-#         """
-#         log.debug("Getting chemical records")
-#         records = ModelList()  # Final list of records -- output
-#         head_def_record = None  # Most recent record from a heading, title or short paragraph
-#         head_def_record_i = None # Element index of head_def_record
-#         last_product_record = None
-#         title_record = None # Records found in the title
-#
-#         # Main loop, over all elements in the document
-#         for i, el in enumerate(self.elements):
-#             log.debug("Element %d, type %s" %(i, str(type(el))))
-#             last_id_record = None
-#
-#             # FORWARD INTERDEPENDENCY RESOLUTION -- Updated model parsers to reflect defined entities
-#             # 1. Find any defined entities in the element e.g. "Curie Temperature, Tc"
-#             # 2. Update the relevant models
-#             element_definitions = el.definitions  # sh20-- What's el.definitions?
-#             for model in el.models:
-#                 model.update(element_definitions)
-#
-#             el_records = el.records
-# #sh-- turn off interdependency resolution here
-#             # Save the title compound
-#             if isinstance(el, Title):
-#                 if len(el_records) == 1 and isinstance(el_records[0], Compound) and el_records[0].is_id_only:
-#                     title_record = el_records[0]  # TODO: why the first only?
-#
-#             # Reset head_def_record unless consecutive heading with no records
-#             if isinstance(el, Heading) and head_def_record is not None:
-#                 if not (i == head_def_record_i + 1 and len(el.records) == 0):
-#                     head_def_record = None
-#                     head_def_record_i = None
-#
-#             # Paragraph with single sentence with single ID record considered a head_def_record
-#             if isinstance(el, Paragraph) and len(el.sentences) == 1:
-#                 if len(el_records) == 1 and isinstance(el_records[0], Compound) and el_records[0].is_id_only:
-#                     head_def_record = el_records[0]
-#                     head_def_record_i = i
-#
-#             # Paragraph with multiple sentences
-#             # We assume that if the first sentence of a paragraph contains only 1 ID Record, we can treat it as a header definition record, unless directly proceeding a header def record
-#             elif isinstance(el, Paragraph) and len(el.sentences) > 0:
-#                 if not (isinstance(self.elements[i - 1], Heading) and head_def_record_i == i - 1):
-#                     first_sent_records = el.sentences[0].records
-#                     if len(first_sent_records) == 1 and isinstance(first_sent_records[0], Compound) and first_sent_records[0].is_id_only:
-#                         sent_record = first_sent_records[0]
-#                         if sent_record.labels or sent_record.names:  # (sent_record.names and len(sent_record.names[0]) > len(el.sentences[0].text) / 2):  # TODO: Why do the length check?
-#                             head_def_record = sent_record
-#                             head_def_record_i = i
-# # sh-- turn off
-#
-#             #: BACKWARD INTERDEPENDENCY RESOLUTION BEGINS HERE
-#             for record in el_records:
-# # sh-- turn off interdependency resolution here
+    @property
+    def records(self):
+        """
+        All records found in this Document, as a list of :class:`~batterydataextractor.model.base.BaseModel`.
+        """
+        log.debug("Getting chemical records")
+        records = ModelList()  # Final list of records -- output
+        head_def_record = None  # Most recent record from a heading, title or short paragraph
+        head_def_record_i = None # Element index of head_def_record
+        last_product_record = None
+        title_record = None # Records found in the title
+
+        # Main loop, over all elements in the document
+        for i, el in enumerate(self.elements):
+            log.debug("Element %d, type %s" %(i, str(type(el))))
+            last_id_record = None
+
+            # FORWARD INTERDEPENDENCY RESOLUTION -- Updated model parsers to reflect defined entities
+            # 1. Find any defined entities in the element e.g. "Curie Temperature, Tc"
+            # 2. Update the relevant models
+            # TODO: recover definition
+            # element_definitions = el.definitions  # sh20-- What's el.definitions?
+            # for model in el.models:
+            #     model.update(element_definitions)
+
+            el_records = el.records
+#sh-- turn off interdependency resolution here
+            # # Save the title compound
+            # if isinstance(el, Title):
+            #     if len(el_records) == 1 and isinstance(el_records[0], Compound) and el_records[0].is_id_only:
+            #         title_record = el_records[0]  # TODO: why the first only?
+            #
+            # # Reset head_def_record unless consecutive heading with no records
+            # if isinstance(el, Heading) and head_def_record is not None:
+            #     if not (i == head_def_record_i + 1 and len(el.records) == 0):
+            #         head_def_record = None
+            #         head_def_record_i = None
+            #
+            # # Paragraph with single sentence with single ID record considered a head_def_record
+            # if isinstance(el, Paragraph) and len(el.sentences) == 1:
+            #     if len(el_records) == 1 and isinstance(el_records[0], Compound) and el_records[0].is_id_only:
+            #         head_def_record = el_records[0]
+            #         head_def_record_i = i
+            #
+            # # Paragraph with multiple sentences
+            # # We assume that if the first sentence of a paragraph contains only 1 ID Record, we can treat it as a header definition record, unless directly proceeding a header def record
+            # elif isinstance(el, Paragraph) and len(el.sentences) > 0:
+            #     if not (isinstance(self.elements[i - 1], Heading) and head_def_record_i == i - 1):
+            #         first_sent_records = el.sentences[0].records
+            #         if len(first_sent_records) == 1 and isinstance(first_sent_records[0], Compound) and first_sent_records[0].is_id_only:
+            #             sent_record = first_sent_records[0]
+            #             if sent_record.labels or sent_record.names:  # (sent_record.names and len(sent_record.names[0]) > len(el.sentences[0].text) / 2):  # TODO: Why do the length check?
+            #                 head_def_record = sent_record
+            #                 head_def_record_i = i
+# sh-- turn off
+
+            #: BACKWARD INTERDEPENDENCY RESOLUTION BEGINS HERE
+            for record in el_records:
+# sh-- turn off interdependency resolution here
 #                 if isinstance(record, Compound):
 #                     # Keep track of the most recent compound record with labels
 #                     if isinstance(el, Paragraph) and record.labels:
@@ -297,108 +298,103 @@ class Document(BaseDocument):
 #                         else:
 #                             # Consider continue here to filter records missing name/label...
 #                             pass
-# # sh-- Turn off
-#                 if record not in records:
-#                     log.debug(record.serialize())
-#                     records.append(record)
-#
-#         # for record in records:
-#         #     for contextual_record in contextual_records:
-#         #         # record.merge_contextual(contextual_record)
-#         #         contextual_record.merge_contextual(record)
-#         #         if not contextual_record.is_contextual:
-#         #             print("No longer contextual:", contextual_record)
-#         #             records.append(contextual_record)
-#         #             contextual_records.remove(contextual_record)
-#         #     log.debug(records.serialize())
-#
-#         # Merge abbreviation definitions
-#         for record in records:
-#             compound = None
-#             if hasattr(record, 'compound'):
-#                 compound = record.compound
-#             elif isinstance(record, Compound):
-#                 compound = record
-#             if compound is not None:
-#                 for short, long_, entity in self.abbreviation_definitions:
-#                     if entity == 'CM':
-#                         name = ' '.join(long_)
-#                         abbrev = ' '.join(short)
-#                         if name in compound.names and abbrev not in compound.names:
-#                             compound.names.append(abbrev)
-#                         if abbrev in compound.names and name not in compound.names:
-#                             compound.names.append(name)
-#
-#         # Merge Compound records with any shared name/label
-#         len_l = len(records)
-#         log.debug(records)
-#         i = 0
-#         while i < (len_l - 1):
-#             j = i + 1
-#             while j < len_l:
-#                 r = records[i]
-#                 other_r = records[j]
-#                 r_compound = None
-#                 if isinstance(r, Compound):
-#                     r_compound = r
-#                 elif hasattr(r, 'compound') and isinstance(r.compound, Compound):
-#                     r_compound = r.compound
-#                 other_r_compound = None
-#                 if isinstance(other_r, Compound):
-#                     other_r_compound = other_r
-#                 elif hasattr(other_r, 'compound') and isinstance(other_r.compound, Compound):
-#                     other_r_compound = other_r.compound
-#                 if r_compound and other_r_compound:
-#                     # Strip whitespace and lowercase to compare names
-#                     rnames_std = {''.join(n.split()).lower() for n in r_compound.names}
-#                     onames_std = {''.join(n.split()).lower() for n in other_r_compound.names}
-#
-#                     # Clashing labels, don't merge
-#                     if len(set(r_compound.labels) - set(other_r_compound.labels)) > 0 and len(set(other_r_compound.labels) - set(r_compound.labels)) > 0:
-#                         j += 1
-#                         continue
-#
-#                     if any(n in rnames_std for n in onames_std) or any(l in r_compound.labels for l in other_r_compound.labels):
-#                         r_compound.merge(other_r_compound)
-#                         other_r_compound.merge(r_compound)
-#                         if isinstance(r, Compound) and isinstance(other_r, Compound):
-#                             records.pop(j)
-#                             records.pop(i)
-#                             records.append(r_compound)
-#                             len_l -= 1
-#                             i -= 1
-#                         break
-#                 j += 1
-#             i += 1
-#
-#         i = 0
-#         length = len(records)
-#         while i < length:
-#             j = 0
-#             while j < length:
-#                 if i != j:
-#                     records[j].merge_contextual(records[i])
-#                 j += 1
-#             i += 1
-#
-#         # clean up records
-#         cleaned_records = ModelList()
-#         for record in records:
-#             if record.required_fulfilled and record not in cleaned_records:
-#                 if (self.models and type(record) in self.models) or not self.models:
-#                     cleaned_records.append(record)
-#
-#         # Reset updatables
-#         for el in self.elements:
-#             for model in el.models:
-#                 model.reset_updatables()
-#
-#         # Append contextual records if they've filled required fields
-#         # for record in contextual_records:
-#         #     if record.required_fulfilled:
-#         #         records.append(record)
-#
-#         return cleaned_records
+# sh-- Turn off
+                if record not in records:
+                    log.debug(record.serialize())
+                    records.append(record)
+
+        # for record in records:
+        #     for contextual_record in contextual_records:
+        #         # record.merge_contextual(contextual_record)
+        #         contextual_record.merge_contextual(record)
+        #         if not contextual_record.is_contextual:
+        #             print("No longer contextual:", contextual_record)
+        #             records.append(contextual_record)
+        #             contextual_records.remove(contextual_record)
+        #     log.debug(records.serialize())
+
+        # Merge abbreviation definitions
+        # for record in records:
+        #     compound = None
+        #     if hasattr(record, 'compound'):
+        #         compound = record.compound
+        #     elif isinstance(record, Compound):
+        #         compound = record
+        #     if compound is not None:
+        #         for short, long_, entity in self.abbreviation_definitions:
+        #             if entity == 'CM':
+        #                 name = ' '.join(long_)
+        #                 abbrev = ' '.join(short)
+        #                 if name in compound.names and abbrev not in compound.names:
+        #                     compound.names.append(abbrev)
+        #                 if abbrev in compound.names and name not in compound.names:
+        #                     compound.names.append(name)
+
+        # Merge Compound records with any shared name/label
+        len_l = len(records)
+        log.debug(records)
+        i = 0
+        while i < (len_l - 1):
+            j = i + 1
+            while j < len_l:
+                r = records[i]
+                other_r = records[j]
+                r_compound = None
+                if isinstance(r, Compound):
+                    r_compound = r
+                elif hasattr(r, 'compound') and isinstance(r.compound, Compound):
+                    r_compound = r.compound
+                other_r_compound = None
+                if isinstance(other_r, Compound):
+                    other_r_compound = other_r
+                elif hasattr(other_r, 'compound') and isinstance(other_r.compound, Compound):
+                    other_r_compound = other_r.compound
+                if r_compound and other_r_compound:
+                    # Strip whitespace and lowercase to compare names
+                    rnames_std = {''.join(n.split()).lower() for n in r_compound.names}
+                    onames_std = {''.join(n.split()).lower() for n in other_r_compound.names}
+
+                    # # Clashing labels, don't merge
+                    # if len(set(r_compound.labels) - set(other_r_compound.labels)) > 0 and len(set(other_r_compound.labels) - set(r_compound.labels)) > 0:
+                    #     j += 1
+                    #     continue
+
+                    # if any(n in rnames_std for n in onames_std) or any(l in r_compound.labels for l in other_r_compound.labels):
+                    #     r_compound.merge(other_r_compound)
+                    #     other_r_compound.merge(r_compound)
+                    #     if isinstance(r, Compound) and isinstance(other_r, Compound):
+                    #         records.pop(j)
+                    #         records.pop(i)
+                    #         records.append(r_compound)
+                    #         len_l -= 1
+                    #         i -= 1
+                    #     break
+                j += 1
+            i += 1
+
+        i = 0
+        length = len(records)
+        while i < length:
+            j = 0
+            while j < length:
+                if i != j:
+                    records[j].merge_contextual(records[i])
+                j += 1
+            i += 1
+
+        # clean up records
+        cleaned_records = ModelList()
+        for record in records:
+            if record.required_fulfilled and record not in cleaned_records:
+                if (self.models and type(record) in self.models) or not self.models:
+                    cleaned_records.append(record)
+
+        # Reset updatables
+        for el in self.elements:
+            for model in el.models:
+                model.reset_updatables()
+
+        return cleaned_records
 
     def get_element_with_id(self, id):
         """

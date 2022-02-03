@@ -6,6 +6,7 @@ batterydataextractor.scrape.elsevier
 Elsevier web-scraper
 author: Shu Huang (sh2009@cam.ac.uk)
 """
+import six
 import json
 import requests
 import numpy as np
@@ -161,4 +162,24 @@ def els_xml_whitespace(document):
             el.tail = ''
         if el.text:
             el.text = el.text.replace('\n', ' ')
+    return document
+
+
+def els_clean_abstract(document):
+    """ Remove <ce:section-title> in <ce:abstract>"""
+    # selects all tags and checks if the text or tail are spaces
+    for el in document.xpath('.//ce:abstract'):
+        next_els = el.getchildren()
+        for next_el in next_els:
+            if next_el.tag == '{http://www.elsevier.com/xml/common/dtd}section-title':
+                parent = next_el.getparent()
+                if parent is None:
+                    continue
+                if next_el.tail:
+                    previous = next_el.getprevious()
+                    if previous is None:
+                        parent.text = (parent.text or '') + next_el.tail
+                    else:
+                        previous.tail = (previous.tail or '') + next_el.tail
+                parent.remove(next_el)
     return document

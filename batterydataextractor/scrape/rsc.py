@@ -270,3 +270,23 @@ def replace_rsc_img_chars(document):
                     parent.text = (parent.text or '') + rep
                 parent.remove(img)
     return document
+
+
+def rsc_clean_abstract(document):
+    """ Remove <h2> in abstract"""
+    # selects all tags and checks if the text or tail are spaces
+    for el in document.xpath('//div[@class="abstract"] | //p[@class="abstract"]'):
+        next_els = el.getchildren()
+        for next_el in next_els:
+            if next_el.tag == 'h2':
+                parent = next_el.getparent()
+                if parent is None:
+                    continue
+                if next_el.tail:
+                    previous = next_el.getprevious()
+                    if previous is None:
+                        parent.text = (parent.text or '') + next_el.tail
+                    else:
+                        previous.tail = (previous.tail or '') + next_el.tail
+                parent.remove(next_el)
+    return document

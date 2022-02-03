@@ -207,7 +207,7 @@ class Document(BaseDocument):
         """
         return self._elements
 
-#     # TODO: memoized_property?
+#     # TODO: memoized_property? Why doc.records.serialize() parse many times?
     @property
     def records(self):
         """

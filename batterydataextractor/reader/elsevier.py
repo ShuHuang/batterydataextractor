@@ -8,7 +8,7 @@ coauthor:: Callum Court <cc889@cam.ac.uk>
 author:
 """
 from ..scrape.clean import clean, Cleaner
-from ..scrape.elsevier import fix_elsevier_xml_whitespace, els_xml_whitespace
+from ..scrape.elsevier import fix_elsevier_xml_whitespace, els_xml_whitespace, els_clean_abstract
 from ..doc.meta import MetaData
 from .markup import XmlReader
 from lxml import etree
@@ -23,7 +23,7 @@ strip_els_xml = Cleaner(strip_xpath='.//ce:inf | .//ce:italic | .//ce:bold | .//
 class ElsevierXmlReader(XmlReader):
     """Reader for Elsevier XML documents."""
 
-    cleaners = [clean, fix_elsevier_xml_whitespace, els_xml_whitespace, strip_els_xml]
+    cleaners = [clean, fix_elsevier_xml_whitespace, els_xml_whitespace, els_clean_abstract, strip_els_xml]
 
     etree.FunctionNamespace("http://www.elsevier.com/xml/svapi/article/dtd").prefix = 'default'
     etree.FunctionNamespace("http://www.elsevier.com/xml/bk/dtd").prefix = 'bk'

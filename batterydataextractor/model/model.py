@@ -52,5 +52,4 @@ class PropertyData(BaseModel):
     # units = StringType(contextual=False)
     specifier = StringType(contextual=False)
     compound = ModelType(Compound, contextual=False)
-    parser = BertParser()
-    parsers = [parser]
+    parsers = [BertParser()]

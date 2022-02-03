@@ -6,6 +6,7 @@ batterydataextractor.scrape.springer
 Springer web-scraper
 author: Shu Huang (sh2009@cam.ac.uk)
 """
+import six
 import json
 import requests
 from bs4 import BeautifulSoup
@@ -178,3 +179,57 @@ class SpringerTDMWebScraper(BaseWebScraper):
         journal = soup.find_all("journal-title")[0].get_text()
         title = soup.find_all("article-title")[0].get_text()
         return {"title": title, "doi": doi, "date": date, "journal": journal, "abstract": abstract}
+
+
+def spr_clean_abstract(document):
+    """ Remove <title> in <abstract>"""
+    # selects all tags and checks if the text or tail are spaces
+    for el in document.xpath('.//abstract'):
+        next_els = el.getchildren()
+        for next_el in next_els:
+            if next_el.tag == 'title':
+                parent = next_el.getparent()
+                if parent is None:
+                    continue
+                if next_el.tail:
+                    previous = next_el.getprevious()
+                    if previous is None:
+                        parent.text = (parent.text or '') + next_el.tail
+                    else:
+                        previous.tail = (previous.tail or '') + next_el.tail
+                parent.remove(next_el)
+    return document
+
+
+def spr_clean_ref(document):
+    """Remove <article-title> in <ref>"""
+    for el in document.xpath('.//ref'):
+        next_els = el.getchildren()
+        for next_el in next_els:
+            if next_el.tag == 'mixed-citation':
+                next_other_els = next_el.getchildren()
+                for next_other_el in next_other_els:
+                    if next_other_el.tag == 'article-title':
+                        parent = next_other_el.getparent()
+                        previous = next_other_el.getprevious()
+                        # We can't strip the root element!
+                        if parent is None:
+                            continue
+                        # Append the text to previous tail (or parent text if no previous), ensuring newline if block level
+                        if next_other_el.text and isinstance(next_other_el.tag, six.string_types):
+                            if previous is None:
+                                parent.text = (parent.text or '') + next_other_el.text
+                            else:
+                                previous.tail = (previous.tail or '') + next_other_el.text
+                        # Append the tail to last child tail, or previous tail, or parent text, ensuring newline if block level
+                        if next_other_el.tail:
+                            if len(next_other_el):
+                                last = next_other_el[-1]
+                                last.tail = (last.tail or '') + next_other_el.tail
+                            elif previous is None:
+                                parent.text = (parent.text or '') + next_other_el.tail
+                            else:
+                                previous.tail = (previous.tail or '') + next_other_el.tail
+                        index = parent.index(next_other_el)
+                        parent[index:index + 1] = next_other_el[:]
+    return document

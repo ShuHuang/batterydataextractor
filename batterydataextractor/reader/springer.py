@@ -7,6 +7,7 @@ Springer XML reader
 author: Shu Huang
 """
 from ..scrape.clean import clean, Cleaner
+from ..scrape.springer import spr_clean_abstract, spr_clean_ref
 from ..doc.meta import MetaData
 from .markup import XmlReader
 
@@ -18,7 +19,7 @@ strip_spr_xml = Cleaner(strip_xpath='.//bold | .//label | .//xref | .//italic | 
 class SpringerXmlReader(XmlReader):
     """Reader for Springer XML documents."""
 
-    cleaners = [clean, strip_spr_xml]
+    cleaners = [clean, spr_clean_abstract, spr_clean_ref, strip_spr_xml]
 
     root_css = 'article'
     title_css = 'article-title'

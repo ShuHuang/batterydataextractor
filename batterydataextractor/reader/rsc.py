@@ -9,7 +9,7 @@ author:
 import logging
 
 from ..scrape.clean import clean, Cleaner
-from ..scrape.rsc import rsc_html_whitespace, replace_rsc_img_chars, join_rsc_table_captions
+from ..scrape.rsc import rsc_html_whitespace, replace_rsc_img_chars, join_rsc_table_captions, rsc_clean_abstract
 from .markup import HtmlReader
 
 log = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ strip_rsc_html = Cleaner(strip_xpath='.//b')
 class RscHtmlReader(HtmlReader):
     """Reader for HTML documents from the RSC."""
 
-    cleaners = [clean, rsc_html_whitespace, replace_rsc_img_chars, join_rsc_table_captions, strip_rsc_html]
+    cleaners = [clean, rsc_html_whitespace, replace_rsc_img_chars, rsc_clean_abstract, join_rsc_table_captions, strip_rsc_html]
 
     root_css = 'html'
     title_css = 'h1, .title_heading'

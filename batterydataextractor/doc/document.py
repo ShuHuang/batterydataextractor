@@ -332,21 +332,21 @@ class Document(BaseDocument):
         #     log.debug(records.serialize())
 
         # Merge abbreviation definitions
-        # for record in records:
-        #     compound = None
-        #     if hasattr(record, 'compound'):
-        #         compound = record.compound
-        #     elif isinstance(record, Compound):
-        #         compound = record
-        #     if compound is not None:
-        #         for short, long_, entity in self.abbreviation_definitions:
-        #             if entity == 'CM':
-        #                 name = ' '.join(long_)
-        #                 abbrev = ' '.join(short)
-        #                 if name in compound.names and abbrev not in compound.names:
-        #                     compound.names.append(abbrev)
-        #                 if abbrev in compound.names and name not in compound.names:
-        #                     compound.names.append(name)
+        for record in records:
+            compound = None
+            if hasattr(record, 'compound'):
+                compound = record.compound
+            elif isinstance(record, Compound):
+                compound = record
+            if compound is not None:
+                for short, long_, entity in self.abbreviation_definitions:
+                    if entity == 'CM':
+                        name = ' '.join(long_)
+                        abbrev = ' '.join(short)
+                        if name in compound.names and abbrev not in compound.names:
+                            compound.names.append(abbrev)
+                        if abbrev in compound.names and name not in compound.names:
+                            compound.names.append(name)
 
         # Merge Compound records with any shared name/label
         # len_l = len(records)

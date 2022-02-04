@@ -46,8 +46,8 @@ class TestChemAbbreviationDetector(unittest.TestCase):
         """Test the ChemAbbreviationDetector on a simple sentence."""
         ad = ChemAbbreviationDetector()
         self.assertEqual(
-            [(['THF'], ['tetrahydrofuran'])],
-            ad.detect(['THF', '(', 'tetrahydrofuran', ')'])
+            [(['NAG'], ['N-acetyl-β-glucosaminidase'])],
+            ad.detect(['NAG', '(', 'N-acetyl-β-glucosaminidase', ')'])
         )
 
     def test_abbr6(self):

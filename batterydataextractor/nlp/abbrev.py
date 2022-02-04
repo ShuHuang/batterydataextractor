@@ -26,24 +26,23 @@ class AbbreviationDetector(object):
         pairs = []
         for index, tuples in enumerate(new_tuples):
             if tuples[-1] == "LF":
-                lf_tokens = tuples[0].split(" ")
                 lf_spans = (tuples[1][0], tuples[2][-1])
                 left, right = index, index
                 # TODO: Need to optimise this logic
                 # TODO: Use the same tokenizer rather than this one?
-                while True:
-                    if right < len(new_tuples):
-                        if new_tuples[right][-1] == "AC":
-                            abbrev_spans = (new_tuples[right][1][0], new_tuples[right][2][-1])
+                abbrev_spans = []
+                for r in range(right, len(new_tuples)):
+                    if new_tuples[r][-1] == "AC":
+                        abbrev_spans = (new_tuples[r][1][0], new_tuples[r][2][-1])
+                        break
+                if abbrev_spans == []:
+                    for l in range(left, -1, -1):
+                        if new_tuples[l][-1] == "AC":
+                            abbrev_spans = (new_tuples[l][1][0], new_tuples[l][2][-1])
                             break
-                        right += 1
-                    else:
-                        if new_tuples[left][-1] == "AC" and left >= 1:
-                            abbrev_spans = (new_tuples[left][1][0], new_tuples[left][2][-1])
-                            break
-                        left -= 1
-                pair = (abbrev_spans, lf_spans)
-                pairs.append(pair)
+                if abbrev_spans != []:
+                    pair = (abbrev_spans, lf_spans)
+                    pairs.append(pair)
         return pairs
 
     def detect(self, tokens):

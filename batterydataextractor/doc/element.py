@@ -9,6 +9,7 @@ author:
 from abc import ABCMeta, abstractmethod
 import json
 import operator
+from ..model.model import PropertyData
 
 import six
 
@@ -66,11 +67,6 @@ class BaseElement(six.with_metaclass(ABCMeta)):
     def document(self, document):
         # Subclasses may need to override this and also assign the document to sub-elements
         self._document = document
-        # If we have problems with garbage collection, use a weakref to document to avoid circular references:
-        # try:
-        #     self._document = weakref.proxy(document)
-        # except TypeError:
-        #     self._document = document
 
     @property
     @abstractmethod
@@ -91,6 +87,12 @@ class BaseElement(six.with_metaclass(ABCMeta)):
         self._streamlined_models_list = None
         self.models.extend(models)
         self.models = self.models
+
+    def add_models_by_names(self, names):
+        """"""
+        model = PropertyData
+        model.defined_names = names
+        self.models.extend([model])
 
     @property
     def models(self):

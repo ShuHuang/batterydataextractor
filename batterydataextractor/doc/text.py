@@ -152,7 +152,7 @@ class Text(collections.Sequence, BaseText):
     word_tokenizer = ChemWordTokenizer()
     lexicon = ChemLexicon()
     abbreviation_detector = ChemAbbreviationDetector()
-    pos_tagger = BertTagger()  # ChemPerceptronTagger()
+    pos_tagger = BertTagger()
     ner_tagger = CemTagger()
 
     def __init__(self, text, sentence_tokenizer=None, word_tokenizer=None, lexicon=None, abbreviation_detector=None, pos_tagger=None, ner_tagger=None, parsers=None, **kwargs):

@@ -14,6 +14,7 @@ import re
 import six
 
 from ..model.base import ModelList
+from ..model.model import Compound
 from ..nlp.lexicon import ChemLexicon, Lexicon
 from ..nlp.cem import CemTagger
 from ..nlp.abbrev import ChemAbbreviationDetector
@@ -21,7 +22,6 @@ from ..nlp.tag import NoneTagger, BaseTagger, BertTagger
 from ..nlp.tokenize import ChemSentenceTokenizer, ChemWordTokenizer, SentenceTokenizer, WordTokenizer
 from ..utils import memoized_property
 from .element import BaseElement
-from ..model.model import Compound
 from ..text import CONTROL_RE
 
 
@@ -369,9 +369,6 @@ class Paragraph(Text):
     def __init__(self, text, **kwargs):
         super(Paragraph, self).__init__(text, **kwargs)
         self.models = [Compound]
-        # self.models = [BatteryVoltage, BatteryCapacity, Compound, BatteryConductivity, BatteryCoulombic, BatteryEnergy#
-                       #SublimationTemperature, NmrSpectrum, IrSpectrum, UvvisSpectrum, MeltingPoint, GlassTransition, BatteryCapacity,
-        # ]
 
     def _repr_html_(self):
         return '<p class="bde-paragraph">' + self.text + '</p>'
@@ -381,7 +378,6 @@ class Footnote(Text):
 
     def __init__(self, text, **kwargs):
         super(Footnote, self).__init__(text, **kwargs)
-        self.models = [Compound]
 
     def _repr_html_(self):
         return '<p class="bde-footnote">' + self.text + '</p>'
@@ -390,8 +386,6 @@ class Footnote(Text):
 class Citation(Text):
     ner_tagger = NoneTagger()  #: No tagging is done for citations
     abbreviation_detector = None
-    # TODO: Citation parser
-    # TODO: Store number/label
 
     def _repr_html_(self):
         return '<p class="bde-citation">' + self.text + '</p>'
@@ -598,15 +592,15 @@ class Sentence(BaseText, ABC):
                         if record in records:
                             continue
                         records.append(record)
-        i = 0
-        length = len(records)
-        while i < length:
-            j = 0
-            while j < length:
-                if i != j:
-                    records[j].merge_all(records[i])
-                j += 1
-            i += 1
+        # i = 0
+        # length = len(records)
+        # while i < length:
+        #     j = 0
+        #     while j < length:
+        #         if i != j:
+        #             records[j].merge_all(records[i])
+        #         j += 1
+        #     i += 1
         return records
 
     def __add__(self, other):

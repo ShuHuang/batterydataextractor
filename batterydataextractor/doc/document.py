@@ -229,107 +229,89 @@ class Document(BaseDocument):
             # 1. Find any defined entities in the element e.g. "Curie Temperature, Tc"
             # 2. Update the relevant models
             # TODO: recover definition
-            # element_definitions = el.definitions  # sh20-- What's el.definitions?
+            # element_definitions = el.definitions
             # for model in el.models:
             #     model.update(element_definitions)
 
             el_records = el.records
 #sh-- turn off interdependency resolution here
-            # # Save the title compound
-            # if isinstance(el, Title):
-            #     if len(el_records) == 1 and isinstance(el_records[0], Compound) and el_records[0].is_id_only:
-            #         title_record = el_records[0]  # TODO: why the first only?
-            #
-            # # Reset head_def_record unless consecutive heading with no records
-            # if isinstance(el, Heading) and head_def_record is not None:
-            #     if not (i == head_def_record_i + 1 and len(el.records) == 0):
-            #         head_def_record = None
-            #         head_def_record_i = None
-            #
-            # # Paragraph with single sentence with single ID record considered a head_def_record
-            # if isinstance(el, Paragraph) and len(el.sentences) == 1:
-            #     if len(el_records) == 1 and isinstance(el_records[0], Compound) and el_records[0].is_id_only:
-            #         head_def_record = el_records[0]
-            #         head_def_record_i = i
-            #
-            # # Paragraph with multiple sentences
-            # # We assume that if the first sentence of a paragraph contains only 1 ID Record, we can treat it as a header definition record, unless directly proceeding a header def record
-            # elif isinstance(el, Paragraph) and len(el.sentences) > 0:
-            #     if not (isinstance(self.elements[i - 1], Heading) and head_def_record_i == i - 1):
-            #         first_sent_records = el.sentences[0].records
-            #         if len(first_sent_records) == 1 and isinstance(first_sent_records[0], Compound) and first_sent_records[0].is_id_only:
-            #             sent_record = first_sent_records[0]
-            #             if sent_record.labels or sent_record.names:  # (sent_record.names and len(sent_record.names[0]) > len(el.sentences[0].text) / 2):  # TODO: Why do the length check?
-            #                 head_def_record = sent_record
-            #                 head_def_record_i = i
+            # Save the title compound
+            if isinstance(el, Title):
+                if len(el_records) == 1 and isinstance(el_records[0], Compound) and el_records[0].is_id_only:
+                    title_record = el_records[0]
+
+            # Reset head_def_record unless consecutive heading with no records
+            if isinstance(el, Heading) and head_def_record is not None:
+                if not (i == head_def_record_i + 1 and len(el.records) == 0):
+                    head_def_record = None
+                    head_def_record_i = None
+
+            # Paragraph with single sentence with single ID record considered a head_def_record
+            if isinstance(el, Paragraph) and len(el.sentences) == 1:
+                if len(el_records) == 1 and isinstance(el_records[0], Compound) and el_records[0].is_id_only:
+                    head_def_record = el_records[0]
+                    head_def_record_i = i
+
+            # Paragraph with multiple sentences
+            # We assume that if the first sentence of a paragraph contains only 1 ID Record, we can treat it as a header definition record, unless directly proceeding a header def record
+            elif isinstance(el, Paragraph) and len(el.sentences) > 0:
+                if not (isinstance(self.elements[i - 1], Heading) and head_def_record_i == i - 1):
+                    first_sent_records = el.sentences[0].records
+                    if len(first_sent_records) == 1 and isinstance(first_sent_records[0], Compound) and first_sent_records[0].is_id_only:
+                        sent_record = first_sent_records[0]
+                        if sent_record.names:
+                            head_def_record = sent_record
+                            head_def_record_i = i
 # sh-- turn off
 
             #: BACKWARD INTERDEPENDENCY RESOLUTION BEGINS HERE
             for record in el_records:
 # sh-- turn off interdependency resolution here
-#                 if isinstance(record, Compound):
-#                     # Keep track of the most recent compound record with labels
-#                     if isinstance(el, Paragraph) and record.labels:
-#                         last_id_record = record
-#                     # # Keep track of the most recent compound 'product' record
-#                     if 'product' in record.roles:
-#                         last_product_record = record
-#
-#                     # Heading records with compound ID's
-#                     if isinstance(el, Heading) and (record.labels or record.names):
-#                         head_def_record = record
-#                         head_def_record_i = i
-#                         # If 2 consecutive headings with compound ID, merge in from previous
-#                         if i > 0 and isinstance(self.elements[i - 1], Heading):
-#                             prev = self.elements[i - 1]
-#                             if (len(el.records) == 1 and record.is_id_only and len(prev.records) == 1 and
-#                                 isinstance(prev.records[0], Compound) and prev.records[0].is_id_only and not (record.labels and prev.records[0].labels) and
-#                                     not (record.names and prev.records[0].names)):
-#                                 record.names.extend(prev.records[0].names)
-#                                 record.labels.extend(prev.records[0].labels)
-#                                 record.roles.extend(prev.records[0].roles)
-#
-#                 # Unidentified records -- those without compound names or labels
-#                 if record.is_unidentified:
-#                     if hasattr(record, 'compound'):
-#                         # We have property values but no names or labels... try merge those from previous records
-#                         if isinstance(el, Paragraph) and (head_def_record or last_product_record or last_id_record or title_record):
-#                             # head_def_record from heading takes priority if the heading directly precedes the paragraph ( NOPE: or the last_id_record has no name)
-#                             if head_def_record_i and head_def_record_i + 1 == i: # or (last_id_record and not last_id_record.names)):
-#                                 if head_def_record:
-#                                     record.compound = head_def_record
-#                                 elif last_id_record:
-#                                     record.compound = last_id_record
-#                                 elif last_product_record:
-#                                     record.compound = last_product_record
-#                                 elif title_record:
-#                                     record.compound = title_record
-#                             else:
-#                                 if last_id_record:
-#                                     record.compound = last_id_record
-#                                 elif head_def_record:
-#                                     record.compound = head_def_record
-#                                 elif last_product_record:
-#                                     record.compound = last_product_record
-#                                 elif title_record:
-#                                     record.compound = title_record
-#                         else:
-#                             # Consider continue here to filter records missing name/label...
-#                             pass
+                if isinstance(record, Compound):
+                    # Keep track of the most recent compound record with labels
+                    # Heading records with compound ID's
+                    if isinstance(el, Heading) and record.names:
+                        head_def_record = record
+                        head_def_record_i = i
+                        # If 2 consecutive headings with compound ID, merge in from previous
+                        if i > 0 and isinstance(self.elements[i - 1], Heading):
+                            prev = self.elements[i - 1]
+                            if (len(el.records) == 1 and record.is_id_only and len(prev.records) == 1 and
+                                isinstance(prev.records[0], Compound) and prev.records[0].is_id_only and
+                                    not (record.names and prev.records[0].names)):
+                                record.names.extend(prev.records[0].names)
+
+                # Unidentified records -- those without compound names or labels
+                if record.is_unidentified:
+                    if hasattr(record, 'compound'):
+                        # We have property values but no names or labels... try merge those from previous records
+                        if isinstance(el, Paragraph) and (head_def_record or last_product_record or last_id_record or title_record):
+                            # head_def_record from heading takes priority if the heading directly precedes the paragraph ( NOPE: or the last_id_record has no name)
+                            if head_def_record_i and head_def_record_i + 1 == i: # or (last_id_record and not last_id_record.names)):
+                                if head_def_record:
+                                    record.compound = head_def_record
+                                elif last_id_record:
+                                    record.compound = last_id_record
+                                elif last_product_record:
+                                    record.compound = last_product_record
+                                elif title_record:
+                                    record.compound = title_record
+                            else:
+                                if last_id_record:
+                                    record.compound = last_id_record
+                                elif head_def_record:
+                                    record.compound = head_def_record
+                                elif last_product_record:
+                                    record.compound = last_product_record
+                                elif title_record:
+                                    record.compound = title_record
+                        else:
+                            # Consider continue here to filter records missing name/label...
+                            pass
 # sh-- Turn off
                 if record not in records:
                     log.debug(record.serialize())
                     records.append(record)
-
-        # for record in records:
-        #     for contextual_record in contextual_records:
-        #         # record.merge_contextual(contextual_record)
-        #         contextual_record.merge_contextual(record)
-        #         if not contextual_record.is_contextual:
-        #             print("No longer contextual:", contextual_record)
-        #             records.append(contextual_record)
-        #             contextual_records.remove(contextual_record)
-        #     log.debug(records.serialize())
 
         # Merge abbreviation definitions
         for record in records:
@@ -347,58 +329,6 @@ class Document(BaseDocument):
                             compound.names.append(abbrev)
                         if abbrev in compound.names and name not in compound.names:
                             compound.names.append(name)
-
-        # Merge Compound records with any shared name/label
-        # len_l = len(records)
-        # log.debug(records)
-        # i = 0
-        # while i < (len_l - 1):
-        #     j = i + 1
-        #     while j < len_l:
-        #         r = records[i]
-        #         other_r = records[j]
-        #         r_compound = None
-        #         if isinstance(r, Compound):
-        #             r_compound = r
-        #         elif hasattr(r, 'compound') and isinstance(r.compound, Compound):
-        #             r_compound = r.compound
-        #         other_r_compound = None
-        #         if isinstance(other_r, Compound):
-        #             other_r_compound = other_r
-        #         elif hasattr(other_r, 'compound') and isinstance(other_r.compound, Compound):
-        #             other_r_compound = other_r.compound
-        #         if r_compound and other_r_compound:
-        #             # Strip whitespace and lowercase to compare names
-        #             rnames_std = {''.join(n.split()).lower() for n in r_compound.names}
-        #             onames_std = {''.join(n.split()).lower() for n in other_r_compound.names}
-
-                    # # Clashing labels, don't merge
-                    # if len(set(r_compound.labels) - set(other_r_compound.labels)) > 0 and len(set(other_r_compound.labels) - set(r_compound.labels)) > 0:
-                    #     j += 1
-                    #     continue
-
-                    # if any(n in rnames_std for n in onames_std) or any(l in r_compound.labels for l in other_r_compound.labels):
-                    #     r_compound.merge(other_r_compound)
-                    #     other_r_compound.merge(r_compound)
-                    #     if isinstance(r, Compound) and isinstance(other_r, Compound):
-                    #         records.pop(j)
-                    #         records.pop(i)
-                    #         records.append(r_compound)
-                    #         len_l -= 1
-                    #         i -= 1
-                    #     break
-        #         j += 1
-        #     i += 1
-        #
-        # i = 0
-        # length = len(records)
-        # while i < length:
-        #     j = 0
-        #     while j < length:
-        #         if i != j:
-        #             records[j].merge_contextual(records[i])
-        #         j += 1
-        #     i += 1
 
         # clean up records
         cleaned_records = ModelList()

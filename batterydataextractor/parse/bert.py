@@ -29,7 +29,11 @@ class BertParser(BaseSentenceParser):
                 qa_input = {'question': question, 'context': context}
                 res = bert_model(qa_input, top_k=1)
                 if res['score'] > 0:
+                    question2 = "What material has a {} of {}?".format(specifier, res['answer'])
+                    qa_input2 = {'question': question2, 'context': context}
+                    res2 = bert_model(qa_input2, top_k=1)
                     c = self.model(value=res['answer'],
-                                   specifier=specifier
+                                   specifier=specifier,
+                                   material=res2['answer']
                                    )
                     yield c

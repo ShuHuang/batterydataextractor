@@ -8,7 +8,7 @@ author:
 """
 import logging
 
-from .base import BaseModel, StringType, ListType, ModelType
+from .base import BaseModel, StringType, ListType
 
 from ..parse.cem import CompoundParser
 from ..parse.bert import BertParser
@@ -51,5 +51,5 @@ class PropertyData(BaseModel):
     value = StringType(contextual=False, required=True)
     # units = StringType(contextual=False)
     specifier = StringType(contextual=False)
-    compound = ModelType(Compound, contextual=False)
+    material = StringType(contextual=False)
     parsers = [BertParser()]

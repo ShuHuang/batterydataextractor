@@ -21,7 +21,7 @@ class TestPropertyDataCompound(unittest.TestCase):
         s = '4-Amino-3-chloro-6-(2,3,4-trifluorophenyl)pyridine-2-carboxylic acid (Compound 67): mp 163-164° C.'
         expected = [
             {'PropertyData':
-                 {'compound': {'Compound': {'names': ['4-Amino-3-chloro-6-(2,3,4-trifluorophenyl)pyridine-2-carboxylic']}},
+                 {'material': 'pyridine-2-carboxylic acid',
                   'specifier': 'mp',
                   'value': '163-164 ° C'}}]
         self.do_parse(s, expected)
@@ -30,7 +30,7 @@ class TestPropertyDataCompound(unittest.TestCase):
         s = '3-Bromo-2,6-dichloroaniline: mp 71-72° C.'
         expected = [
             {'PropertyData':
-                 {'compound': {'Compound': {'names': ['3-Bromo-2,6-dichloroaniline']}},
+                 {'material': '3-Bromo-2,6-dichloroaniline',
                   'specifier': 'mp',
                   'value': '71-72 ° C'}}]
         self.do_parse(s, expected)

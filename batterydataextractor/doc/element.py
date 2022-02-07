@@ -82,7 +82,6 @@ class BaseElement(six.with_metaclass(ABCMeta)):
     def add_models(self, models):
         """Set all models on this element
         """
-        # print(models)
         log.debug("Setting models on %s" % self)
         self._streamlined_models_list = None
         self.models.extend(models)

@@ -8,10 +8,10 @@ author:
 """
 import logging
 
-from .base import BaseModel, StringType, ListType
+from .base import BaseModel, StringType, ListType, FloatType
 
 from ..parse.cem import CompoundParser
-from ..parse.bert import BertParser
+from ..parse.bert import BertMaterialParser, BertGeneralParser
 
 log = logging.getLogger(__name__)
 
@@ -48,8 +48,14 @@ class Compound(BaseModel):
 
 
 class PropertyData(BaseModel):
-    value = StringType(contextual=False, required=True)
-    # units = StringType(contextual=False)
+    value = ListType(FloatType(required=True))
+    units = StringType(contextual=False)
     specifier = StringType(contextual=False)
-    material = StringType(contextual=False)
-    parsers = [BertParser()]
+    material = StringType(contextual=False, required=True)
+    parsers = [BertMaterialParser()]
+
+
+class GeneralInfo(BaseModel):
+    answer = StringType(contextual=False, required=True)
+    specifier = StringType(contextual=False)
+    parsers = [BertGeneralParser()]

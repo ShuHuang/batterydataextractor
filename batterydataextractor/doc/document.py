@@ -19,7 +19,7 @@ from .element import CaptionedElement
 from .meta import MetaData
 from ..errors import ReaderError
 from ..model.base import ModelList
-from ..model.model import PropertyData, Compound
+from ..model.model import PropertyData, Compound, GeneralInfo
 from ..text import get_encoding
 from ..config import Config
 
@@ -121,6 +121,25 @@ class Document(BaseDocument):
         log.debug("Setting models by names")
 
         model = PropertyData
+        model.defined_names = names
+        self._models.extend([model])
+        for element in self.elements:
+            if callable(getattr(element, 'add_models', None)):
+                element.add_models([model])
+        return
+
+    def add_general_models(self, names):
+        """
+        Add models to all elements.
+        Usage::
+            d = Document.from_file(f)
+            d.add_general_models("myModelName1", "myModelName2",..])
+        Arguments::
+            models -- List of model classes
+        """
+        log.debug("Setting models by names")
+
+        model = GeneralInfo
         model.defined_names = names
         self._models.extend([model])
         for element in self.elements:

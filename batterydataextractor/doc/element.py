@@ -9,7 +9,7 @@ author:
 from abc import ABCMeta, abstractmethod
 import json
 import operator
-from ..model.model import PropertyData
+from ..model.model import PropertyData, GeneralInfo
 
 import six
 
@@ -90,6 +90,12 @@ class BaseElement(six.with_metaclass(ABCMeta)):
     def add_models_by_names(self, names):
         """"""
         model = PropertyData
+        model.defined_names = names
+        self.models.extend([model])
+
+    def add_general_models(self, names):
+        """"""
+        model = GeneralInfo
         model.defined_names = names
         self.models.extend([model])
 

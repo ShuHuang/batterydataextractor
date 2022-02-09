@@ -8,8 +8,6 @@ log = logging.getLogger(__name__)
 
 class TestPropertyDataMp(unittest.TestCase):
 
-    maxDiff = None
-
     def do_parse(self, input, expected):
         p = Document(input)
         p.add_models_by_names(["mp"])
@@ -36,8 +34,6 @@ class TestPropertyDataMp(unittest.TestCase):
 
 class TestGeneralInfoApparatus(unittest.TestCase):
 
-    maxDiff = None
-
     def do_parse(self, input, expected):
         p = Document(input)
         p.add_general_models(["apparatus"])
@@ -57,6 +53,42 @@ class TestGeneralInfoApparatus(unittest.TestCase):
         expected = [{'GeneralInfo':
                                 {'answer': 'HORIBA Jobin Yvon FluoroMax-4',
                                  'specifier': 'apparatus'}}]
+        self.do_parse(s, expected)
+
+
+class TestGeneralInfoElectrolyte(unittest.TestCase):
+
+    def do_parse(self, input, expected):
+        p = Document(input)
+        p.add_general_models(["electrolyte"])
+        log.debug(p)
+        log.debug([r.serialize() for r in p.records])
+        self.assertEqual(expected, [r.serialize() for r in p.records])
+
+    def test_electrolyte(self):
+        s = 'The typical non-aqueous electrolyte for commercial Li-ion cells is a solution of LiPF6 in linear and ' \
+            'cyclic carbonates such as dimethyl carbonate and ethylene carbonate, respectively [1], [2].'
+        expected = [{'GeneralInfo':
+                         {'answer': 'a solution of LiPF6 in linear and cyclic carbonates',
+                          'specifier': 'electrolyte'}}]
+        self.do_parse(s, expected)
+
+
+class TestGeneralInfoDeviceComponent(unittest.TestCase):
+
+    def do_parse(self, input, expected):
+        p = Document(input)
+        p.add_general_models(["anode", "cathode"])
+        log.debug(p)
+        log.debug([r.serialize() for r in p.records])
+        self.assertEqual(expected, [r.serialize() for r in p.records])
+
+    def test_device_component(self):
+        s = 'The lithium iron phosphate battery (LiFePO4 battery) or LFP battery (lithium ferrophosphate), is a type ' \
+            'of lithium-ion battery using lithium iron phosphate (LiFePO4) as the cathode material, and a graphitic ' \
+            'carbon electrode with a metallic backing as the anode.'
+        expected = [{'GeneralInfo': {'answer': 'graphitic carbon electrode with a metallic backing', 'specifier': 'anode'}},
+                    {'GeneralInfo': {'answer': 'lithium iron phosphate', 'specifier': 'cathode'}}]
         self.do_parse(s, expected)
 
 

@@ -8,13 +8,15 @@ author:
 """
 import logging
 import re
+from abc import ABC
+
 from .base import BaseSentenceParser
 from transformers.pipelines import pipeline
 
 log = logging.getLogger(__name__)
 
 
-class BertParser(BaseSentenceParser):
+class BertParser(BaseSentenceParser, ABC):
     """Bert Parser"""
 
     @staticmethod
@@ -39,7 +41,7 @@ class BertMaterialParser(BertParser):
                     question2 = "What material has a {} of {}?".format(specifier, res['answer'])
                     qa_input2 = {'question': question2, 'context': context}
                     res2 = bert_model(qa_input2, top_k=1)
-                    value = re.findall(r'(?:\d*\.\d+|\d+)', res['answer'])
+                    value = re.findall(r'^(?:\d*\.\d+|\d+)$', res['answer'])
                     c = self.model(value=[float(v) for v in value],
                                    units=res['answer'].split(value[-1])[-1].strip(),
                                    specifier=specifier,

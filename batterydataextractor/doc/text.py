@@ -10,6 +10,7 @@ from abc import abstractmethod, ABC
 import collections
 import logging
 import re
+import unicodedata
 
 import six
 
@@ -58,7 +59,7 @@ class BaseText(BaseElement):
         if not isinstance(text, six.text_type):
             raise TypeError('Text must be a unicode string')
         super(BaseText, self).__init__(**kwargs)
-        self._text = text
+        self._text = unicodedata.normalize("NFKD", text)
         self.word_tokenizer = word_tokenizer if word_tokenizer is not None else self.word_tokenizer
         self.lexicon = lexicon if lexicon is not None else self.lexicon
         self.abbreviation_detector = abbreviation_detector if abbreviation_detector is not None else self.abbreviation_detector

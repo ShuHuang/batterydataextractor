@@ -66,7 +66,7 @@ def regex_span_tokenize(s, regex):
 class SentenceTokenizer(BaseTokenizer):
     """Sentence tokenizer from Spacy."""
 
-    model = 'en_core_web_md'  # This is available from Spacy
+    model = 'en_core_sci_sm'  # This is available from Spacy
 
     def __init__(self, model=None):
         self.model = model if model is not None else self.model
@@ -88,7 +88,7 @@ class SentenceTokenizer(BaseTokenizer):
 
 class ChemSentenceTokenizer(SentenceTokenizer):
     """"""
-    model = 'en_core_web_md'  # This is available from Spacy
+    model = 'en_core_sci_sm'  # This is available from Spacy
 
 
 def bracket_level(text, open={'(', '[', '{'}, close={')', ']', '}'}):

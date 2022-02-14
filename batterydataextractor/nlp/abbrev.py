@@ -15,7 +15,8 @@ import itertools
 class AbbreviationDetector(object):
     """"""
     def __init__(self, model_name="batterydata/bde-abbrev"):
-        self.model = AutoModelForTokenClassification.from_pretrained(model_name, use_auth_token='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')
+        self.model = None
+        # self.model = AutoModelForTokenClassification.from_pretrained(model_name, use_auth_token='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')
 
     def detect_spans(self, tokens):
         # doc = self.model(" ".join(tokens))

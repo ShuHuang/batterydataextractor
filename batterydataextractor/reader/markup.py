@@ -133,7 +133,9 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
             try:
                 element += element_cls(' ') + next_element
             except TypeError as e:
-                log.warning('Adding of two objects was skipped. {} and {} cannot be added.'.format(str(type(element)), str(type(next_element))))
+                continue
+                # TODO: Add back log warning.
+                # log.warning('Adding of two objects was skipped. {} and {} cannot be added.'.format(str(type(element)), str(type(next_element))))
         return [element]
 
     @staticmethod

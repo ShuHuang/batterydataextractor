@@ -72,6 +72,10 @@ class SpringerXmlReader(XmlReader):
         month = '0' + month[0].text if len(month[0].text) == 1 else month[0].text
         day = '0' + day[0].text if len(day[0].text) == 1 else day[0].text
         date = year[0].text + month + day
+        try:
+            abstract = abstract[0].findall('p')[0].text
+        except IndexError:
+            abstract = None
 
         metadata = {
                 '_title': title[0].text if title else None,
@@ -84,7 +88,7 @@ class SpringerXmlReader(XmlReader):
                 '_firstpage': firstpage[0].text if firstpage else None,
                 '_lastpage': lastpage[0].text if lastpage else None,
                 '_doi': doi[0].text if doi else None,
-                '_abstract': abstract[0].findall('p')[0].text if abstract else None,
+                '_abstract': abstract if abstract else None,
                 }
         meta = MetaData(metadata)
         return [meta]

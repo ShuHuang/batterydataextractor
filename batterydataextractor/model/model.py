@@ -50,6 +50,7 @@ class Compound(BaseModel):
 class PropertyData(BaseModel):
     value = ListType(FloatType(required=True))
     units = StringType(contextual=False)
+    raw_value = StringType(contextual=False)
     specifier = StringType(contextual=False)
     material = StringType(contextual=False, required=True)
     parsers = [BertMaterialParser()]

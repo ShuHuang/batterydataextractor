@@ -44,6 +44,7 @@ class BertMaterialParser(BertParser):
                     value = re.findall(r'(?:\d*\.\d+|\d+)', res['answer'])
                     c = self.model(value=[float(v) for v in value],
                                    units=res['answer'].split(value[-1])[-1].strip(),
+                                   raw_value=res['answer'],
                                    specifier=specifier,
                                    material=res2['answer']
                                    )

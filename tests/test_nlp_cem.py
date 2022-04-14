@@ -12,19 +12,13 @@ class TestBertCemTagger(unittest.TestCase):
                 (('UV-vis', 'JJ'), 'O'),
                 (('spectrum', 'NN'), 'O'),
                 (('of', 'IN'), 'O'),
-                (('Coumarin', 'NN'), 'B-CM'),
-                (('343', 'CD'), 'O'),
-                (('in', 'IN'), 'O'),
-                (('THF', 'NN'), 'B-CM')
+                (('Coumarin', 'NN'), 'B-MAT')
             ],
             dt.tag([
                 ('UV-vis', 'JJ'),
                 ('spectrum', 'NN'),
                 ('of', 'IN'),
-                ('Coumarin', 'NN'),
-                ('343', 'CD'),
-                ('in', 'IN'),
-                ('THF', 'NN')
+                ('Coumarin', 'NN')
             ])
         )
 
@@ -37,7 +31,7 @@ class TestCemTagger(unittest.TestCase):
         GitHub issue #12.
         """
         ct = CemTagger()
-        self.assertEqual([(('benzene-aromatic', 'NN'), 'B-CM')], ct.tag([('benzene-aromatic', 'NN')]))
+        self.assertEqual([(('benzene-aromatic', 'NN'), 'B-MAT')], ct.tag([('benzene-aromatic', 'NN')]))
         self.assertEqual([(('-aromatic', 'JJ'), None)], ct.tag([('-aromatic', 'JJ')]))
         self.assertEqual([(('non-aromatic', 'JJ'), None)], ct.tag([('non-aromatic', 'JJ')]))
 

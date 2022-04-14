@@ -6,25 +6,49 @@ batterydataextractor.nlp.abbrev
 Abbreviation detection.
 author:
 """
-from transformers import AutoModelForTokenClassification
+from transformers import pipeline
 import itertools
 
 
-# Just for demonstration using spacy
 # TODO: Change into transformers version
 class AbbreviationDetector(object):
     """"""
-    def __init__(self, model_name="batterydata/bde-abbrev"):
-        self.model = None
-        # self.model = AutoModelForTokenClassification.from_pretrained(model_name, use_auth_token='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')
+    def __init__(self, model_name="batterydata/bde-abbrev-batterybert-base"):
+        self.model = pipeline('token-classification', model_name, use_auth_token=True)
 
     def detect_spans(self, tokens):
+        """
+        Detects abbreviations in a list of tokens.
+
+        :param tokens:
+        :return:
+        """
+        results = self.model(" ".join(tokens))
+        b_short_spans, i_short_spans, b_long_spans, i_long_spans = [], [], [], []
+        for result in results:
+            if result['index'] == 1:
+                b_short_spans.append((result['start'], result['end']))
+            elif result['index'] == 2:
+                i_short_spans.append((result['start'], result['end']))
+            elif result['index'] == 4:
+                b_long_spans.append((result['start'], result['end']))
+            elif result['index'] == 5:
+                i_long_spans.append((result['start'], result['end']))
+
+        # if i_short_spans != []:
+
+
+        pairs = []
+        # pair = (abbrev_spans, lf_spans)
+        #             pairs.append(pair)
+
         # doc = self.model(" ".join(tokens))
         # entities = doc.ents
         # text_label = [(e.text, e.start, e.end, e.label_) for e in entities]
         # g_list = [list(g) for k, g in itertools.groupby(text_label, key=lambda x: x[-1])]
         # new_tuples = [(" ".join(i), j, h, k[0]) for i, j, h, k in [zip(*i) for i in g_list]]
-        pairs = []
+
+
         # for index, tuples in enumerate(new_tuples):
         #     if tuples[-1] == "LF":
         #         lf_spans = (tuples[1][0], tuples[2][-1])

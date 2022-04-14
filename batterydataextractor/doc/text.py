@@ -553,7 +553,7 @@ class Sentence(BaseText, ABC):
         spans = []
         raw_tokens = self.raw_tokens
         for index, result in enumerate(self.ner_tags):
-            if result == 'B-CM':
+            if result == 'B-MAT':
                 ner_word = raw_tokens[index].replace("(", "\\(").replace(")", "\\)")
                 span = Span(text=raw_tokens[index], start=re.search(ner_word, self.text).start() + self.start,
                             end=re.search(ner_word, self.text).end() + self.start)

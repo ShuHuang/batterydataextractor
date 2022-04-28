@@ -73,7 +73,6 @@ class SentenceTokenizer(BaseTokenizer):
         self._tokenizer = None
         log.debug('%s: Initializing with %s' % (self.__class__.__name__, self.model))
 
-    # TODO: I was just using Spacy for now.
     def span_tokenize(self, s):
         """Return a list of integer offsets that identify sentences in the given text.
         :param string s: The text to tokenize into sentences.

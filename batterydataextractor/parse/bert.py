@@ -20,14 +20,14 @@ class BertParser(BaseSentenceParser, ABC):
     """Bert Parser"""
 
     @staticmethod
-    def qa_model(model_name_or_path="batterydata/test1"):
+    def qa_model(model_name_or_path="batterydata/batterybert-cased-squad-v1") -> pipeline:
         return pipeline('question-answering', model=model_name_or_path, tokenizer=model_name_or_path)
 
 
 class BertMaterialParser(BertParser):
     """Bert Material Parser."""
 
-    confidence_threshold = 0.1
+    confidence_threshold = 0.01
 
     def interpret(self, tokens):
         bert_model = self.qa_model()

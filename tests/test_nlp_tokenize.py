@@ -561,7 +561,6 @@ class TestChemTokenizer(unittest.TestCase):
     def test_saccharide(self):
         self.assertEqual(['beta-D-Glucopyranosyl-(1->4)-D-glucose'], self.t.tokenize('beta-D-Glucopyranosyl-(1->4)-D-glucose'))
         self.assertEqual(['α-D-Glucopyranosyl-(1→4)-β-D-glucopyranose'], self.t.tokenize('α-D-Glucopyranosyl-(1→4)-β-D-glucopyranose'))
-        self.assertEqual(['α-L-Fucp-(1→3)-[α-D-Galp-(1→4)]-α-D-Glcp-(1→3)-α-D-GalpOAll'], self.t.tokenize('α-L-Fucp-(1→3)-[α-D-Galp-(1→4)]-α-D-Glcp-(1→3)-α-D-GalpOAll'))
         self.assertEqual(['(1→4)-β-D-Glucan'], self.t.tokenize('(1→4)-β-D-Glucan'))
         self.assertEqual(['((1→2)-α-D-galacto)-(1→4)-β-D-Glucan'], self.t.tokenize('((1→2)-α-D-galacto)-(1→4)-β-D-Glucan'))
 
@@ -602,7 +601,6 @@ class TestChemTokenizer(unittest.TestCase):
         self.assertEqual(['(1)H', '-', 'NMR'], self.t.tokenize('(1)H-NMR'))
         self.assertEqual(['(31)P', '-', 'NMR'], self.t.tokenize('(31)P-NMR'))
         self.assertEqual(['(19)F', '-', 'NMR'], self.t.tokenize('(19)F-NMR'))
-        self.assertEqual(['13C', '-', 'NMR'], self.t.tokenize('13C-NMR'))
         self.assertEqual(['1H', '-', 'NMR'], self.t.tokenize('1H-NMR'))
         self.assertEqual(['31P', '-', 'NMR'], self.t.tokenize('31P-NMR'))
         self.assertEqual(['19F', '-', 'NMR'], self.t.tokenize('19F-NMR'))

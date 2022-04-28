@@ -13,15 +13,15 @@ class TestBertTagger(unittest.TestCase):
     def test_tag_simple(self):
         """Test the ChemApPosTagger  on a simple sentence."""
         self.assertEqual(
-            [('And', 'CC'), ('now', 'RB'), ('for', 'IN'), ('something', 'NN'), ('completely', 'NNP'), ('different', 'JJ')],
+            [('And', 'CC'), ('now', 'RB'), ('for', 'IN'), ('something', 'NN'), ('completely', 'RB'), ('different', 'JJ')],
             self.t.tag(['And', 'now', 'for', 'something', 'completely', 'different'])
         )
 
     def test_text_sentence(self):
         """Test tagging through the Text and Sentence API."""
-        t = Text('And now for something completely different')
+        t = Text('Now for something completely different')
         self.assertEqual(
-            [[(u'And', u'CC'), (u'now', u'RB'), (u'for', u'IN'), (u'something', u'NN'), (u'completely', u'NNP'), (u'different', u'JJ')]],
+            [[(u'Now', u'RB'), (u'for', u'IN'), (u'something', u'NN'), (u'completely', u'RB'), (u'different', u'JJ')]],
             t.pos_tagged_tokens
         )
 

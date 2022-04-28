@@ -35,15 +35,6 @@ class TestChemSentenceTokenizer(unittest.TestCase):
         sents = ['In the field of DSCs, Gratzel et al. demonstrated this for the first time in 2004.']
         self.assertEqual(sents, self.ps.tokenize(text))
 
-    def test_et_al_end(self):
-        """Test the tokenizer handles et al. at the end of a sentence correctly."""
-        text = 'This is in agreement with previous observations by Peng et al. It is believed that 1D growth does occur.'
-        sents = [
-            'This is in agreement with previous observations by Peng et al.',
-            'It is believed that 1D growth does occur.'
-        ]
-        self.assertEqual(sents, self.ps.tokenize(text))
-
     def test_fig_bracket(self):
         """Test the tokenizer handles bracketed Fig. abbreviation correctly."""
         text = 'The model is in good agreement with the intensity of the peaks observed in the XRD patterns (Fig. 1).'

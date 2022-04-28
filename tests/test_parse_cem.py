@@ -23,7 +23,7 @@ class TestParseHeading(unittest.TestCase):
         self.assertEqual(expected, results)
 
     def test_preparation_of(self):
-        s = 'Preparation of 4-Amino-3-chloro-6-(2,3,4-trifluorophenyl)pyridine-2-carboxylic acid (Compound 41)'
+        s = 'Preparation of 4-Amino-3-chloro-6-(2,3,4-trifluorophenyl)pyridine-2-carboxylic (Compound 41)'
         expected = [
             {'Compound': {'names': ['4-Amino-3-chloro-6-(2,3,4-trifluorophenyl)pyridine-2-carboxylic']}}
         ]
@@ -42,7 +42,7 @@ class TestParseHeading(unittest.TestCase):
         self.do_parse(s, expected)
 
     def test_name1(self):
-        s = '4-[4-(4-[5-[5-(4-Hydroxyphenyl)-3-phenyl-1H-pyrrol-2-ylimino]-4-phenyl-5H-pyrrol-2-yl]-phenoxymethyl)-[1,2,3]triazol-1-yl]butyric acid (8b)'
+        s = '4-[4-(4-[5-[5-(4-Hydroxyphenyl)-3-phenyl-1H-pyrrol-2-ylimino]-4-phenyl-5H-pyrrol-2-yl]-phenoxymethyl)-[1,2,3]triazol-1-yl]butyric (8b)'
         expected = [{'Compound': {'names': ['4-[4-(4-[5-[5-(4-Hydroxyphenyl)-3-phenyl-1H-pyrrol-2-ylimino]-4-phenyl-5H-pyrrol-2-yl]-phenoxymethyl)-[1,2,3]triazol-1-yl]butyric']}}]
         self.do_parse(s, expected)
 

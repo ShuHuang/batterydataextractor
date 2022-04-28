@@ -21,6 +21,6 @@ class CompoundParser(BaseSentenceParser):
     def interpret(self, tokens):
         cems = self.ct.tag(tokens)
         for cem in cems:
-            if cem[-1] == 'B-CM':
+            if cem[-1] == 'MAT':
                 c = self.model(names=[cem[0][0]])
                 yield c

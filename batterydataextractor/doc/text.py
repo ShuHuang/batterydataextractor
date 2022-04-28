@@ -513,16 +513,17 @@ class Sentence(BaseText, ABC):
         """
         abbreviations = []
         if self.abbreviation_detector:
-            # log.debug('Detecting abbreviations')
+            log.debug('Detecting abbreviations')
             ners = self.unprocessed_ner_tags
             for abbr_span, long_span in self.abbreviation_detector.detect_spans(self.raw_tokens):
-                abbr = self.raw_tokens[abbr_span[0]:abbr_span[1]]
-                long = self.raw_tokens[long_span[0]:long_span[1]]
-                # Check if long is entirely tagged as one named entity type
-                long_tags = ners[long_span[0]:long_span[1]]
-                unique_tags = set([tag[2:] for tag in long_tags if tag is not None])
-                tag = long_tags[0][2:] if None not in long_tags and len(unique_tags) == 1 else None
-                abbreviations.append((abbr, long, tag))
+                if abbr_span != [] and long_span != []:
+                    abbr = self.raw_tokens[abbr_span[0]:abbr_span[1]]
+                    long = self.raw_tokens[long_span[0]:long_span[1]]
+                    # Check if long is entirely tagged as one named entity type
+                    long_tags = ners[long_span[0]:long_span[1]]
+                    unique_tags = set([tag[2:] for tag in long_tags if tag is not None])
+                    tag = long_tags[0][2:] if None not in long_tags and len(unique_tags) == 1 else None
+                    abbreviations.append((abbr, long, tag))
         return abbreviations
 
     @memoized_property
@@ -553,7 +554,7 @@ class Sentence(BaseText, ABC):
         spans = []
         raw_tokens = self.raw_tokens
         for index, result in enumerate(self.ner_tags):
-            if result == 'B-MAT':
+            if result == 'MAT':
                 ner_word = raw_tokens[index].replace("(", "\\(").replace(")", "\\)")
                 span = Span(text=raw_tokens[index], start=re.search(ner_word, self.text).start() + self.start,
                             end=re.search(ner_word, self.text).end() + self.start)

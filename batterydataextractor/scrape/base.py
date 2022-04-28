@@ -13,7 +13,7 @@ class BaseWebScraper:
     """
     Base web-scraper.
     """
-    def __init__(self, model_name_or_path="batterydata/test4"):
+    def __init__(self, model_name_or_path="batterydata/batteryscibert-uncased-abstract"):
         """
         :param model_name_or_path: the BERT model to classify battery paper abstract. (Not required)
         """

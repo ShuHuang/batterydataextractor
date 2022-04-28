@@ -12,7 +12,7 @@ class TestBertCemTagger(unittest.TestCase):
                 (('UV-vis', 'JJ'), 'O'),
                 (('spectrum', 'NN'), 'O'),
                 (('of', 'IN'), 'O'),
-                (('Coumarin', 'NN'), 'B-MAT')
+                (('Coumarin', 'NN'), 'MAT')
             ],
             dt.tag([
                 ('UV-vis', 'JJ'),
@@ -31,7 +31,7 @@ class TestCemTagger(unittest.TestCase):
         GitHub issue #12.
         """
         ct = CemTagger()
-        self.assertEqual([(('benzene-aromatic', 'NN'), 'B-MAT')], ct.tag([('benzene-aromatic', 'NN')]))
+        self.assertEqual([(('LiFePO4 materials', 'NN'), 'MAT')], ct.tag([('LiFePO4 materials', 'NN')]))
         self.assertEqual([(('-aromatic', 'JJ'), None)], ct.tag([('-aromatic', 'JJ')]))
         self.assertEqual([(('non-aromatic', 'JJ'), None)], ct.tag([('non-aromatic', 'JJ')]))
 
@@ -39,7 +39,7 @@ class TestCemTagger(unittest.TestCase):
         """Test Document cems removes words in stoplist, ncluding words entirely made up of ignore prefix/suffix.
         GitHub issue #12.
         """
-        self.assertEqual([Span('benzene', 0, 7)], Document('benzene-aromatic').cems)
+        self.assertEqual([Span('LiFePO4', 0, 7)], Document('LiFePO4 materials').cems)
         self.assertEqual([], Document('-aromatic').cems)
         self.assertEqual([], Document('non-aromatic').cems)
 

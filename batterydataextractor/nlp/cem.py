@@ -17,7 +17,7 @@ class BertCemTagger(BertTagger):
 
     def tag(self, tokens):
         tuples = tokens
-        cner_tagger = pipeline("token-classification", model="batterydata/cner-batterybert-cased-base",
+        cner_tagger = pipeline("token-classification", model="batterydata/bde-cner-batteryonlybert-cased-base",
                                aggregation_strategy="simple", use_auth_token=True)
         result = cner_tagger([token[0] for token in tuples])
         labels = ['O' if token == [] else 'MAT' for token in result]

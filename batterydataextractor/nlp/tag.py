@@ -54,14 +54,15 @@ class BertTagger(BaseTagger):
 
     def __init__(self, model=None):
         """"""
-        self.model = model if model is not None else "batterydata/bde-pos-batterybert-base"
+        self.model = model if model is not None else "batterydata/bde-pos-bert-cased-base"
 
     def tag(self, tokens):
         """Return a list of (token, tag) tuples for a given list of (token, tag) tuples.
 
         :param list(str) tokens: The list of tokens to tag.
         """
-        classifier = pipeline("token-classification", model=self.model, use_auth_token=True)
+        classifier = pipeline("token-classification", model=self.model, use_auth_token=True,
+                              aggregation_strategy="simple")
         tags = [token[0]['entity'] for token in classifier(tokens)]
         tagged_sent = list(zip(tokens, tags))
         return tagged_sent

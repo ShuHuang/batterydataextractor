@@ -13,8 +13,8 @@ class AbbreviationDetector(object):
     """"""
 
     # TODO: improve the model
-    def __init__(self, model_name="batterydata/bde-abbrev-batterybert-base"):
-        self.model = pipeline('token-classification', model_name, use_auth_token=True, grouped_entities='simple')
+    def __init__(self, model_name="batterydata/bde-abbrev-batteryonlybert-cased-base"):
+        self.model = pipeline('token-classification', model_name, use_auth_token=True, aggregation_strategy='simple')
 
     def detect_spans(self, tokens):
         """

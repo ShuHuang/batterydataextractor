@@ -6,13 +6,15 @@ batterydataextractor.nlp.cem
 Named entity recognition (NER) for Chemical entity mentions (CEM).
 author:
 """
-import six
 from transformers import pipeline
+from operator import itemgetter
+from itertools import groupby
 from .tag import BertTagger, BaseTagger
 
 
 class BertCemTagger(BertTagger):
     """"""
+
     base_tagger = BertTagger()
 
     def tag(self, tokens):
@@ -33,15 +35,19 @@ class CemTagger(BaseTagger):
     def tag(self, tokens):
         """Run individual chemical entity mention taggers and return union of matches, with some postprocessing."""
         # Combine output from individual taggers
-        tags = [None] * len(tokens)
+        ner, new_tags = [], []
         for tagger in self.taggers:
             tag_gen = tagger.tag(tokens)
-            for i, (token, newtag) in enumerate(tag_gen):
-                if newtag == 'MAT':
-                    tags[i] = 'MAT'
-                # if newtag == 'I-MAT' and not (i == 0 or tag_gen[i - 1][1] not in {'B-MAT', 'I-MAT'}):
-                #     tags[i] = 'I-MAT'  # Always overwrite I-CM
-                # elif newtag == 'B-MAT' and tags[i] is None:
-                #     tags[i] = 'B-MAT'  # Only overwrite B-CM over None
-        token_tags = list(six.moves.zip(tokens, tags))
+            materials = [tag[0][0] for tag in tag_gen]
+            tags = [tag[-1] for tag in tag_gen]
+            seq = [next(group) for key, group in groupby(enumerate(tags), key=itemgetter(1))]
+            if seq[0][-1] == "O":
+                seq = seq[1:]
+            if len(seq) % 2 == 1:
+                seq += -1
+            token_indices = [(seq[i][0], seq[i+1][0]) for i in range(0, len(seq), 2)]
+            for token_index in token_indices:
+                ner.append(" ".join(materials[token_index[0]:token_index[1]]))
+                new_tags.append("MAT")
+        token_tags = list(zip(ner, new_tags))
         return token_tags

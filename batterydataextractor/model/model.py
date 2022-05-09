@@ -54,6 +54,7 @@ class PropertyData(BaseModel):
     specifier = StringType(contextual=False)
     material = StringType(contextual=False, required=True)
     confidence_score = FloatType(contextual=False)
+    original_text = StringType(contextual=False)
     parsers = [BertMaterialParser()]
 
 
@@ -61,4 +62,5 @@ class GeneralInfo(BaseModel):
     answer = StringType(contextual=False, required=True)
     specifier = StringType(contextual=False)
     confidence_score = FloatType(contextual=False)
+    original_text = StringType(contextual=False)
     parsers = [BertGeneralParser()]

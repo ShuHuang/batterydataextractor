@@ -41,14 +41,14 @@ class BertMaterialParser(BertParser):
                     qa_input2 = {'question': question2, 'context': context}
                     res2 = bert_model(qa_input2, top_k=1)
                     cs2 = res2['score']
-                    cs = "%.4f" % (cs1 * cs2)
                     value = re.findall(r'(?:\d*\.\d+|\d+)', res['answer'])
                     c = self.model(value=[float(v) for v in value],
                                    units=res['answer'].split(value[-1])[-1].strip(),
                                    raw_value=res['answer'],
                                    specifier=specifier,
                                    material=res2['answer'],
-                                   confidence_score=cs,
+                                   confidence_score="%.4f" % (cs1 * cs2),
+                                   original_text=context if self.model.original_text else None,
                                    )
                     yield c
 
@@ -67,5 +67,6 @@ class BertGeneralParser(BertParser):
                 c = self.model(answer=res['answer'],
                                specifier=specifier,
                                confidence_score="%.4f" % res['score'],
+                               original_text=context if self.model.original_text else None,
                                )
                 yield c

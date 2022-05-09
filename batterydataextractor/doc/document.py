@@ -109,7 +109,7 @@ class Document(BaseDocument):
                 element.add_models(models)
         return
 
-    def add_models_by_names(self, names, confidence_threshold=0.1):
+    def add_models_by_names(self, names, confidence_threshold=0.1, original_text=False):
         """
         Add models to all elements.
         Usage::
@@ -123,13 +123,14 @@ class Document(BaseDocument):
         model = PropertyData
         model.defined_names = names
         model.confidence_threshold = confidence_threshold
+        model.original_text = original_text
         self._models.extend([model])
         for element in self.elements:
             if callable(getattr(element, 'add_models', None)):
                 element.add_models([model])
         return
 
-    def add_general_models(self, names, confidence_threshold=0.1):
+    def add_general_models(self, names, confidence_threshold=0.1, original_text=False):
         """
         Add models to all elements.
         Usage::
@@ -143,6 +144,7 @@ class Document(BaseDocument):
         model = GeneralInfo
         model.defined_names = names
         model.confidence_threshold = confidence_threshold
+        model.original_text = original_text
         self._models.extend([model])
         for element in self.elements:
             if callable(getattr(element, 'add_models', None)):

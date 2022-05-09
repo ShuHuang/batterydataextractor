@@ -95,12 +95,13 @@ class BaseElement(six.with_metaclass(ABCMeta)):
         model.original_text = original_text
         self.models.extend([model])
 
-    def add_general_models(self, names, confidence_threshold=0.1, original_text=False):
+    def add_general_models(self, names, confidence_threshold=0.1, original_text=False, self_defined=False):
         """"""
         model = GeneralInfo
         model.defined_names = names
         model.confidence_threshold = confidence_threshold
         model.original_text = original_text
+        model.self_defined = self_defined
         self.models.extend([model])
 
     @property

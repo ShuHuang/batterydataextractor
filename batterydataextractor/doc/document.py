@@ -130,7 +130,7 @@ class Document(BaseDocument):
                 element.add_models([model])
         return
 
-    def add_general_models(self, names, confidence_threshold=0.1, original_text=False):
+    def add_general_models(self, names, confidence_threshold=0.1, original_text=False, self_defined=False):
         """
         Add models to all elements.
         Usage::
@@ -145,6 +145,7 @@ class Document(BaseDocument):
         model.defined_names = names
         model.confidence_threshold = confidence_threshold
         model.original_text = original_text
+        model.self_defined = self_defined
         self._models.extend([model])
         for element in self.elements:
             if callable(getattr(element, 'add_models', None)):

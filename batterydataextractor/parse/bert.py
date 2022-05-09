@@ -60,7 +60,7 @@ class BertGeneralParser(BertParser):
         bert_model = self.qa_model()
         context = " ".join([token[0] for token in tokens])
         for specifier in self.model.defined_names:
-            question = "What is the {}?".format(specifier)
+            question = specifier if self.model.self_defined else "What is the {}?".format(specifier)
             qa_input = {'question': question, 'context': context}
             res = bert_model(qa_input, top_k=1)
             if res['score'] > self.model.confidence_threshold:

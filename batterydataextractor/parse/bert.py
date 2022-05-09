@@ -27,8 +27,6 @@ class BertParser(BaseSentenceParser, ABC):
 class BertMaterialParser(BertParser):
     """Bert Material Parser."""
 
-    confidence_threshold = 0.01
-
     def interpret(self, tokens):
         bert_model = self.qa_model()
         context = " ".join([token[0] for token in tokens])
@@ -37,24 +35,26 @@ class BertMaterialParser(BertParser):
                 question = "What is the value of {}?".format(specifier)
                 qa_input = {'question': question, 'context': context}
                 res = bert_model(qa_input, top_k=1)
-                if res['score'] > self.confidence_threshold:
+                cs1 = res['score']
+                if cs1 > self.model.confidence_threshold:
                     question2 = "What material has a {} of {}?".format(specifier, res['answer'])
                     qa_input2 = {'question': question2, 'context': context}
                     res2 = bert_model(qa_input2, top_k=1)
+                    cs2 = res2['score']
+                    cs = "%.4f" % (cs1 * cs2)
                     value = re.findall(r'(?:\d*\.\d+|\d+)', res['answer'])
                     c = self.model(value=[float(v) for v in value],
                                    units=res['answer'].split(value[-1])[-1].strip(),
                                    raw_value=res['answer'],
                                    specifier=specifier,
-                                   material=res2['answer']
+                                   material=res2['answer'],
+                                   confidence_score=cs,
                                    )
                     yield c
 
 
 class BertGeneralParser(BertParser):
     """Bert General Parser."""
-
-    confidence_threshold = 0
 
     def interpret(self, tokens):
         bert_model = self.qa_model()
@@ -63,8 +63,9 @@ class BertGeneralParser(BertParser):
             question = "What is the {}?".format(specifier)
             qa_input = {'question': question, 'context': context}
             res = bert_model(qa_input, top_k=1)
-            if res['score'] > self.confidence_threshold:
+            if res['score'] > self.model.confidence_threshold:
                 c = self.model(answer=res['answer'],
-                               specifier=specifier
+                               specifier=specifier,
+                               confidence_score="%.4f" % res['score'],
                                )
                 yield c

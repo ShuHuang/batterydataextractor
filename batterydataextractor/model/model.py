@@ -53,10 +53,12 @@ class PropertyData(BaseModel):
     raw_value = StringType(contextual=False)
     specifier = StringType(contextual=False)
     material = StringType(contextual=False, required=True)
+    confidence_score = FloatType(contextual=False)
     parsers = [BertMaterialParser()]
 
 
 class GeneralInfo(BaseModel):
     answer = StringType(contextual=False, required=True)
     specifier = StringType(contextual=False)
+    confidence_score = FloatType(contextual=False)
     parsers = [BertGeneralParser()]

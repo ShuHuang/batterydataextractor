@@ -63,6 +63,6 @@ class BertTagger(BaseTagger):
         """
         classifier = pipeline("token-classification", model=self.model, use_auth_token=True,
                               aggregation_strategy="simple")
-        tags = [token[0]['entity'] for token in classifier(tokens)]
+        tags = [token[0]['entity_group'] for token in classifier(tokens)]
         tagged_sent = list(zip(tokens, tags))
         return tagged_sent

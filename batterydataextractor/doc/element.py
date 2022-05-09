@@ -87,16 +87,18 @@ class BaseElement(six.with_metaclass(ABCMeta)):
         self.models.extend(models)
         self.models = self.models
 
-    def add_models_by_names(self, names):
+    def add_models_by_names(self, names, confidence_threshold=0.1):
         """"""
         model = PropertyData
         model.defined_names = names
+        model.confidence_threshold = confidence_threshold
         self.models.extend([model])
 
-    def add_general_models(self, names):
+    def add_general_models(self, names, confidence_threshold=0.1):
         """"""
         model = GeneralInfo
         model.defined_names = names
+        model.confidence_threshold = confidence_threshold
         self.models.extend([model])
 
     @property

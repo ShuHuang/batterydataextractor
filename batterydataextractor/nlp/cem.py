@@ -6,7 +6,7 @@ batterydataextractor.nlp.cem
 Named entity recognition (NER) for Chemical entity mentions (CEM).
 author:
 """
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer
 from operator import itemgetter
 from itertools import groupby
 from .tag import BertTagger, BaseTagger
@@ -20,6 +20,8 @@ class BertCemTagger(BertTagger):
     def tag(self, tokens):
         tuples = tokens
         cner_tagger = pipeline("token-classification", model="batterydata/bde-cner-batteryonlybert-cased-base",
+                               tokenizer=AutoTokenizer.from_pretrained(self.model, model_max_length=512,
+                                                                       use_auth_token=True),
                                aggregation_strategy="simple", use_auth_token=True)
         result = cner_tagger([token[0] for token in tuples])
         labels = ['O' if token == [] else 'MAT' for token in result]

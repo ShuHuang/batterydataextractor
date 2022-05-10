@@ -6,7 +6,7 @@ batterydataextractor.nlp.abbrev
 Abbreviation detection.
 author:
 """
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer
 
 
 class AbbreviationDetector(object):
@@ -14,7 +14,9 @@ class AbbreviationDetector(object):
 
     # TODO: improve the model
     def __init__(self, model_name="batterydata/bde-abbrev-batteryonlybert-cased-base"):
-        self.model = pipeline('token-classification', model_name, use_auth_token=True, aggregation_strategy='simple')
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, model_max_length=512, use_auth_token=True)
+        self.model = pipeline('token-classification', model_name, tokenizer=self.tokenizer,
+                              use_auth_token=True, aggregation_strategy='simple')
 
     def detect_spans(self, tokens):
         """

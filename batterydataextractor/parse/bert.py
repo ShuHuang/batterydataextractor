@@ -11,6 +11,7 @@ import re
 from abc import ABC
 
 from .base import BaseSentenceParser
+from transformers import AutoTokenizer
 from transformers.pipelines import pipeline
 
 log = logging.getLogger(__name__)
@@ -20,8 +21,9 @@ class BertParser(BaseSentenceParser, ABC):
     """Bert Parser"""
 
     @staticmethod
-    def qa_model(model_name_or_path="batterydata/batterybert-cased-squad-v1") -> pipeline:
-        return pipeline('question-answering', model=model_name_or_path, tokenizer=model_name_or_path)
+    def qa_model(model_name="batterydata/batterybert-cased-squad-v1") -> pipeline:
+        return pipeline('question-answering', model=model_name,
+                        tokenizer=AutoTokenizer.from_pretrained(model_name, model_max_length=512, use_auth_token=True))
 
 
 class BertMaterialParser(BertParser):

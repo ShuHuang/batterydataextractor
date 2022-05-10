@@ -140,6 +140,33 @@ class BaseElement(six.with_metaclass(ABCMeta)):
         to that of :meth:`serialize`."""
         return json.dumps(self.serialize(), *args, **kwargs)
 
+    def to_database(self, file_name, file_type='json'):
+        """
+        Save the document to a file in the database.
+
+        :param file_name: The name of the file to save the document to.
+        :param file_type: The type of file to save the document to.
+        """
+        if file_type == 'json':
+            with open(file_name, 'a', encoding='utf-8') as f:
+                json.dump(self.serialize(), f)
+                f.write('\n')
+        elif file_type == 'txt':
+            with open(file_name, 'a', encoding='utf-8') as f:
+                f.write(json.dumps(self.serialize()))
+                f.write('\n')
+        elif file_type == 'csv':
+            data = self.serialize()
+            dic = data[list(data.keys())[0]]
+            dic['model_type'] = list(dic.keys())[0]
+            csv_columns = dic.keys()
+            with open(file_name, 'a', encoding='utf-8') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+                writer.writeheader()
+                writer.writerow(dic)
+        else:
+            raise ValueError('Unknown file type. Please use json, txt, or csv.')
+
 
 class CaptionedElement(BaseElement):
     """

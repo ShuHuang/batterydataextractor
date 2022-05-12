@@ -110,7 +110,7 @@ class Document(BaseDocument):
                 element.add_models(models)
         return
 
-    def add_models_by_names(self, names, confidence_threshold=0.1, original_text=False):
+    def add_models_by_names(self, names, confidence_threshold=0, original_text=False):
         """
         Add models to all elements.
         Usage::
@@ -131,7 +131,7 @@ class Document(BaseDocument):
                 element.add_models([model])
         return
 
-    def add_general_models(self, names, confidence_threshold=0.1, original_text=False, self_defined=False):
+    def add_general_models(self, names, confidence_threshold=0, original_text=False, self_defined=False):
         """
         Add models to all elements.
         Usage::

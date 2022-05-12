@@ -31,7 +31,7 @@ class TestCemTagger(unittest.TestCase):
         GitHub issue #12.
         """
         ct = CemTagger()
-        self.assertEqual([(['LiFePO4'], 'MAT')], ct.tag([('LiFePO4', 'NN')]))
+        self.assertEqual([('LiFePO4', 'MAT')], ct.tag([('LiFePO4', 'NN')]))
 
     def test_cems_stoplist(self):
         """Test Document cems removes words in stoplist, ncluding words entirely made up of ignore prefix/suffix.

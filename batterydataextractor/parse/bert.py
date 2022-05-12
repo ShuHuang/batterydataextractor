@@ -31,9 +31,11 @@ class BertMaterialParser(BertParser):
 
     def interpret(self, tokens):
         bert_model = self.qa_model()
-        context = " ".join([token[0] for token in tokens])
+        context_list = [token[0] for token in tokens]
+        context = " ".join(context_list)
         for specifier in self.model.defined_names:
-            if specifier in context:
+            length = len(specifier.split(" "))
+            if (specifier in context_list and length == 1) or (specifier in context and length > 1):
                 question = "What is the value of {}?".format(specifier)
                 qa_input = {'question': question, 'context': context}
                 res = bert_model(qa_input, top_k=1)
@@ -45,7 +47,7 @@ class BertMaterialParser(BertParser):
                     cs2 = res2['score']
                     value = re.findall(r'(?:\d*\.\d+|\d+)', res['answer'])
                     c = self.model(value=[float(v) for v in value],
-                                   units=res['answer'].split(value[-1])[-1].strip(),
+                                   # units=res['answer'].split(value[-1])[-1].strip(),
                                    raw_value=res['answer'],
                                    specifier=specifier,
                                    material=res2['answer'],

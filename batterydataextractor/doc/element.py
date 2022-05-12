@@ -87,7 +87,7 @@ class BaseElement(six.with_metaclass(ABCMeta)):
         self.models.extend(models)
         self.models = self.models
 
-    def add_models_by_names(self, names, confidence_threshold=0.1, original_text=False):
+    def add_models_by_names(self, names, confidence_threshold=0, original_text=False):
         """"""
         model = PropertyData
         model.defined_names = names
@@ -95,7 +95,7 @@ class BaseElement(six.with_metaclass(ABCMeta)):
         model.original_text = original_text
         self.models.extend([model])
 
-    def add_general_models(self, names, confidence_threshold=0.1, original_text=False, self_defined=False):
+    def add_general_models(self, names, confidence_threshold=0, original_text=False, self_defined=False):
         """"""
         model = GeneralInfo
         model.defined_names = names

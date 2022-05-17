@@ -12,7 +12,6 @@ from transformers import pipeline, AutoTokenizer
 class AbbreviationDetector(object):
     """"""
 
-    # TODO: improve the model
     def __init__(self, model_name="batterydata/bde-abbrev-batteryonlybert-cased-base", device=None):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, model_max_length=512, use_auth_token=True)
         self.device = device if device else -1

@@ -134,8 +134,7 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
                 element += element_cls(' ') + next_element
             except TypeError as e:
                 continue
-                # TODO: Add back log warning.
-                # log.warning('Adding of two objects was skipped. {} and {} cannot be added.'.format(str(type(element)), str(type(next_element))))
+                log.warning('Adding of two objects was skipped. {} and {} cannot be added.'.format(str(type(element)), str(type(next_element))))
         return [element]
 
     @staticmethod

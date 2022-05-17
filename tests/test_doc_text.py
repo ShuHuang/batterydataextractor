@@ -20,7 +20,6 @@ class TestText(unittest.TestCase):
     #     test_config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data', 'test_config.yml')
     #     return Config(test_config_path)
 
-    # TODO: Allow importing models defaults from config files
     # def test_parsers_set_from_config(self):
     #     d = Document(Title('Test'), Paragraph('Test'), Footnote('Test'), Heading('Test'), Caption('Test'), config=self.get_config())
     #     title_p = d.titles[0].parsers

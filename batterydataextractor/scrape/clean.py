@@ -64,7 +64,6 @@ class Cleaner(object):
         :param bool fix_whitespace: Normalize whitespace to a single space and ensure newlines around block elements.
         :param dict namespaces: Namespace prefixes to register for the XPaths.
         """
-        # TODO: This is weird. Why don't we change to proper individual keyword arguments with class attribs as default
         for name, value in kwargs.items():
             if not hasattr(self, name):
                 raise TypeError('Unknown parameter: %s=%r' % (name, value))

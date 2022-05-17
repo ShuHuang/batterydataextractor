@@ -206,7 +206,6 @@ class Lexicon(six.with_metaclass(Singleton)):
     @staticmethod
     def is_hyphenated(text):
         """"""
-        # TODO: What about '--'?
         return '-' in text and not text == '-'
 
     @staticmethod

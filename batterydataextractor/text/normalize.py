@@ -82,7 +82,6 @@ class Normalizer(BaseNormalizer):
 
         # Normalize all hyphens, minuses and dashes to ascii hyphen-minus and remove soft hyphen entirely
         if self.hyphens:
-            # TODO: Better normalization of em/en dashes to '--' if surrounded by spaces or start/end?
             for hyphen in HYPHENS | MINUSES:
                 text = text.replace(hyphen, '-')
             text = text.replace('\u00ad', '')

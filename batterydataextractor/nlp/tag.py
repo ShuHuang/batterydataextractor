@@ -52,9 +52,10 @@ class NoneTagger(BaseTagger):
 class BertTagger(BaseTagger):
     """BERT Tagger"""
 
-    def __init__(self, model=None):
+    def __init__(self, model=None, device=None):
         """"""
         self.model = model if model is not None else "batterydata/bde-pos-bert-cased-base"
+        self.device = device if device is not None else -1
         self.tokenizer = AutoTokenizer.from_pretrained(self.model, model_max_length=512, use_auth_token=True)
 
     def tag(self, tokens):
@@ -63,7 +64,7 @@ class BertTagger(BaseTagger):
         :param list(str) tokens: The list of tokens to tag.
         """
         classifier = pipeline("token-classification", model=self.model, tokenizer=self.tokenizer, use_auth_token=True,
-                              aggregation_strategy="simple")
+                              aggregation_strategy="simple", device=self.device)
         tags = [token[0]['entity_group'] for token in classifier(tokens)]
         tagged_sent = list(zip(tokens, tags))
         return tagged_sent

@@ -13,10 +13,11 @@ class AbbreviationDetector(object):
     """"""
 
     # TODO: improve the model
-    def __init__(self, model_name="batterydata/bde-abbrev-batteryonlybert-cased-base"):
+    def __init__(self, model_name="batterydata/bde-abbrev-batteryonlybert-cased-base", device=None):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, model_max_length=512, use_auth_token=True)
+        self.device = device if device else -1
         self.model = pipeline('token-classification', model_name, tokenizer=self.tokenizer,
-                              use_auth_token=True, aggregation_strategy='simple')
+                              use_auth_token=True, aggregation_strategy='simple', device=self.device)
 
     def detect_spans(self, tokens):
         """

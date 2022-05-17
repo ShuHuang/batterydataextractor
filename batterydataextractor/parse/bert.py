@@ -20,9 +20,8 @@ log = logging.getLogger(__name__)
 class BertParser(BaseSentenceParser, ABC):
     """Bert Parser"""
 
-    @staticmethod
-    def qa_model(model_name="batterydata/batterybert-cased-squad-v1") -> pipeline:
-        return pipeline('question-answering', model=model_name,
+    def qa_model(self, model_name="batterydata/batterybert-cased-squad-v1") -> pipeline:
+        return pipeline('question-answering', model=model_name, device=self.model.device,
                         tokenizer=AutoTokenizer.from_pretrained(model_name, model_max_length=512, use_auth_token=True))
 
 
@@ -47,7 +46,7 @@ class BertMaterialParser(BertParser):
                     cs2 = res2['score']
                     value = re.findall(r'(?:\d*\.\d+|\d+)', res['answer'])
                     c = self.model(value=[float(v) for v in value],
-                                   # units=res['answer'].split(value[-1])[-1].strip(),
+                                   units=res['answer'].split(value[-1])[-1].strip(),
                                    raw_value=res['answer'],
                                    specifier=specifier,
                                    material=res2['answer'],

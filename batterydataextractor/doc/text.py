@@ -188,6 +188,9 @@ class Text(collections.Sequence, BaseText):
         """
         super(Text, self).__init__(text, word_tokenizer=word_tokenizer, lexicon=lexicon, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, parsers=None, **kwargs)
         self.sentence_tokenizer = sentence_tokenizer if sentence_tokenizer is not None else self.sentence_tokenizer
+        self.abbreviation_detector.device = self.device
+        self.pos_tagger.device = self.device
+        self.ner_tagger.device = self.device
 
     def __getitem__(self, index):
         return self.sentences[index]
@@ -233,7 +236,8 @@ class Text(collections.Sequence, BaseText):
                 pos_tagger=self.pos_tagger,
                 ner_tagger=self.ner_tagger,
                 document=self.document,
-                models=self.models
+                models=self.models,
+                device=self.device
             )
             sents.append(sent)
         return sents

@@ -292,7 +292,6 @@ class BaseModel(six.with_metaclass(ModelMeta)):
                     matches = [
                         i for i in cls.fields[field].parse_expression.scan(
                             definition['tokens'])]
-                    # print(matches)
                     if any(matches):
                         cls.fields[field].parse_expression = cls.fields[field].parse_expression | W(
                             str(definition['specifier']))

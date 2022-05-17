@@ -88,6 +88,11 @@ class Document(BaseDocument):
         else:
             self._models = []
 
+        if 'device' in kwargs.keys():
+            self._device = kwargs['device']
+        else:
+            self._device = -1
+
         # Sets parameters from configuration file
         for element in elements:
             if callable(getattr(element, 'set_config', None)):
@@ -125,6 +130,7 @@ class Document(BaseDocument):
         model.defined_names = names
         model.confidence_threshold = confidence_threshold
         model.original_text = original_text
+        model.device = self.device
         self._models.extend([model])
         for element in self.elements:
             if callable(getattr(element, 'add_models', None)):
@@ -147,6 +153,7 @@ class Document(BaseDocument):
         model.confidence_threshold = confidence_threshold
         model.original_text = original_text
         model.self_defined = self_defined
+        model.device = self.device
         self._models.extend([model])
         for element in self.elements:
             if callable(getattr(element, 'add_models', None)):
@@ -162,6 +169,16 @@ class Document(BaseDocument):
         self._models = value
         for element in self.elements:
             element.models = value
+
+    @property
+    def device(self):
+        return self._device
+
+    @device.setter
+    def device(self, value):
+        self._device = value
+        for element in self.elements:
+            element.device = value
 
     @classmethod
     def from_file(cls, f, fname=None, readers=None):
@@ -347,7 +364,7 @@ class Document(BaseDocument):
                 compound = record
             if compound is not None:
                 for short, long_, entity in self.abbreviation_definitions:
-                    if entity == 'CM':
+                    if entity == 'MAT':
                         name = ' '.join(long_)
                         abbrev = ' '.join(short)
                         if name in compound.names and abbrev not in compound.names:

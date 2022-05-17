@@ -9,9 +9,10 @@ author:
 from abc import ABCMeta, abstractmethod
 import json
 import operator
-from ..model.model import PropertyData, GeneralInfo
-
 import six
+import csv
+
+from ..model.model import PropertyData, GeneralInfo
 
 import logging
 log = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ class BaseElement(six.with_metaclass(ABCMeta)):
     :ivar list[batterydataextractor.models.BaseModel] models: A list of models that this element will parse
     """
 
-    def __init__(self, document=None, references=None, id=None, models=None, **kwargs):
+    def __init__(self, document=None, references=None, id=None, models=None, device=None, **kwargs):
         """
         .. note::
             If intended as part of a :class:`~batterydataextractor.doc.document.Document`,
@@ -51,6 +52,11 @@ class BaseElement(six.with_metaclass(ABCMeta)):
         else:
             self.models = []
         self._streamlined_models_list = None
+
+        if device:
+            self._device = device
+        else:
+            self._device = -1
 
     def __repr__(self):
         return '<%s>' % (self.__class__.__name__,)
@@ -93,6 +99,7 @@ class BaseElement(six.with_metaclass(ABCMeta)):
         model.defined_names = names
         model.confidence_threshold = confidence_threshold
         model.original_text = original_text
+        model.device = self.device
         self.models.extend([model])
 
     def add_general_models(self, names, confidence_threshold=0, original_text=False, self_defined=False):
@@ -102,6 +109,7 @@ class BaseElement(six.with_metaclass(ABCMeta)):
         model.confidence_threshold = confidence_threshold
         model.original_text = original_text
         model.self_defined = self_defined
+        model.device = self.device
         self.models.extend([model])
 
     @property
@@ -112,6 +120,14 @@ class BaseElement(six.with_metaclass(ABCMeta)):
     def models(self, value):
         self._models = value
         self._streamlined_models_list = None
+
+    @property
+    def device(self):
+        return self._device
+
+    @device.setter
+    def device(self, value):
+        self._device = value
 
     @property
     def _streamlined_models(self):
@@ -253,6 +269,15 @@ class CaptionedElement(BaseElement):
     def models(self, value):
         self._models = value
         self.caption.models = value
+
+    @property
+    def device(self):
+        return self._device
+
+    @device.setter
+    def device(self, value):
+        self._device = value
+        self.caption.device = value
 
     def serialize(self):
         """

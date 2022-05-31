@@ -66,14 +66,16 @@ Or, the individual tokens::
 as well as a list of individual chemical entity mentions (CEMs) of the document::
 
     >>> doc.cems
-    [Span('5,10,15,20-Tetra(4-carboxyphenyl)porphyrin', 19, 61),
-     Span('THF', 82, 85),
-     Span('Tetrahydrofuran', 65, 80)]
+    [Span('lithium', 17, 24),
+     Span('graphite', 76, 84),
+     Span('carbons', 100, 107),
+     Span('graphene', 239, 247),
+     Span('LiC6', 282, 286)]
 
 Each mention is returned as a ``Span``, which contains the mention text, as well as the start and end character offsets within the containing document element.
 
 You can also output the abbreviations found in the document::
 
     >>> doc.abbreviation_definitions
-    [([u'THF'], [u'Tetrahydrofuran'], u'CM')]
+    [[('Abbr: ', 'ZnTPP')], [('LF: ', 'Zinc tetraphenylporphyrin')]]
 

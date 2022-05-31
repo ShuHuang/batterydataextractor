@@ -19,8 +19,8 @@ class BertCemTagger(BertTagger):
 
     def tag(self, tokens):
         tuples = tokens
-        cner_tagger = pipeline("token-classification", model="batterydata/bde-cner-batteryonlybert-cased-base",
-                               tokenizer=AutoTokenizer.from_pretrained("batterydata/bde-cner-batteryonlybert-cased-base",
+        cner_tagger = pipeline("token-classification", model="batterydata/bde-cner-batteryonlybert-uncased-base",
+                               tokenizer=AutoTokenizer.from_pretrained("batterydata/bde-cner-batteryonlybert-uncased-base",
                                                                        model_max_length=512, use_auth_token=True),
                                aggregation_strategy="simple", use_auth_token=True, device=self.device)
         result = cner_tagger([token[0] for token in tuples])

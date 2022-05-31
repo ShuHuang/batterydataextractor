@@ -33,7 +33,7 @@ Similarly, the model of data extraction of general information can be created by
     >>>     print(record.serialize())
     {'GeneralInfo': {'answer': 'Varian MR - 400 MHz instrument', 'specifier': 'apparatus', 'confidence_score': 0.5065, 'original_text': '1H NMR spectra were recorded on a Varian MR - 400 MHz instrument .'}}
 
-Or users can ask self_defined questions by setting ``self_defined`` as True::
+Or users can ask self-defined questions by setting ``self_defined`` as True::
 
     >>> from batterydataextractor.doc.text import Paragraph
     >>> text = 'For current LIBs based on OLE system, the employed cathodes could be mainly divided into two categories: LCO is still very popular in the consumer electronics market and Ni-rich compounds have already taken a place in the electric vehicles where the Tesla LiNi0.8Co0.15Al0.05O2 (NCA) cathode is a good example.'

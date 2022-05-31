@@ -11,14 +11,13 @@ import collections
 import logging
 import re
 import unicodedata
-
 import six
 
 from ..model.base import ModelList
 from ..model.model import Compound
 from ..nlp.lexicon import ChemLexicon, Lexicon
 from ..nlp.cem import CemTagger
-from ..nlp.abbrev import ChemAbbreviationDetector
+from ..nlp.abbrev import AbbreviationDetector
 from ..nlp.tag import NoneTagger, BaseTagger, BertTagger
 from ..nlp.tokenize import ChemSentenceTokenizer, ChemWordTokenizer, SentenceTokenizer, WordTokenizer
 from ..utils import memoized_property
@@ -152,7 +151,7 @@ class Text(collections.Sequence, BaseText):
     sentence_tokenizer = ChemSentenceTokenizer()
     word_tokenizer = ChemWordTokenizer()
     lexicon = ChemLexicon()
-    abbreviation_detector = ChemAbbreviationDetector()
+    abbreviation_detector = AbbreviationDetector()
     pos_tagger = BertTagger()
     ner_tagger = CemTagger()
 
@@ -186,9 +185,10 @@ class Text(collections.Sequence, BaseText):
             inside a :class:`~batterydataextractor.doc.text.Paragraph`), or is part of a :class:`~batterydataextractor.doc.document.Document`,
             this is set automatically to be the same as that of the containing element, unless manually set otherwise.
         """
-        super(Text, self).__init__(text, word_tokenizer=word_tokenizer, lexicon=lexicon, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, parsers=None, **kwargs)
+        super(Text, self).__init__(text, word_tokenizer=word_tokenizer, lexicon=lexicon,
+                                   abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger,
+                                   ner_tagger=ner_tagger, parsers=None, **kwargs)
         self.sentence_tokenizer = sentence_tokenizer if sentence_tokenizer is not None else self.sentence_tokenizer
-        # self.abbreviation_detector.device = self.device
         self.pos_tagger.device = self.device
         self.ner_tagger.device = self.device
 
@@ -325,7 +325,7 @@ class Text(collections.Sequence, BaseText):
         A list of all abbreviation definitions in this Document. Each abbreviation is in the form
         (:class:`str` abbreviation, :class:`str` long form of abbreviation, :class:`str` ner_tag)
         """
-        return [ab for sent in self.sentences for ab in sent.abbreviation_definitions]
+        return [ab for sent in self.sentences for ab in sent.abbreviation_definitions if ab != []]
 
     @property
     def records(self):
@@ -420,7 +420,7 @@ class Sentence(BaseText, ABC):
 
     word_tokenizer = ChemWordTokenizer()
     lexicon = ChemLexicon()
-    abbreviation_detector = ChemAbbreviationDetector()
+    abbreviation_detector = AbbreviationDetector()
     pos_tagger = BertTagger()
     ner_tagger = CemTagger()
 
@@ -441,7 +441,7 @@ class Sentence(BaseText, ABC):
         :param Lexicon lexicon: (Optional) Lexicon for this element. The lexicon stores all the occurences of unique words and can provide
             Brown clusters for the words. Default :class:`~batterydataextractor.nlp.lexicon.ChemLexicon`
         :param AbbreviationDetector abbreviation_detector: (Optional) The abbreviation detector for this element.
-            Default :class:`~batterydataextractor.nlp.abbrev.ChemAbbreviationDetector`.
+            Default :class:`~batterydataextractor.nlp.abbrev.AbbreviationDetector`.
         :param BaseTagger pos_tagger: (Optional) The part of speech tagger for this element.
             Default :class:`~batterydataextractor.nlp.pos.ChemCrfPosTagger`.
         :param BaseTagger ner_tagger: (Optional) The named entity recognition tagger for this element.
@@ -498,8 +498,6 @@ class Sentence(BaseText, ABC):
         from the text.
         No corrections from abbreviation detection are performed.
         """
-        # log.debug('Getting unprocessed_ner_tags')
-        print(self.pos_tagged_tokens)
         return self.ner_tagger.tag(self.pos_tagged_tokens)
 
     @memoized_property
@@ -508,7 +506,6 @@ class Sentence(BaseText, ABC):
         A list of :class:`str` unprocessed named entity tags for the tokens in this sentence.
         No corrections from abbreviation detection are performed.
         """
-        print(self.unprocessed_ner_tagged_tokens)
         return [tag for token, tag in self.unprocessed_ner_tagged_tokens]
 
     @memoized_property
@@ -517,20 +514,21 @@ class Sentence(BaseText, ABC):
         A list of all abbreviation definitions in this Document. Each abbreviation is in the form
         (:class:`str` abbreviation, :class:`str` long form of abbreviation, :class:`str` ner_tag)
         """
-        abbreviations = []
+        abbreviations, long_words = [], []
         if self.abbreviation_detector:
             log.debug('Detecting abbreviations')
-            ners = self.unprocessed_ner_tags
-            for abbr_span, long_span in self.abbreviation_detector.detect_spans(self.raw_tokens):
-                if abbr_span != [] and long_span != []:
-                    abbr = self.raw_tokens[abbr_span[0]:abbr_span[1]]
-                    long = self.raw_tokens[long_span[0]:long_span[1]]
-                    # Check if long is entirely tagged as one named entity type
-                    long_tags = ners[long_span[0]:long_span[1]]
-                    unique_tags = set([tag[2:] for tag in long_tags if tag is not None])
-                    tag = long_tags[0][2:] if None not in long_tags and len(unique_tags) == 1 else None
-                    abbreviations.append((abbr, long, tag))
-        return abbreviations
+            abbr_spans, long_spans = self.abbreviation_detector.detect_spans(self.raw_tokens)
+            if abbr_spans:
+                for abbr_span in abbr_spans:
+                    abb = " ".join(self.raw_tokens)[abbr_span[0]:abbr_span[1]]
+                    abbr = ("Abbr: ", abb)
+                    abbreviations.append(abbr)
+            if long_spans:
+                for long_span in long_spans:
+                    lon = " ".join(self.raw_tokens)[long_span[0]:long_span[1]]
+                    long = ("LF: ", lon)
+                    long_words.append(long)
+        return abbreviations, long_words
 
     @memoized_property
     def ner_tagged_tokens(self):
@@ -560,7 +558,6 @@ class Sentence(BaseText, ABC):
         spans = []
         raw_tokens = self.raw_tokens
         for index, result in enumerate(self.ner_tags):
-            print(index, result)
             if result == 'MAT':
                 ner_word = raw_tokens[index].replace("(", "\\(").replace(")", "\\)")
                 span = Span(text=raw_tokens[index], start=re.search(ner_word, self.text).start() + self.start,

@@ -188,7 +188,7 @@ class Text(collections.Sequence, BaseText):
         """
         super(Text, self).__init__(text, word_tokenizer=word_tokenizer, lexicon=lexicon, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, parsers=None, **kwargs)
         self.sentence_tokenizer = sentence_tokenizer if sentence_tokenizer is not None else self.sentence_tokenizer
-        self.abbreviation_detector.device = self.device
+        # self.abbreviation_detector.device = self.device
         self.pos_tagger.device = self.device
         self.ner_tagger.device = self.device
 
@@ -499,6 +499,7 @@ class Sentence(BaseText, ABC):
         No corrections from abbreviation detection are performed.
         """
         # log.debug('Getting unprocessed_ner_tags')
+        print(self.pos_tagged_tokens)
         return self.ner_tagger.tag(self.pos_tagged_tokens)
 
     @memoized_property
@@ -507,6 +508,7 @@ class Sentence(BaseText, ABC):
         A list of :class:`str` unprocessed named entity tags for the tokens in this sentence.
         No corrections from abbreviation detection are performed.
         """
+        print(self.unprocessed_ner_tagged_tokens)
         return [tag for token, tag in self.unprocessed_ner_tagged_tokens]
 
     @memoized_property
@@ -558,6 +560,7 @@ class Sentence(BaseText, ABC):
         spans = []
         raw_tokens = self.raw_tokens
         for index, result in enumerate(self.ner_tags):
+            print(index, result)
             if result == 'MAT':
                 ner_word = raw_tokens[index].replace("(", "\\(").replace(")", "\\)")
                 span = Span(text=raw_tokens[index], start=re.search(ner_word, self.text).start() + self.start,

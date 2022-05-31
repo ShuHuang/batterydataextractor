@@ -37,21 +37,26 @@ class CemTagger(BaseTagger):
     def tag(self, tokens):
         """Run individual chemical entity mention taggers and return union of matches, with some postprocessing."""
         # Combine output from individual taggers
-        ner, new_tags = [], []
+        # ner, new_tags = [], []
         for tagger in self.taggers:
             tag_gen = tagger.tag(tokens)
             materials = [tag[0][0] for tag in tag_gen]
             tags = [tag[-1] for tag in tag_gen]
-            seq = [next(group) for key, group in groupby(enumerate(tags), key=itemgetter(1))]
-            if seq[0][-1] == "O":
-                seq = seq[1:]
-            if len(seq) % 2 == 0:
-                token_indices = [(seq[i][0], seq[i+1][0]) for i in range(0, len(seq), 2)]
-            else:
-                token_indices = [(seq[i][0], seq[i+1][0]) for i in range(0, len(seq)-1, 2)]
-                token_indices.append((seq[-1][0], len(materials)))
-            for token_index in token_indices:
-                ner.append(" ".join(materials[token_index[0]:token_index[1]]))
-                new_tags.append("MAT")
-        token_tags = list(zip(ner, new_tags))
+        #     seq = [next(group) for key, group in groupby(enumerate(tags), key=itemgetter(1))]
+        #     print('-----')
+        #     print(materials)
+        #     print(tags)
+        #     print(seq)
+        #     if seq[0][-1] == "O":
+        #         seq = seq[1:]
+        #     if len(seq) % 2 == 0:
+        #         token_indices = [(seq[i][0], seq[i+1][0]) for i in range(0, len(seq), 2)]
+        #     else:
+        #         token_indices = [(seq[i][0], seq[i+1][0]) for i in range(0, len(seq)-1, 2)]
+        #         token_indices.append((seq[-1][0], len(materials)))
+        #     for token_index in token_indices:
+        #         ner.append(" ".join(materials[token_index[0]:token_index[1]]))
+        #         new_tags.append("MAT")
+        # token_tags = list(zip(ner, new_tags))
+        token_tags = list(zip(materials, tags))
         return token_tags

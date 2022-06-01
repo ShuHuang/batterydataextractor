@@ -49,6 +49,7 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
+    'rst2pdf.pdfbuilder'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -111,6 +112,8 @@ latex_elements = {
     #
     # 'figure_align': 'htbp',
 }
+
+pdf_documents = [('index', u'rst2pdf', u'BatteryDataExtractor', 'BatteryDataExtractor')]
 
 
 # -- Options for Epub output -------------------------------------------------

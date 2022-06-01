@@ -75,7 +75,7 @@ Or, the individual tokens::
 NLP toolkits
 ---------------------------------
 
-as well as a list of individual chemical entity mentions (CEMs) of the document::
+BatteryDataExtractor can produce a list of individual chemical entity mentions (CEMs) of the document::
 
     >>> doc.cems
     [Span('lithium', 17, 24),

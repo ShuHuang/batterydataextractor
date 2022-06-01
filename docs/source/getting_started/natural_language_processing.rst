@@ -46,6 +46,16 @@ Use the ``tokens`` property to get the word tokens::
 
 There are also ``raw_sentences`` and ``raw_tokens`` properties that return strings instead of ``Sentence`` and ``Token`` objects.
 
+Set CPU/GPU Device
+---------------------------
+Each document and paragraph are assigned a default ``device`` value as -1 (CPU). You can set the ``device`` as a local GPU rank (e.g. 0, 1) to accelerate the NLP pipeline::
+
+    >>> para.device = 0
+    >>> s = Sentence("Li-ion battery")
+    >>> s.device = 1
+    >>> print(doc.device, para.device, s.device)
+    -1, 0, 1
+
 Part-of-speech Tagging
 ---------------------------
 

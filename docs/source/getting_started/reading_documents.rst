@@ -1,7 +1,16 @@
 =================================
-Reading a Document
+Getting Started
 =================================
 
+Installation
+---------------------------------
+
+You can use ``pip`` to install BatteryDataExtractor (this will be available after the paper is published)::
+
+        pip install batterydataextractor
+
+Reading a Document
+---------------------------------
 Most commonly, you want to pass an entire document file to BatteryDataExtractor. BatteryDataExtractor comes with three built-in Document readers that can read HTML or XML files. These readers are responsible for detecting different elements of a document and recompiling them into a single consistent document structure::
 
     >>> from batterydataextractor import Document
@@ -25,7 +34,8 @@ At present, the available readers are:
     * SpringerXmlReader - For Springer XML with JATS format
     * PlainTextReader - Generic plain text
 
-.. rubric:: Document Elements
+Document Elements
+---------------------------------
 
 Once read, documents are represented by a single linear stream of `element` objects. This stream is now independent of the initial document type or the source::
 
@@ -62,6 +72,8 @@ Or, the individual tokens::
     ...
     ]]
 
+NLP toolkits
+---------------------------------
 
 as well as a list of individual chemical entity mentions (CEMs) of the document::
 
@@ -77,5 +89,5 @@ Each mention is returned as a ``Span``, which contains the mention text, as well
 You can also output the abbreviations found in the document::
 
     >>> doc.abbreviation_definitions
-    [[('Abbr: ', 'ZnTPP')], [('LF: ', 'Zinc tetraphenylporphyrin')]]
+    [[('Abbr: ', 'THF')], [('LF: ', 'Tetrahydrofuran')]]
 

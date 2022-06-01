@@ -16,12 +16,13 @@ Citing:
 BatteryDataExtractor: battery-aware text-mining software embedded with BERT models
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :hidden:
-   :caption: Getting Started
+   :caption: Contents:
    
-   getting_started/installation
    getting_started/reading_documents
    getting_started/automated_model
+   getting_started/natural_language_processing
+
 
    

@@ -1,8 +1,10 @@
 ===========================================
-BERT-based Automated Data Extraction Model
+BERT-based Automated Model
 ===========================================
 
-BatteryDataExtractor can create a BERT-based automated data extraction model for materials property by just providing the list of names of properties::
+Double-turn Question-answering Model
+----------------------------------------------
+BatteryDataExtractor can create a BERT-based automated data extraction model for materials property by just providing the list of names of properties based on the double-turn question-answering strategy::
 
     >>> from batterydataextractor.doc import Document
     >>> doc = Document("The theoretical capacity of graphite is 372 mAh/g... In the case of LiFePO4 chemistry, the absolute maximum voltage is 4.2V per cell.")
@@ -23,6 +25,8 @@ Users can also extract non-battery-related properties and provide the confidence
     >>>     print(record.serialize())
     {'PropertyData': {'value': [146.0, 147.0], 'units': '° C', 'raw_value': '146-147 ° C', 'specifier': 'mp', 'material': 'Aspirin', 'confidence_score': 0.3717, 'original_text': 'The melting point ( mp ) of Aspirin ( C9H8O4 ) : 146-147 ° C .'}}
 
+General Question-answering Model
+----------------------------------------------
 Similarly, the model of data extraction of general information can be created by providing the name of the general infomation::
 
     >>> from batterydataextractor.doc.text import Paragraph

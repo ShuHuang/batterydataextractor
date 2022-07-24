@@ -4,7 +4,6 @@ batterydataextractor.nlp.tag
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tagger implementations. Used for part-of-speech tagging and named entity recognition.
-author:
 """
 from abc import ABCMeta, abstractmethod
 import six

@@ -4,7 +4,6 @@ batterydataextractor.text.normalize
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tools for normalizing text.
-author:
 """
 from abc import ABCMeta, abstractmethod
 import re

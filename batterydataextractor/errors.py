@@ -4,7 +4,6 @@ batterydataextractor.errors
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Error classes for BatteryDataExtractor.
-author:
 """
 
 

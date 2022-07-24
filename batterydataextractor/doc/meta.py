@@ -4,7 +4,6 @@ batterydataextractor.doc.meta
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 MetaData Document elements
-author:
 """
 from .element import BaseElement
 import logging

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """
+batterydataextractor.text.__init__
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tools for processing text.
 """
 import re

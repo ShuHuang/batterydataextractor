@@ -4,7 +4,6 @@ batterydataextractor.text.processors
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Text processors.
-author:
 """
 from abc import ABCMeta, abstractmethod
 import logging

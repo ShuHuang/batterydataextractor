@@ -4,7 +4,6 @@ batterydataextractor.scrape.base
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Base web-scraper
-author: Shu Huang (sh2009@cam.ac.uk)
 """
 from transformers import BertTokenizer, BertForSequenceClassification
 

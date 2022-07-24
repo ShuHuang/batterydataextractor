@@ -4,7 +4,6 @@ batterydataextractor.scrape.springer
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Springer web-scraper
-author: Shu Huang (sh2009@cam.ac.uk)
 """
 import six
 import json

@@ -4,7 +4,6 @@ batterydataextractor.doc.document
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Document model.
-author:
 """
 from abc import ABCMeta, abstractmethod
 import collections
@@ -276,7 +275,6 @@ class Document(BaseDocument):
             #     model.update(element_definitions)
 
             el_records = el.records
-#sh-- turn off interdependency resolution here
             # Save the title compound
             if isinstance(el, Title):
                 if len(el_records) == 1 and isinstance(el_records[0], Compound) and el_records[0].is_id_only:
@@ -304,11 +302,9 @@ class Document(BaseDocument):
                         if sent_record.names:
                             head_def_record = sent_record
                             head_def_record_i = i
-# sh-- turn off
 
             #: BACKWARD INTERDEPENDENCY RESOLUTION BEGINS HERE
             for record in el_records:
-# sh-- turn off interdependency resolution here
                 if isinstance(record, Compound):
                     # Keep track of the most recent compound record with labels
                     # Heading records with compound ID's
@@ -348,29 +344,11 @@ class Document(BaseDocument):
                                 elif title_record:
                                     record.compound = title_record
                         else:
-                            # Consider continue here to filter records missing name/label...
                             pass
-# sh-- Turn off
+
                 if record not in records:
                     log.debug(record.serialize())
                     records.append(record)
-
-        # Merge abbreviation definitions
-        # for record in records:
-        #     compound = None
-        #     if hasattr(record, 'compound'):
-        #         compound = record.compound
-        #     elif isinstance(record, Compound):
-        #         compound = record
-        #     if compound is not None:
-        #         for short, long_, entity in self.abbreviation_definitions:
-        #             if entity == 'MAT':
-        #                 name = ' '.join(long_)
-        #                 abbrev = ' '.join(short)
-        #                 if name in compound.names and abbrev not in compound.names:
-        #                     compound.names.append(abbrev)
-        #                 if abbrev in compound.names and name not in compound.names:
-        #                     compound.names.append(name)
 
         # clean up records
         cleaned_records = ModelList()

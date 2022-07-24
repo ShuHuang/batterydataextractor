@@ -4,7 +4,6 @@ batterydataextractor.doc.element
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Document elements.
-author:
 """
 from abc import ABCMeta, abstractmethod
 import json

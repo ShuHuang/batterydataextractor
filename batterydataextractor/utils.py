@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """
+batterydataextractor.utils
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Miscellaneous utility functions.
 """
 import errno

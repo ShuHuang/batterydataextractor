@@ -4,7 +4,6 @@ batterydataextractor.parse.base
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Base classes for parsing sentences and tables.
-author:
 """
 from abc import abstractmethod, ABC
 import logging

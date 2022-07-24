@@ -4,7 +4,6 @@ batterydataextractor.reader.markup
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 XML and HTML readers based on lxml.
-author:
 """
 import logging
 import six

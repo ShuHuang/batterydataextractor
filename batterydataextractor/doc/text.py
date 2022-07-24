@@ -4,7 +4,6 @@ batterydataextractor.doc.text
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Text-based document elements.
-author:
 """
 from abc import abstractmethod, ABC
 import collections

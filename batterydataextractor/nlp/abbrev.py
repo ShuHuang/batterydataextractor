@@ -4,7 +4,6 @@ batterydataextractor.nlp.abbrev
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Abbreviation detection.
-author:
 """
 from transformers import pipeline, AutoTokenizer
 from abc import ABCMeta

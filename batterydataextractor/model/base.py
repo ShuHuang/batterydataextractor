@@ -4,7 +4,6 @@ batterydataextractor.model.base
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Data model for extracted information.
-author:
 """
 import copy
 from abc import ABCMeta

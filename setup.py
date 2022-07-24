@@ -9,16 +9,18 @@ author: Shu Huang (sh2009@cam.ac.uk)
 import os
 from setuptools import setup, find_packages
 
-with open('LICENSE', encoding='utf8') as f:
+with open('LICENSE', encoding='utf-8') as f:
     license = f.read()
 
-with open('requirements.txt', encoding='utf8') as f:
+with open('requirements.txt', encoding='utf-8') as f:
     reqs = f.read()
 
 if os.path.exists('README.md'):
     long_description = open('README.md').read()
 else:
-    long_description = '''BatteryDataExtractor: A battery version of ChemDataExtractor based on BatteryBERT models.'''
+    long_description = '''BatteryDataExtractor is the first property-specific text-mining tool for auto-generating 
+    databases of materials and their property, device, and associated characteristics. The software has been 
+    constructed by embedding the BatteryBERT model.'''
 
 setup(
     name='batterydataextractor',
@@ -28,7 +30,7 @@ setup(
     license=license,
     url='https://github.com/ShuHuang/batterydataextractor',
     packages=find_packages(),
-    description='BatteryDataExtractor: A battery version of ChemDataExtractor based on BatteryBERT models.',
+    description='BatteryDataExtractor: battery-aware text-mining software embedded with BERT models',
     long_description=long_description,
     keywords='bde ',
     zip_safe=False,

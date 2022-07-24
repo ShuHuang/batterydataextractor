@@ -4,7 +4,6 @@ batterydataextractor.parse.cem
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Chemical entity mention parser elements.
-author:
 """
 import logging
 from .base import BaseSentenceParser

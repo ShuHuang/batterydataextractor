@@ -4,7 +4,6 @@ batterydataextractor.reader.rsc
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 RSC reader
-author:
 """
 import logging
 

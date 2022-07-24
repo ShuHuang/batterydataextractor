@@ -4,7 +4,6 @@ batterydataextractor.scrape.elsevier
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Elsevier web-scraper
-author: Shu Huang (sh2009@cam.ac.uk)
 """
 import six
 import json

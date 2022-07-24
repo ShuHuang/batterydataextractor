@@ -6,7 +6,6 @@ batterydataextractor.nlp.lexicon
 Cache features of previously seen words. (No Brown word clusters)
 When processing documents, BDE adds each unique word that it encounters to the Lexicon as a Lexeme.
 Each Lexeme stores various word features, so they don’t have to be re-calculated for every occurrence of that word.
-author:
 """
 import logging
 

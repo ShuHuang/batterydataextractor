@@ -4,8 +4,6 @@ batterydataextractor.reader.elsevier
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Elsevier XML reader
-coauthor:: Callum Court <cc889@cam.ac.uk>
-author:
 """
 from ..scrape.clean import clean, Cleaner
 from ..scrape.elsevier import fix_elsevier_xml_whitespace, els_xml_whitespace, els_clean_abstract

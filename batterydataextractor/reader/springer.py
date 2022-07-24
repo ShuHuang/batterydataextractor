@@ -4,7 +4,6 @@ batterydataextractor.reader.springer
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Springer XML reader
-author: Shu Huang
 """
 from ..scrape.clean import clean, Cleaner
 from ..scrape.springer import spr_clean_abstract, spr_clean_ref

@@ -4,7 +4,6 @@ batterydataextractor.reader.__init__
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Paper reader
-author:
 """
 from .elsevier import ElsevierXmlReader
 from .markup import HtmlReader, XmlReader

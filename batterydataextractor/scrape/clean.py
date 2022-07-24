@@ -4,7 +4,6 @@ batterydataextractor.reader.clean
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Tools for cleaning up XML/HTML by removing tags entirely or replacing with their contents.
-author:
 """
 import copy
 import logging

@@ -4,7 +4,6 @@ batterydataextractor.model.model
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Model classes for physical properties.
-author:
 """
 import logging
 

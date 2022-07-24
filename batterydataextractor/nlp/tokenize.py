@@ -4,7 +4,6 @@ batterydataextractor.nlp.tokenize
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Word and sentence tokenizers.
-author:
 """
 from abc import ABCMeta, abstractmethod
 import logging

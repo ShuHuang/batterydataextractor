@@ -4,7 +4,6 @@ batterydataextractor.reader.plaintext
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Plain text document reader.
-author:
 """
 import re
 import six

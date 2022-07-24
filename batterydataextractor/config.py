@@ -4,7 +4,6 @@ batterydataextractor.config
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Config file reader/writer.
-author:
 """
 import io
 import os
@@ -33,7 +32,7 @@ class Config(MutableMapping):
     The file location may be specified::
         c = Config('~/matt/anotherconfig.yml')
         c['where'] = 'in a different file'
-    If no location is specified, the environment variable CHEMDATAEXTRACTOR_CONFIG is checked and used if available.
+    If no location is specified, the environment variable BATTERYDATAEXTRACTOR_CONFIG is checked and used if available.
     Otherwise, a standard config location is used, which varies depending on the operating system. You can check the
     location using the ``path`` property. For more information see https://github.com/ActiveState/appdirs
     It is possible to edit the file by hand with a text editor. It is in YAML format.
@@ -50,13 +49,13 @@ class Config(MutableMapping):
 
         # Use BATTERYDATAEXTRACTOR_CONFIG environment variable if set
         if not self._path:
-            self._path = os.environ.get('CHEMDATAEXTRACTOR_CONFIG')
+            self._path = os.environ.get('BATTERYDATAEXTRACTOR_CONFIG')
         # Use OS-dependent config directory given by appdirs
         if not self._path:
             if sys.version_info[0] == 2:
                 self._path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'python2_config.yml')
             else:
-                self._path = os.path.join(appdirs.user_config_dir('ChemDataExtractor'), 'chemdataextractor.yml')
+                self._path = os.path.join(appdirs.user_config_dir('BatteryDataExtractor'), 'batterydataextractor.yml')
         if os.path.isfile(self.path):
             with io.open(self.path, encoding='utf8') as f:
                 self._data = yaml.safe_load(f)

@@ -4,7 +4,6 @@ batterydataextractor.scrape.rsc
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The Royal Society of Chemistry (RSC) web scraper. Please get the permission from RSC before web-scraping.
-author: Shu Huang (sh2009@cam.ac.uk)
 """
 import re
 import requests

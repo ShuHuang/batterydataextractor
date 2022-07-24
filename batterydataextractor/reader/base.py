@@ -4,10 +4,8 @@ batterydataextractor.reader.base
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Base reader
-author:
 """
 from abc import ABCMeta, abstractmethod
-
 import six
 
 

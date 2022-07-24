@@ -4,7 +4,6 @@ batterydataextractor.parse.bert
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Bert parsers.
-author:
 """
 import logging
 import re

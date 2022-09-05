@@ -11,4 +11,5 @@ cssselect>=1.1.0
 appdirs>=1.4.4
 scispacy>=0.4.0
 spacy==3.0.7
+rst2pdf>=0.98
 https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.4.0/en_core_sci_sm-0.4.0.tar.gz

@@ -1,4 +1,6 @@
 # BatteryDataExtractor
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](https://github.com/shuhuang/batterydataextractor/blob/master/LICENSE)
+
 BatteryDataExtractor is a battery-aware text-mining software embedded with BERT models for automatically extracting chemical information from scientific literature. Full details available at [Documentation](https://batterydataextractor.readthedocs.io/en/latest/index.html).
 
 ## Features

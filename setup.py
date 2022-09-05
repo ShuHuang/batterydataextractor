@@ -13,7 +13,7 @@ with open('LICENSE', encoding='utf-8') as f:
 
 setup(
     name='batterydataextractor',
-    version='0.0.2',
+    version='0.0.5',
     author='Shu Huang',
     author_email='sh2009@cam.ac.uk',
     license=license,

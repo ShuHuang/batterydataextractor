@@ -21,7 +21,7 @@ class BertParser(BaseSentenceParser, ABC):
 
     def qa_model(self, model_name="batterydata/batterybert-cased-squad-v1") -> pipeline:
         return pipeline('question-answering', model=model_name, device=self.model.device,
-                        tokenizer=AutoTokenizer.from_pretrained(model_name, model_max_length=512, use_auth_token=True))
+                        tokenizer=AutoTokenizer.from_pretrained(model_name, model_max_length=512))
 
 
 class BertMaterialParser(BertParser):

@@ -1,5 +1,5 @@
 # BatteryDataExtractor
-BatteryDataExtractor is a battery-aware text-mining software embedded with BERT models for automatically extracting chemical information from scientific literature.
+BatteryDataExtractor is a battery-aware text-mining software embedded with BERT models for automatically extracting chemical information from scientific literature. Full details available at [Documentation](https://batterydataextractor.readthedocs.io/en/latest/index.html).
 
 ### Installation 
 Note: this command will be available after the paper has been accepted for publication:

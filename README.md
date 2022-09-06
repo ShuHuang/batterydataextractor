@@ -5,8 +5,8 @@ BatteryDataExtractor is a battery-aware text-mining software embedded with BERT 
 
 ## Features
    * Open-source battery-specific literature-mining toolkit
-   * BERT-based token-classification models: abbreviation detection, part-of-speech tagging, chemical-named-entity recognition
    * Double-turn question-answering model for the data extraction of materials and properties
+   * BERT-based token-classification models: abbreviation detection, part-of-speech tagging, chemical-named-entity recognition
    * State-of-the-art performance on downstream evaluation data sets
    * Updated NLP plugins: new web scrapers, document readers, and tokenizers
    * New options: database auto-saving, original text-saving, and device-selection
@@ -57,6 +57,8 @@ Ask self-defined questions:
 ### BERT-based NLP toolkit
 Usage of new NLP toolkit can be found at [Documentation](https://batterydataextractor.readthedocs.io/en/latest/getting_started/natural_language_processing.html). BERT-based functionalities include part-of-speech (POS) tagging, abbreviation detection, and chemical named entity recognition.
 
-## Citation
+## Acknowledgements
+This project was financially supported by the [Science and Technology Facilities Council (STFC)](https://www.ukri.org/councils/stfc/), the [Royal Academy of Engineering](https://raeng.org.uk/) (RCSRF1819\7\10) and [Christ's College, Cambridge](https://www.christs.cam.ac.uk/). The Argonne Leadership Computing Facility, which is a [DOE Office of Science Facility](https://science.osti.gov/), is also acknowledged for use of its research resources, under contract No. DEAC02-06CH11357.
 
-BatteryDataExtractor: battery-aware text-mining software embedded with BERT models
+## Citation
+S. Huang, J. M. Cole, "BatteryDataExtractor: battery-aware text-mining software embedded with BERT models", Chemical Science (in press, 2022).

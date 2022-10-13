@@ -503,7 +503,8 @@ class Document(BaseDocument):
     def _repr_html_(self):
         html_lines = ['<div class="cde-document">']
         for element in self.elements:
-            html_lines.append(element._repr_html_())
+            if hasattr(element, '_repr_html_'):
+                html_lines.append(element._repr_html_())
         html_lines.append('</div>')
         return '\n'.join(html_lines)
 

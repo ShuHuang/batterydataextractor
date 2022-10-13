@@ -13,7 +13,7 @@ with open('LICENSE', encoding='utf-8') as f:
 
 setup(
     name='batterydataextractor',
-    version='0.0.5',
+    version='0.0.6',
     author='Shu Huang',
     author_email='sh2009@cam.ac.uk',
     license=license,
@@ -29,7 +29,7 @@ setup(
         'selenium>=4.1.0',
         'requests>=2.27.1',
         'beautifulsoup4>=4.10.0',
-        'numpy>=1.22.0',
+        'numpy',
         'torch>=1.11.0',
         'torchvision>=0.12.0',
         'torchaudio>=0.11.0',

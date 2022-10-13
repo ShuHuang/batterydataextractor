@@ -2,7 +2,7 @@ import logging
 import unittest
 
 from batterydataextractor.doc.document import Document
-from batterydataextractor.doc.text import Heading, Paragraph
+from batterydataextractor.doc.text import Heading1, Paragraph
 
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ class TestParseHeading(unittest.TestCase):
     maxDiff = None
 
     def do_parse(self, input, expected):
-        s = Heading(input)
+        s = Heading1(input)
         log.debug(s)
         log.debug(s.tagged_tokens)
         results = [r.serialize() for r in s.records]
@@ -89,8 +89,8 @@ class TestParseDocument(unittest.TestCase):
 
     def test_consecutive_headings(self):
         d = Document(
-            Heading('Preparation of 2-Amino-3-methoxy-5-chloropyridine'),
-            Heading('Example 3'),
+            Heading1('Preparation of 2-Amino-3-methoxy-5-chloropyridine'),
+            Heading1('Example 3'),
             Paragraph('The solid is suspended in hexanes, stirred and filtered to give the product as a bright yellow solid. (MP 93-94\xc2\xb0 C.).')
         )
         results = [r.serialize() for r in d.records]

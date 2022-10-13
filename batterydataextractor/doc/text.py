@@ -23,14 +23,14 @@ from ..utils import memoized_property
 from .element import BaseElement
 from ..text import CONTROL_RE
 
-
 log = logging.getLogger(__name__)
 
 
 class BaseText(BaseElement):
     """Abstract base class for a text Document Element."""
 
-    def __init__(self, text, word_tokenizer=None, lexicon=None, abbreviation_detector=None, pos_tagger=None, ner_tagger=None, **kwargs):
+    def __init__(self, text, word_tokenizer=None, lexicon=None, abbreviation_detector=None, pos_tagger=None,
+                 ner_tagger=None, **kwargs):
         """
         .. note::
             If intended as part of a :class:`~batterydataextractor.doc.document.Document`,
@@ -154,7 +154,8 @@ class Text(collections.Sequence, BaseText):
     pos_tagger = BertTagger()
     ner_tagger = CemTagger()
 
-    def __init__(self, text, sentence_tokenizer=None, word_tokenizer=None, lexicon=None, abbreviation_detector=None, pos_tagger=None, ner_tagger=None, parsers=None, **kwargs):
+    def __init__(self, text, sentence_tokenizer=None, word_tokenizer=None, lexicon=None, abbreviation_detector=None,
+                 pos_tagger=None, ner_tagger=None, parsers=None, **kwargs):
         """
         .. note::
             If intended as part of a :class:`~batterydataextractor.doc.document.Document`,
@@ -217,7 +218,8 @@ class Text(collections.Sequence, BaseText):
             if 'LEXICON' in c.keys():
                 self.lexicon = eval(c['LEXICON'])()
             if 'PARSERS' in c.keys():
-                raise(DeprecationWarning('Manually setting parsers deprecated, any settings from config files for this will be ignored.'))
+                raise (DeprecationWarning(
+                    'Manually setting parsers deprecated, any settings from config files for this will be ignored.'))
 
     @memoized_property
     def sentences(self):
@@ -358,14 +360,34 @@ class Title(Text, ABC):
         return '<h1 class="bde-title">' + self.text + '</h1>'
 
 
-class Heading(Text):
+class Heading1(Text):
 
     def __init__(self, text, **kwargs):
-        super(Heading, self).__init__(text, **kwargs)
+        super(Heading1, self).__init__(text, **kwargs)
         self.models = [Compound]
 
     def _repr_html_(self):
         return '<h2 class="bde-title">' + self.text + '</h2>'
+
+
+class Heading2(Text):
+
+    def __init__(self, text, **kwargs):
+        super(Heading2, self).__init__(text, **kwargs)
+        self.models = [Compound]
+
+    def _repr_html_(self):
+        return '<h3 class="bde-title">' + self.text + '</h3>'
+
+
+class Heading3(Text):
+
+    def __init__(self, text, **kwargs):
+        super(Heading3, self).__init__(text, **kwargs)
+        self.models = [Compound]
+
+    def _repr_html_(self):
+        return '<h4 class="bde-title">' + self.text + '</h4>'
 
 
 class Paragraph(Text):
@@ -423,7 +445,8 @@ class Sentence(BaseText, ABC):
     pos_tagger = BertTagger()
     ner_tagger = CemTagger()
 
-    def __init__(self, text, start=0, end=None, word_tokenizer=None, lexicon=None, abbreviation_detector=None, pos_tagger=None, ner_tagger=None, **kwargs):
+    def __init__(self, text, start=0, end=None, word_tokenizer=None, lexicon=None, abbreviation_detector=None,
+                 pos_tagger=None, ner_tagger=None, **kwargs):
         """
         .. note::
             If intended as part of a :class:`batterydataextractor.doc.document.Document`,
@@ -454,7 +477,9 @@ class Sentence(BaseText, ABC):
             this is set automatically to be the same as that of the containing element, unless manually set otherwise.
         """
         self.models = [Compound]
-        super(Sentence, self).__init__(text, word_tokenizer=word_tokenizer, lexicon=lexicon, abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger, ner_tagger=ner_tagger, **kwargs)
+        super(Sentence, self).__init__(text, word_tokenizer=word_tokenizer, lexicon=lexicon,
+                                       abbreviation_detector=abbreviation_detector, pos_tagger=pos_tagger,
+                                       ner_tagger=ner_tagger, **kwargs)
         #: The start index of this sentence within the text passage.
         self.start = start
         #: The end index of this sentence within the text passage.

@@ -16,8 +16,9 @@ from lxml.html import HTMLParser
 
 from ..errors import ReaderError
 from ..doc.document import Document
-from ..doc.text import Title, Heading, Paragraph, Citation, Text, Sentence, Abstract
+from ..doc.text import Title, Heading1, Heading2, Heading3, Paragraph, Citation, Text, Sentence, Abstract
 from ..doc.meta import MetaData
+from ..doc.head import HeadData
 from ..scrape.clean import clean
 from ..scrape.csstranslator import CssHTMLTranslator
 from .base import BaseReader
@@ -42,7 +43,9 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
 
     root_css = 'html'
     title_css = 'h1'
-    heading_css = 'h2, h3, h4, h5, h6'
+    heading1_css = 'h2'
+    heading2_css = 'h3'
+    heading3_css = 'h4, h5, h6'
     reference_css = 'a.ref'
     citation_css = 'cite'
     abstract_css = 'div[class="abstract"], p[class="abstract"]'
@@ -61,6 +64,13 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
     metadata_lastpage_css = 'meta[name="citation_lastpage"]::attr("content")'
     metadata_pdf_url_css = 'meta[name="citation_pdf_url"]::attr("content")'
     metadata_html_url_css = 'meta[name="citation_fulltext_html_url"]::attr("content"), meta[name="citation_abstract_html_url"]::attr("content")'
+
+    headdata_css = 'head'
+    headdata_title_css = 'meta[name="DC.title"]::attr("content"), meta[name="citation_title"]::attr("content")'
+    headdata_author_css = 'meta[name="DC.Creator"]::attr("content"), meta[name="citation_author"]::attr("content")'
+    headdata_date_css = 'meta[name="DC.Date"]::attr("content"), meta[name="citation_date"]::attr("content"), meta[name="citation_online_date"]::attr("content")'
+    headdata_abstract_css = 'meta[name="DC.Description"]::attr("content"), meta[name="citation_abstract"]::attr("content")'
+    headdata_keywords_css = 'meta[name="DC.Subject"]::attr("content"), meta[name="citation_keywords"]::attr("content")'
 
     ignore_css = 'a.ref sup'
 
@@ -181,6 +191,23 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
         meta = MetaData(metadata)
         return [meta]
 
+    def _parse_headdata(self, el, refs, specials):
+        title = self._css(self.headdata_title_css, el)
+        authors = self._css(self.headdata_author_css, el)
+        date = self._css(self.headdata_date_css, el)
+        abstract = self._css(self.headdata_abstract_css, el)
+        keywords = self._css(self.headdata_keywords_css, el)
+
+        headdata = {
+                '_title': title[0] if title else None,
+                '_authors': authors if authors else None,
+                '_date': date[0] if date else None,
+                '_abstract': abstract[0] if abstract else None,
+                '_keywords': keywords if keywords else None
+                }
+        head = HeadData(headdata)
+        return [head]
+
     @staticmethod
     def _xpath(query, root):
         result = root.xpath(query, smart_strings=False)
@@ -215,20 +242,29 @@ class LxmlReader(six.with_metaclass(ABCMeta, BaseReader)):
         specials = {}
         refs = defaultdict(list)
         titles = self._css(self.title_css, root)
-        headings = self._css(self.heading_css, root)
+        headings1 = self._css(self.heading1_css, root)
+        headings2 = self._css(self.heading2_css, root)
+        headings3 = self._css(self.heading3_css, root)
         abstracts = self._css(self.abstract_css, root)
         citations = self._css(self.citation_css, root)
         references = self._css(self.reference_css, root)
         ignores = self._css(self.ignore_css, root)
         metadata = self._css(self.metadata_css, root)
+        headdata = self._css(self.headdata_css, root)
         for reference in references:
             refs[reference.getparent()].extend(self._parse_reference(reference))
         for title in titles:
             specials[title] = self._parse_text(title, element_cls=Title, refs=refs, specials=specials)
-        for heading in headings:
-            specials[heading] = self._parse_text(heading, element_cls=Heading, refs=refs, specials=specials)
+        for heading1 in headings1:
+            specials[heading1] = self._parse_text(heading1, element_cls=Heading1, refs=refs, specials=specials)
+        for heading2 in headings2:
+            specials[heading2] = self._parse_text(heading2, element_cls=Heading2, refs=refs, specials=specials)
+        for heading3 in headings3:
+            specials[heading3] = self._parse_text(heading3, element_cls=Heading3, refs=refs, specials=specials)
         for citation in citations:
             specials[citation] = self._parse_text(citation, element_cls=Citation, refs=refs, specials=specials)
+        for hd in headdata:
+            specials[hd] = self._parse_headdata(hd, refs=refs, specials=specials)
         for md in metadata:
             specials[md] = self._parse_metadata(md, refs=refs, specials=specials)
         for abstract in abstracts:

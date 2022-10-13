@@ -44,7 +44,8 @@ class TestElsXMLReader(unittest.TestCase):
         fname = 'els_test2.xml'
         f = io.open(os.path.join(os.path.dirname(__file__), 'testpapers', fname), 'rb')
         d = Document.from_file(f, readers=[ElsevierXmlReader()])
-        self.assertEqual(len(d.elements), 56)
+        self.assertEqual(d.headdata[0].title, 'The effect of temperature on the electrode properties of the directly prepared Ti3Ni2 alloy')
+        self.assertEqual(len(d.elements), 50)
 
 
 if __name__ == '__main__':

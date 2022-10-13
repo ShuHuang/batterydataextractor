@@ -22,7 +22,7 @@ class SpringerXmlReader(XmlReader):
 
     root_css = 'article'
     title_css = 'article-title'
-    heading_css = 'title'
+    heading1_css = 'title'
     reference_css = 'xref'
     citation_css = 'ref'
     abstract_css = 'abstract'
@@ -31,7 +31,7 @@ class SpringerXmlReader(XmlReader):
 
     metadata_css = 'front'
     metadata_title_css = 'article-title'
-    metadata_author_css = 'surname'
+    metadata_author_css = 'name'
     metadata_journal_css = 'journal-title'
     metadata_volume_css = 'volume'
     metadata_issue_css = 'issue'
@@ -78,7 +78,7 @@ class SpringerXmlReader(XmlReader):
 
         metadata = {
                 '_title': title[0].text if title else None,
-                '_authors': [i.text for i in authors] if authors else None,
+                '_authors': [author.getchildren()[1].text + " " + author.getchildren()[0].text for author in authors] if authors else None,
                 '_publisher': publisher[0].text if publisher else None,
                 '_journal': journal[0].text if journal else None,
                 '_date': date if date else None,

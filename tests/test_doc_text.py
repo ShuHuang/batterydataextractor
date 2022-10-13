@@ -3,7 +3,7 @@ import unittest
 import os
 
 from batterydataextractor.doc.document import Document
-from batterydataextractor.doc.text import Paragraph, Title, Heading, Caption, Footnote
+from batterydataextractor.doc.text import Paragraph, Title, Heading1, Caption, Footnote
 # from batterydataextractor.config import Config
 # from batterydataextractor.model import Compound, NmrSpectrum, IrSpectrum, UvvisSpectrum, MeltingPoint, GlassTransition
 from batterydataextractor.nlp import *

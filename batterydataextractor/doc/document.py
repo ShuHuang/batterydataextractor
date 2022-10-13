@@ -14,9 +14,10 @@ import logging
 
 import six
 
-from .text import Paragraph, Citation, Footnote, Heading, Title, Caption
+from .text import Paragraph, Citation, Footnote, Heading1, Heading2, Heading3, Title, Caption
 from .element import CaptionedElement
 from .meta import MetaData
+from .head import HeadData
 from ..errors import ReaderError
 from ..model.base import ModelList
 from ..model.model import PropertyData, Compound, GeneralInfo
@@ -201,7 +202,7 @@ class Document(BaseDocument):
             f = io.open(f, 'rb')
         if not fname and hasattr(f, 'name'):
             fname = f.name
-        return cls.from_string(f.read(), fname=fname, readers=readers)
+        return cls.from_string(f.read().replace(b"<head>", b"<ce:head>").replace(b"</head>", b"</ce:head>"), fname=fname, readers=readers)
 
     @classmethod
     def from_string(cls, fstring, fname=None, readers=None):
@@ -281,7 +282,7 @@ class Document(BaseDocument):
                     title_record = el_records[0]
 
             # Reset head_def_record unless consecutive heading with no records
-            if isinstance(el, Heading) and head_def_record is not None:
+            if isinstance(el, Heading1) and head_def_record is not None:
                 if not (i == head_def_record_i + 1 and len(el.records) == 0):
                     head_def_record = None
                     head_def_record_i = None
@@ -295,7 +296,7 @@ class Document(BaseDocument):
             # Paragraph with multiple sentences
             # We assume that if the first sentence of a paragraph contains only 1 ID Record, we can treat it as a header definition record, unless directly proceeding a header def record
             elif isinstance(el, Paragraph) and len(el.sentences) > 0:
-                if not (isinstance(self.elements[i - 1], Heading) and head_def_record_i == i - 1):
+                if not (isinstance(self.elements[i - 1], Heading1) and head_def_record_i == i - 1):
                     first_sent_records = el.sentences[0].records
                     if len(first_sent_records) == 1 and isinstance(first_sent_records[0], Compound) and first_sent_records[0].is_id_only:
                         sent_record = first_sent_records[0]
@@ -308,11 +309,11 @@ class Document(BaseDocument):
                 if isinstance(record, Compound):
                     # Keep track of the most recent compound record with labels
                     # Heading records with compound ID's
-                    if isinstance(el, Heading) and record.names:
+                    if isinstance(el, Heading1) and record.names:
                         head_def_record = record
                         head_def_record_i = i
                         # If 2 consecutive headings with compound ID, merge in from previous
-                        if i > 0 and isinstance(self.elements[i - 1], Heading):
+                        if i > 0 and isinstance(self.elements[i - 1], Heading1):
                             prev = self.elements[i - 1]
                             if (len(el.records) == 1 and record.is_id_only and len(prev.records) == 1 and
                                 isinstance(prev.records[0], Compound) and prev.records[0].is_id_only and
@@ -401,11 +402,25 @@ class Document(BaseDocument):
         return [el for el in self.elements if isinstance(el, Title)]
 
     @property
-    def headings(self):
+    def headings1(self):
         """
-        A list of all :class:`~batterydataextractor.doc.text.Heading` elements in this Document.
+        A list of all :class:`~batterydataextractor.doc.text.Heading1` elements in this Document.
         """
-        return [el for el in self.elements if isinstance(el, Heading)]
+        return [el for el in self.elements if isinstance(el, Heading1)]
+
+    @property
+    def headings2(self):
+        """
+        A list of all :class:`~batterydataextractor.doc.text.Heading2` elements in this Document.
+        """
+        return [el for el in self.elements if isinstance(el, Heading2)]
+
+    @property
+    def headings3(self):
+        """
+        A list of all :class:`~batterydataextractor.doc.text.Heading3` elements in this Document.
+        """
+        return [el for el in self.elements if isinstance(el, Heading3)]
 
     @property
     def paragraphs(self):
@@ -433,6 +448,12 @@ class Document(BaseDocument):
         """Return metadata information
         """
         return [el for el in self.elements if isinstance(el, MetaData)]
+
+    @property
+    def headdata(self):
+        """Return header information
+        """
+        return [el for el in self.elements if isinstance(el, HeadData)]
 
     @property
     def abbreviation_definitions(self):

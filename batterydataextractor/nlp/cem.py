@@ -6,6 +6,7 @@ batterydataextractor.nlp.cem
 Named entity recognition (NER) for Chemical entity mentions (CEM).
 """
 from .tag import BertTagger, BaseTagger
+from transformers import pipeline, AutoTokenizer
 
 
 class BertCemTagger(BertTagger):

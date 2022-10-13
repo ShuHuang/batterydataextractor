@@ -45,6 +45,8 @@ class TestSpringerXMLReader(unittest.TestCase):
         f = io.open(os.path.join(os.path.dirname(__file__), 'testpapers', fname), 'rb')
         d = Document.from_file(f, readers=[SpringerXmlReader()])
         self.assertEqual(len(d.elements), 60)
+        self.assertEqual(d.metadata[0].authors, ['Hua-Chao Tao', 'Xue-Lin Yang', 'Lu-Lu Zhang', 'Shi-Bing Ni'])
+        self.assertEqual(d.headdata, [])
 
 
 if __name__ == '__main__':

@@ -8,6 +8,7 @@ Elsevier XML reader
 from ..scrape.clean import clean, Cleaner
 from ..scrape.elsevier import fix_elsevier_xml_whitespace, els_xml_whitespace, els_clean_abstract
 from ..doc.meta import MetaData
+from ..doc.head import HeadData
 from .markup import XmlReader
 from lxml import etree
 
@@ -41,9 +42,10 @@ class ElsevierXmlReader(XmlReader):
 
     root_css = 'default|full-text-retrieval-response'
     title_css = 'dc|title, ce|title'
-    heading_css = 'ce|section-title'
+    heading1_css = 'ce|section-title'
     abstract_css = 'ce|abstract'
     table_css = 'ce|table'
+
     metadata_css = 'xocs|meta'
     metadata_title_css = 'xocs|normalized-article-title'
     metadata_author_css = 'xocs|normalized-first-auth-surname'
@@ -58,6 +60,14 @@ class ElsevierXmlReader(XmlReader):
     metadata_pii_css = 'xocs|pii-unformatted'
     reference_css = 'ce|cross-refs, ce|cross-ref'
     citation_css = 'ce|bib-reference'
+
+    headdata_css = 'ce|head'
+    headdata_title_css = 'ce|title'
+    headdata_author_css = 'ce|author'
+    headdata_date_css = 'ce|date-accepted'
+    headdata_abstract_css = 'ce|simple-para'
+    headdata_keywords_css = 'ce|keyword'
+
     ignore_css = 'ce|acknowledgment, ce|correspondence, ce|author, ce|doi, ja|jid, ja|aid, ce|pii, ' \
                  'xocs|oa-sponsor-type, xocs|open-access, default|openaccess, ce|article-number,'\
                  'default|openaccessArticle, dc|format, dc|creator, dc|identifier,'\
@@ -115,3 +125,25 @@ class ElsevierXmlReader(XmlReader):
         }
         meta = MetaData(metadata)
         return [meta]
+
+    def _parse_headdata(self, el, refs, specials):
+        title = self._css(self.headdata_title_css, el)
+        authors = self._css(self.headdata_author_css, el)
+        date = self._css(self.headdata_date_css, el)
+        abstract = self._css(self.headdata_abstract_css, el)
+        keywords = self._css(self.headdata_keywords_css, el)
+        if date:
+            year = date[0].attrib['year']
+            month = date[0].attrib['month'] if len(date[0].attrib['month']) == 2 else '0' + date[0].attrib['month']
+            day = date[0].attrib['day'] if len(date[0].attrib['day']) == 2 else '0' + date[0].attrib['day']
+            dates = year + month + day
+
+        headdata = {
+                '_title': title[0].text if title else None,
+                '_authors': [author.getchildren()[0].text + " " + author.getchildren()[1].text for author in authors] if authors else None,
+                '_date': dates if date else None,
+                '_keywords': [i.getchildren()[0].text for i in keywords] if keywords else None,
+                '_abstract': abstract[0].text if abstract else None
+                }
+        head = HeadData(headdata)
+        return [head]

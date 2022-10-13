@@ -44,7 +44,8 @@ class TestRscHtmlReader(unittest.TestCase):
         f = io.open(os.path.join(os.path.dirname(__file__), 'testpapers', fname), 'rb')
         d = Document.from_file(f, readers=[RscHtmlReader()])
         self.assertEqual(len(d.elements), 60)
-
+        self.assertEqual(d.metadata[0].title, 'Surface modification of electrospun TiO 2 nanofibers via layer-by-layer self-assembly for high-performance lithium-ion batteries  ')
+        self.assertEqual(d.headdata, [])
 
 if __name__ == '__main__':
     unittest.main()

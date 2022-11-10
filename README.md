@@ -12,10 +12,11 @@ BatteryDataExtractor is a battery-aware text-mining software embedded with BERT 
    * New options: database auto-saving, original text-saving, and device-selection
    
 ## Installation 
-Note: this command will be available after the paper has been accepted for publication:
 ```angular2html
 pip install batterydataextractor
 ```
+Note: We only support Python version <= 3.9.13 due to the Spacy conflict issue.
+
 
 ## Usage
 ### BERT-based Automated Model
@@ -61,4 +62,16 @@ Usage of new NLP toolkit can be found at [Documentation](https://batterydataextr
 This project was financially supported by the [Science and Technology Facilities Council (STFC)](https://www.ukri.org/councils/stfc/), the [Royal Academy of Engineering](https://raeng.org.uk/) (RCSRF1819\7\10) and [Christ's College, Cambridge](https://www.christs.cam.ac.uk/). The Argonne Leadership Computing Facility, which is a [DOE Office of Science Facility](https://science.osti.gov/), is also acknowledged for use of its research resources, under contract No. DEAC02-06CH11357.
 
 ## Citation
-S. Huang, J. M. Cole, "BatteryDataExtractor: battery-aware text-mining software embedded with BERT models", Chemical Science (in press, 2022).
+S. Huang, J. M. Cole, BatteryDataExtractor: battery-aware text-mining software embedded with BERT models, Chem. Sci., 2022,13, 11487-11495.
+```
+@article{huang2022batterydataextractor,
+  title={BatteryDataExtractor: battery-aware text-mining software embedded with BERT models},
+  author={Huang, Shu and Cole, Jacqueline M},
+  journal={Chemical Science},
+  volume={13},
+  number={39},
+  pages={11487--11495},
+  year={2022},
+  publisher={Royal Society of Chemistry}
+}
+```

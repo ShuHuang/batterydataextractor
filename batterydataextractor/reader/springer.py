@@ -73,12 +73,14 @@ class SpringerXmlReader(XmlReader):
         date = year[0].text + month + day
         try:
             abstract = abstract[0].findall('p')[0].text
+            cleaned_authors = [author.getchildren()[1].text + " " + author.getchildren()[0].text for author in authors]
         except IndexError:
             abstract = None
+            cleaned_authors = None
 
         metadata = {
                 '_title': title[0].text if title else None,
-                '_authors': [author.getchildren()[1].text + " " + author.getchildren()[0].text for author in authors] if authors else None,
+                '_authors': cleaned_authors if cleaned_authors else None,
                 '_publisher': publisher[0].text if publisher else None,
                 '_journal': journal[0].text if journal else None,
                 '_date': date if date else None,

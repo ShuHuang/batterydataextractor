@@ -137,10 +137,14 @@ class ElsevierXmlReader(XmlReader):
             month = date[0].attrib['month'] if len(date[0].attrib['month']) == 2 else '0' + date[0].attrib['month']
             day = date[0].attrib['day'] if len(date[0].attrib['day']) == 2 else '0' + date[0].attrib['day']
             dates = year + month + day
+        try:
+            cleaned_authors = [author.getchildren()[1].text + " " + author.getchildren()[0].text for author in authors]
+        except IndexError:
+            cleaned_authors = None
 
         headdata = {
                 '_title': title[0].text if title else None,
-                '_authors': [author.getchildren()[0].text + " " + author.getchildren()[1].text for author in authors] if authors else None,
+                '_authors': cleaned_authors if cleaned_authors else None,
                 '_date': dates if date else None,
                 '_keywords': [i.getchildren()[0].text for i in keywords] if keywords else None,
                 '_abstract': abstract[0].text if abstract else None
